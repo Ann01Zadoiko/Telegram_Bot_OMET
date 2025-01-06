@@ -1,8 +1,8 @@
-package com.example.bot.constance;
+package com.example.museum;
 
 public enum Museum {
     INFO ("Інформація про музей"),
-    SOCIAL_MEDIA ("Соціальні мережі"),
+    SOCIAL_MEDIA_MUSEUM ("Соціальні мережі"),
     REGISTRATION ("Реєстрація");
 
     private String fullName;

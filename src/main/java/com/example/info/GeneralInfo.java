@@ -1,11 +1,11 @@
-package com.example.bot.constance;
+package com.example.info;
 
 public enum GeneralInfo {
     VACANCY ("Вакансії"),
     STUDY ("Навчання"),
+    TRACKS ("Маршрути"),
     NEWS ("Новини"),
     SOCIAL_MEDIA ("Соціальні мережи"),
-    TRACKS ("Маршрути"),
     FREE_TRAVEL ("Пільги"),
     RULES ("Правила користуванням");
 

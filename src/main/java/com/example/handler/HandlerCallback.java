@@ -1,4 +1,4 @@
-package com.example.bot.handler;
+package com.example.handler;
 
 public class HandlerCallback {
 }

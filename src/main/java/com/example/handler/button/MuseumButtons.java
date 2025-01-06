@@ -1,27 +1,27 @@
-package com.example.bot.handler.button;
+package com.example.handler.button;
 
-import com.example.bot.constance.GeneralInfo;
-import com.example.bot.constance.Museum;
+import com.example.museum.Museum;
+import com.example.museum.SocialMediaMuseum;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.InlineKeyboardMarkup;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.InlineKeyboardButton;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class GeneralInfoButtons {
+public class MuseumButtons {
 
-    private GeneralInfoButtons(){}
+    private MuseumButtons(){}
 
     public static InlineKeyboardMarkup getButtons(){
         InlineKeyboardMarkup markup = new InlineKeyboardMarkup();
 
         List<List<InlineKeyboardButton>> row = new ArrayList<>();
 
-        for (GeneralInfo generalInfo: GeneralInfo.values()) {
+        for (Museum museum: Museum.values()) {
             InlineKeyboardButton button = InlineKeyboardButton
                     .builder()
-                    .text(generalInfo.getFullName())
-                    .callbackData(generalInfo.name())
+                    .text(museum.getFullName())
+                    .callbackData(museum.name())
                     .build();
 
             List<InlineKeyboardButton> buttons = new ArrayList<>();

@@ -1,6 +1,5 @@
-package com.example.bot.handler.button;
+package com.example.handler.button;
 
-import com.example.bot.constance.Button;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.ReplyKeyboardMarkup;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.KeyboardRow;
 
