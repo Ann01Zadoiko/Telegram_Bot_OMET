@@ -1,26 +1,25 @@
 package com.example.handler.button;
 
-import com.example.constance.museum.MuseumEnum;
+import com.example.constance.info.vacancy.Specification;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.InlineKeyboardMarkup;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.InlineKeyboardButton;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class MuseumButtons {
+public class VacancyButtons {
 
-    private MuseumButtons(){}
-
-    public static InlineKeyboardMarkup getButtons(){
+    public static InlineKeyboardMarkup getButtonsSpecification(){
         InlineKeyboardMarkup markup = new InlineKeyboardMarkup();
 
         List<List<InlineKeyboardButton>> row = new ArrayList<>();
 
-        for (MuseumEnum museum: MuseumEnum.values()) {
+
+        for (Specification specification: Specification.values()){
             InlineKeyboardButton button = InlineKeyboardButton
                     .builder()
-                    .text(museum.getFullName())
-                    .callbackData(museum.name())
+                    .text(specification.getName())
+                    .callbackData(specification.name())
                     .build();
 
             List<InlineKeyboardButton> buttons = new ArrayList<>();

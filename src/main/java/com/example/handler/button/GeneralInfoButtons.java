@@ -1,7 +1,7 @@
 package com.example.handler.button;
 
-import com.example.info.GeneralInfo;
-import com.example.info.Link;
+import com.example.constance.info.GeneralInfo;
+import com.example.constance.info.links.Link;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.InlineKeyboardMarkup;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.InlineKeyboardButton;
 import org.telegram.telegrambots.meta.api.objects.webapp.WebAppInfo;
@@ -22,7 +22,7 @@ public class GeneralInfoButtons {
         InlineKeyboardButton button = InlineKeyboardButton
                 .builder()
                 .text(GeneralInfo.VACANCY.getFullName())
-                .callbackData(GeneralInfo.VACANCY.getFullName())
+                .callbackData(GeneralInfo.VACANCY.name())
                 .build();
 
         List<InlineKeyboardButton> buttons = new ArrayList<>();
@@ -34,7 +34,7 @@ public class GeneralInfoButtons {
         InlineKeyboardButton button1 = InlineKeyboardButton
                 .builder()
                 .text(GeneralInfo.STUDY.getFullName())
-                .callbackData(GeneralInfo.STUDY.getFullName())
+                .callbackData(GeneralInfo.STUDY.name())
                 .build();
 
         List<InlineKeyboardButton> buttons1 = new ArrayList<>();
@@ -46,7 +46,7 @@ public class GeneralInfoButtons {
         InlineKeyboardButton button2 = InlineKeyboardButton
                 .builder()
                 .text(GeneralInfo.TRACKS.getFullName())
-                .callbackData(GeneralInfo.TRACKS.getFullName())
+                .callbackData(GeneralInfo.TRACKS.name())
                 .build();
 
         List<InlineKeyboardButton> buttons2 = new ArrayList<>();
@@ -58,7 +58,7 @@ public class GeneralInfoButtons {
         InlineKeyboardButton button3 = InlineKeyboardButton
                 .builder()
                 .text(GeneralInfo.SOCIAL_MEDIA.getFullName())
-                .callbackData(GeneralInfo.SOCIAL_MEDIA.getFullName())
+                .callbackData(GeneralInfo.SOCIAL_MEDIA.name())
                 .build();
 
         List<InlineKeyboardButton> buttons3 = new ArrayList<>();

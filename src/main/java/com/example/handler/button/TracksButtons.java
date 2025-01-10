@@ -6,23 +6,34 @@ import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.InlineKe
 import java.util.ArrayList;
 import java.util.List;
 
-public class BackButton {
+public class TracksButtons {
 
-    public static InlineKeyboardMarkup getButtons(){
+    public static InlineKeyboardMarkup getButtonsTracks(){
         InlineKeyboardMarkup markup = new InlineKeyboardMarkup();
 
         List<List<InlineKeyboardButton>> row = new ArrayList<>();
 
         InlineKeyboardButton button = InlineKeyboardButton
                 .builder()
-                .text("Назад")
-                .callbackData("BACK")
+                .text("Трамвай")
+                .callbackData("Трамвай")
                 .build();
 
         List<InlineKeyboardButton> buttons = new ArrayList<>();
         buttons.add(button);
 
         row.add(buttons);
+
+        InlineKeyboardButton button1 = InlineKeyboardButton
+                .builder()
+                .text("Тролейбус")
+                .callbackData("Тролейбус")
+                .build();
+
+        List<InlineKeyboardButton> buttons1 = new ArrayList<>();
+        buttons1.add(button1);
+
+        row.add(buttons1);
 
         markup.setKeyboard(row);
 

@@ -1,11 +1,11 @@
-create table bot.users(
+create table users(
 	id bigint auto_increment primary key,
     chat_id bigint not null,
     permission tinyint,
     username varchar(50)
 );
 
-create table bot.complaints(
+create table complaints(
 	id bigint auto_increment primary key,
     text text,
     phone_number varchar(20),
@@ -14,10 +14,10 @@ create table bot.complaints(
     audio blob
 );
 
-create table bot.museums(
+create table museums(
 	id bigint auto_increment primary key,
     count_of_people int,
     phone_number varchar(20),
     full_name varchar(50),
-    date datetime
+    date date
 );
