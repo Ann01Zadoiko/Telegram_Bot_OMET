@@ -20,6 +20,7 @@ public class BotHandler {
         callback.handlerOfGeneralInfo(update, bot);
         callback.handlerOfMuseum(update, bot);
         callback.handlerOfVacancy(update, bot);
+        callback.handlerOfBack(update, bot);
     }
 
     public void answerToMessage(Update update){

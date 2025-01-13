@@ -30,15 +30,6 @@ public class LinkButtons {
             row.add(buttons);
         }
 
-        InlineKeyboardButton webAppButton = new InlineKeyboardButton();
-        webAppButton.setText("Назад");
-        webAppButton.setCallbackData("BACK");
-
-        List<InlineKeyboardButton> buttons = new ArrayList<>();
-        buttons.add(webAppButton);
-
-        row.add(buttons);
-
         markup.setKeyboard(row);
 
         return markup;
@@ -62,15 +53,6 @@ public class LinkButtons {
 
             row.add(buttons);
         }
-
-        InlineKeyboardButton webAppButton = new InlineKeyboardButton();
-        webAppButton.setText("Назад");
-        webAppButton.setCallbackData("BACK");
-
-        List<InlineKeyboardButton> buttons = new ArrayList<>();
-        buttons.add(webAppButton);
-
-        row.add(buttons);
 
         markup.setKeyboard(row);
 

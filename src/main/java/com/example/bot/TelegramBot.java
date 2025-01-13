@@ -43,11 +43,9 @@ public class TelegramBot extends TelegramLongPollingBot{
     @SneakyThrows
     @Override
     public void onUpdateReceived(Update update) {
-        Message message = update.getMessage();
-
         BotHandler botHandler = new BotHandler(new HandlerCallback(), new HandlerMessage(), config);
 
-        if (update.hasMessage() && message.hasText()){
+        if (update.hasMessage() && update.getMessage().hasText()){
             botHandler.answerToMessage(update);
         }
 
@@ -58,7 +56,7 @@ public class TelegramBot extends TelegramLongPollingBot{
     }
 
     @SneakyThrows
-    public void sendMessage(long chatId, String text, long messageId) throws TelegramApiException {
+    public void sendMessage(long chatId, String text, long messageId, CallbackQuery callbackQuery) throws TelegramApiException {
 
         SendMessage sendMessage = SendMessage
                 .builder()
@@ -67,6 +65,8 @@ public class TelegramBot extends TelegramLongPollingBot{
                 .replyToMessageId((int) messageId)
                 .build();
         execute(sendMessage);
+
+        answerCallback(callbackQuery);
 
         log.info("Reply sent: " + sendMessage.getText() + "\nBy user: " + sendMessage.getChatId());
     }
@@ -129,12 +129,13 @@ public class TelegramBot extends TelegramLongPollingBot{
     }
 
     @SneakyThrows
-    public void executeEditMessage(String text, Long chatId, long messageId) {
+    public void executeEditMessage(String text, Long chatId, long messageId, InlineKeyboardMarkup markup) {
 
         EditMessageText editMessageText = EditMessageText
                 .builder()
                 .messageId((int) messageId)
                 .chatId(chatId)
+                .replyMarkup(markup)
                 .text(text)
                 .build();
         execute(editMessageText);
@@ -143,13 +144,15 @@ public class TelegramBot extends TelegramLongPollingBot{
     }
 
     @SneakyThrows
-    public void sendMiniApp(Long chatId, InlineKeyboardMarkup markup, String text, long messageId){
+    public void sendMiniApp(Long chatId, InlineKeyboardMarkup markup, String text, long messageId, CallbackQuery callbackQuery){
         SendMessage message = new SendMessage();
         message.setChatId(chatId);
         message.setText(text);
         message.setReplyMarkup(markup);
         message.setReplyToMessageId((int) messageId);
         execute(message);
+
+        answerCallback(callbackQuery);
     }
 }
 

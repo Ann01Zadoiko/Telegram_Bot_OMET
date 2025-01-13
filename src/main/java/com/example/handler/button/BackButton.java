@@ -8,7 +8,7 @@ import java.util.List;
 
 public class BackButton {
 
-    public static InlineKeyboardMarkup getButtons(){
+    public static InlineKeyboardMarkup getButtons(String callback){
         InlineKeyboardMarkup markup = new InlineKeyboardMarkup();
 
         List<List<InlineKeyboardButton>> row = new ArrayList<>();
@@ -16,7 +16,7 @@ public class BackButton {
         InlineKeyboardButton button = InlineKeyboardButton
                 .builder()
                 .text("Назад")
-                .callbackData("BACK")
+                .callbackData(callback)
                 .build();
 
         List<InlineKeyboardButton> buttons = new ArrayList<>();
