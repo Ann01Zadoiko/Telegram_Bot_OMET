@@ -32,4 +32,6 @@ public class MessageChecker {
         }
         return false;
     }
+
+    // /count (date), /setDate, /start, phone number, full name, count of people    complaint, full name, phone number
 }

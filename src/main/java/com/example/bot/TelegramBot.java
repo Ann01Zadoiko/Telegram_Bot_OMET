@@ -1,6 +1,7 @@
 package com.example.bot;
 
 import com.example.config.BotConfig;
+import com.example.feature.museum.MuseumService;
 import com.example.handler.BotHandler;
 import com.example.handler.HandlerCallback;
 import com.example.handler.HandlerMessage;
@@ -29,6 +30,7 @@ import java.io.File;
 public class TelegramBot extends TelegramLongPollingBot{
 
     private final BotConfig config;
+    private final MuseumService museumService;
 
     @Override
     public String getBotUsername() {
@@ -43,7 +45,7 @@ public class TelegramBot extends TelegramLongPollingBot{
     @SneakyThrows
     @Override
     public void onUpdateReceived(Update update) {
-        BotHandler botHandler = new BotHandler(new HandlerCallback(), new HandlerMessage(), config);
+        BotHandler botHandler = new BotHandler(new HandlerCallback(museumService), new HandlerMessage(museumService), config, museumService);
 
         if (update.hasMessage() && update.getMessage().hasText()){
             botHandler.answerToMessage(update);
@@ -73,6 +75,7 @@ public class TelegramBot extends TelegramLongPollingBot{
 
 
     public void answerCallback(CallbackQuery callbackQuery) throws TelegramApiException {
+
         AnswerCallbackQuery answer = new AnswerCallbackQuery();
         answer.setCallbackQueryId(callbackQuery.getId());
         answer.setShowAlert(false); // true, если хотите показать всплывающее окно
