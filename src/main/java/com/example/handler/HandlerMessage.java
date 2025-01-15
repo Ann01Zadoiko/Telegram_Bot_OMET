@@ -127,4 +127,6 @@ public class HandlerMessage {
             bot.sendMessage(chatId, Registration.STEP_8.getText());
         }
     }
+
+
 }
