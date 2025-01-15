@@ -79,6 +79,7 @@ public class MessageChecker {
         return false;
     }
 
+
     public static boolean isComplaint(String value){
         String[] s = value.split(" ");
         if (s.length > 2){
@@ -86,6 +87,5 @@ public class MessageChecker {
         }
         return false;
     }
-
 
 }

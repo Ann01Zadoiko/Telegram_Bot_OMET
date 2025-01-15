@@ -8,9 +8,11 @@ public interface Function {
 
     String MUSEUM = "Музей";
     String GENERAL_INFO = "Загальна інформація";
+    String RENT = "Оренда";
+    String COMPLAINT = "Скарги та пропозиції";
 
     String START = "/start";
     String SET_NEW_DAY = "/setDate";
-    String COUNT = "/count";
+    String SHOW = "/show";
     String CLOSE = "/close";
 }
