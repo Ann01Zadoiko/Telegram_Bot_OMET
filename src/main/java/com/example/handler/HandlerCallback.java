@@ -41,7 +41,14 @@ public class HandlerCallback {
 
                 case REGISTRATION ->{
                     Museum museum = museumService.getById(1L);
-                    bot.executeEditMessage(Registration.STEP_1.getText() + museum.getDate() + " на 12:00?", chatId, messageId, MuseumButtons.getButtonsYesOrNo());
+                    String textClose = Registration.STEP_9.getText() + "\n" + Registration.STEP_6.getText() + "\n" + Registration.STEP_7.getText();
+                    String textOpen =  Registration.STEP_1.getText() + museum.getDate() + " на 12:00?";
+
+                    if (museum.isClose()){
+                        bot.executeEditMessage(textClose, chatId, messageId, BackButton.getButtons("BACK_MUSEUM"));
+                    } else {
+                        bot.executeEditMessage(textOpen, chatId, messageId, MuseumButtons.getButtonsYesOrNo());
+                    }
                 }
             }
         }
@@ -124,6 +131,10 @@ public class HandlerCallback {
         if (data.equals("BACK_VACANCY")){
             bot.executeEditMessage("Вакансії", chatId,  messageId, VacancyButtons.getButtonsSpecification());
         }
+
+        if (data.equals("BACK_MUSEUM")){
+            bot.executeEditMessage(Button.MUSEUM.getFullName(), chatId, messageId, MuseumButtons.getButtons());
+        }
     }
 
     public void handlerOfYesOrNoMuseum(Update update, TelegramBot bot){
@@ -132,6 +143,12 @@ public class HandlerCallback {
         long messageId = update.getCallbackQuery().getMessage().getMessageId();
 
         if (data.equals("YES_MUSEUM")){
+            Museum museum = new Museum();
+            museum.setDate(museumService.showDate());
+            museum.setChatId(chatId);
+
+            museumService.save(museum);
+
             bot.executeEditMessage(Registration.STEP_2.getText(), chatId, messageId, null);
         }
 

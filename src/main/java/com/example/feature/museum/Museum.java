@@ -27,4 +27,10 @@ public class Museum {
 
     @Column(name = "date")
     private LocalDate date;
+
+    @Column(name = "close")
+    private boolean close;
+
+    @Column(name = "chat_id")
+    private Long chatId;
 }

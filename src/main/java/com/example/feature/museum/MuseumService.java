@@ -38,4 +38,15 @@ public class MuseumService implements IMuseumService{
         museum.setDate(date);
         save(museum);
     }
+
+    @Override
+    public Museum getByChatId(Long chatId){
+        return repository.findByChatId(chatId);
+    }
+
+    @Override
+    public LocalDate showDate(){
+        Museum museum = getById(1L);
+        return museum.getDate();
+    }
 }

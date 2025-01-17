@@ -1,8 +1,10 @@
 package com.example.handler;
 
+import com.example.constance.Function;
 import com.example.constance.info.GeneralInfo;
 import com.example.constance.info.vacancy.Specification;
 import com.example.constance.museum.MuseumEnum;
+import com.example.handler.button.Button;
 
 public class MessageChecker {
 
@@ -35,7 +37,9 @@ public class MessageChecker {
 
     public static boolean isFullNameMuseum(String value){
         String[] s = value.split(" ");
-        if (s.length == 1 && !value.startsWith("/start")){
+        if (s.length == 1 && !value.startsWith("/start")  && !value.equals(Button.MUSEUM.getFullName())
+        && !value.equals(Button.RENT.getFullName()) && !value.equals(Function.SET_NEW_DAY) && !value.equals(Function.CLOSE)
+        && !value.equals(Function.SHOW) && !value.startsWith("0") && !value.startsWith("+380")){
             return true;
         }
         return false;
@@ -43,7 +47,9 @@ public class MessageChecker {
 
     public static boolean isFullNameComplaint(String value){
         String[] s = value.split(" ");
-        if (s.length == 2 && (!value.startsWith("/count")) && (!value.startsWith("/setDate"))){
+        if (s.length == 2 && (!value.startsWith("/setDate")) &&
+        !value.startsWith(Function.SHOW)  && !value.equals(Button.COMPLAINT.getFullName())
+                && !value.equals(Button.GENERAL_INFO.getFullName())){
             return true;
         }
         return false;
@@ -58,14 +64,6 @@ public class MessageChecker {
 
     public static boolean isPhoneNumberComplaint(String value){
         if (value.startsWith("+380") && value.length() == 13){
-            return true;
-        }
-        return false;
-    }
-
-    public static boolean isCountOfPeople(String value){
-        String[] s = value.split(" ");
-        if (value.startsWith("/count") && s.length == 2){
             return true;
         }
         return false;
@@ -88,4 +86,22 @@ public class MessageChecker {
         return false;
     }
 
+    public static boolean isShow(String value){
+        String[] s = value.split(" ");
+        if (s.length == 2 && value.startsWith(Function.SHOW)){
+            return true;
+        }
+        return false;
+    }
+
+    public static boolean isClose(String value){
+        return (value.equals(Function.CLOSE)) ? true : false;
+    }
+
+    public static boolean isCountOfPeople(String value){
+        if (value.length() < 3){
+            return true;
+        }
+        return false;
+    }
 }

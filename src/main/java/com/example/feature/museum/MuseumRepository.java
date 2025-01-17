@@ -14,4 +14,6 @@ public interface MuseumRepository extends JpaRepository<Museum, Long> {
                     "from museums m\n" +
                     "where m.date=:date")
     Integer countOfPeopleByDay(LocalDate date);
+
+    Museum findByChatId(Long chatId);
 }

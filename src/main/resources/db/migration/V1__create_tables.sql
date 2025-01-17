@@ -19,5 +19,7 @@ create table museums(
     count_of_people int,
     phone_number varchar(20),
     full_name varchar(50),
-    date date
+    date date,
+    close bit,
+    chat_id bigint
 );

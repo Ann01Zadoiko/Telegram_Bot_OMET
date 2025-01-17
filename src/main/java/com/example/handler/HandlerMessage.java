@@ -2,9 +2,11 @@ package com.example.handler;
 
 import com.example.bot.TelegramBot;
 import com.example.constance.Function;
-import com.example.constance.museum.MuseumEnum;
+
+
 import com.example.constance.museum.Registration;
 import com.example.constance.rent.Rent;
+import com.example.feature.museum.Museum;
 import com.example.feature.museum.MuseumService;
 import com.example.handler.button.Button;
 import com.example.handler.button.GeneralInfoButtons;
@@ -30,7 +32,7 @@ public class HandlerMessage {
         Long chatId = message.getChatId();
         String text = message.getText();
 
-        if (text.equals("/start")) {
+        if (text.equals(Function.START)) {
             bot.sendMessage(chatId, Function.WELCOME);
         }
     }
@@ -42,7 +44,7 @@ public class HandlerMessage {
         String text = message.getText();
 
         if (text.equals(Button.MUSEUM.getFullName())){
-           bot.sendMessage(chatId, Function.MUSEUM, MuseumButtons.getButtons());
+           bot.sendMessage(chatId, Button.MUSEUM.getFullName(), MuseumButtons.getButtons());
         }
     }
 
@@ -53,7 +55,7 @@ public class HandlerMessage {
         String text = message.getText();
 
         if (text.equals(Button.GENERAL_INFO.getFullName())){
-            bot.sendMessage(chatId, Function.GENERAL_INFO, GeneralInfoButtons.getButtons());
+            bot.sendMessage(chatId, Button.GENERAL_INFO.getFullName(), GeneralInfoButtons.getButtons());
         }
     }
 
@@ -76,6 +78,8 @@ public class HandlerMessage {
         Message message = update.getMessage();
         Long chatId = message.getChatId();
         String text = message.getText();
+        Museum museum = museumService.getById(1L);
+
 
         if (text.contains(Function.SET_NEW_DAY)){
 
@@ -83,6 +87,9 @@ public class HandlerMessage {
 
             DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd.MM.yyyy");
             LocalDate date = LocalDate.parse(dayString, formatter);
+            museum.setClose(false);
+            museum.setDate(date);
+            museumService.save(museum);
 
             museumService.setNewDayToExhibition(date);
 
@@ -96,10 +103,12 @@ public class HandlerMessage {
         Long chatId = message.getChatId();
         String text = message.getText();
 
-        String[] s = text.split(" ");
-
         //add check
-        if (s.length == 2){
+        if (MessageChecker.isFullNameMuseum(text)){
+            Museum byChatId = museumService.getByChatId(chatId);
+            byChatId.setFullName(text);
+            museumService.save(byChatId);
+
             bot.sendMessage(chatId, Registration.STEP_3.getText());
         }
     }
@@ -109,9 +118,12 @@ public class HandlerMessage {
         Message message = update.getMessage();
         Long chatId = message.getChatId();
         String text = message.getText();
-
         //add check
-        if (text.startsWith("0") && text.length()==10){
+        if (MessageChecker.isPhoneNumberMuseum(text)){
+            Museum byChatId = museumService.getByChatId(chatId);
+            byChatId.setPhoneNumber(text);
+            museumService.save(byChatId);
+
             bot.sendMessage(chatId, Registration.STEP_4.getText());
         }
     }
@@ -123,10 +135,29 @@ public class HandlerMessage {
         String text = message.getText();
 
         //add check
-        if (text.length() < 3){
-            bot.sendMessage(chatId, Registration.STEP_8.getText());
+        if (MessageChecker.isCountOfPeople(text)){
+            Museum byChatId = museumService.getByChatId(chatId);
+            byChatId.setCountOfPeople(Integer.parseInt(text));
+            museumService.save(byChatId);
+
+            bot.sendMessage(chatId, Registration.STEP_8.getText() + "\n" + Registration.STEP_7.getText());
         }
     }
 
+    @SneakyThrows
+    public void handlerOfCloseExhibition(Update update, TelegramBot bot){
+        Message message = update.getMessage();
+        Long chatId = message.getChatId();
+        String text = message.getText();
+
+        Museum museum = museumService.getById(1L);
+
+        if (MessageChecker.isClose(text)){
+            museum.setClose(true);
+            museumService.save(museum);
+
+            bot.sendMessage(chatId, "Ви закрили запись на ексеурсію");
+        }
+    }
 
 }

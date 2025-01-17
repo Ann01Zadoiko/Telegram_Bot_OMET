@@ -14,4 +14,8 @@ public interface IMuseumService {
     Integer countOfPeopleByDay(LocalDate date);
 
     void setNewDayToExhibition(LocalDate date);
+
+    Museum getByChatId(Long chatId);
+
+    LocalDate showDate();
 }
