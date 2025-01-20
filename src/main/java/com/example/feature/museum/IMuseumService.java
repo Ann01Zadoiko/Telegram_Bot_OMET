@@ -11,11 +11,11 @@ public interface IMuseumService {
 
     Museum getById(Long id);
 
-    Integer countOfPeopleByDay(LocalDate date);
-
     void setNewDayToExhibition(LocalDate date);
 
     Museum getByChatId(Long chatId);
 
     LocalDate showDate();
+
+    List<Museum> getByDate(LocalDate date);
 }

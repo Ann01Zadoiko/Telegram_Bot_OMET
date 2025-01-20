@@ -3,6 +3,7 @@ package com.example.handler;
 import com.example.bot.TelegramBot;
 import com.example.config.BotConfig;
 import com.example.feature.museum.MuseumService;
+import com.example.feature.user.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.telegram.telegrambots.meta.api.objects.Update;
@@ -15,9 +16,10 @@ public class BotHandler {
     private final HandlerMessage message;
     private final BotConfig config;
     private final MuseumService museumService;
+    private final UserService userService;
 
     public void answerToCallback(Update update){
-        TelegramBot bot = new TelegramBot(config, museumService);
+        TelegramBot bot = new TelegramBot(config, museumService, userService);
 
         callback.handlerOfGeneralInfo(update, bot);
         callback.handlerOfMuseum(update, bot);
@@ -27,7 +29,7 @@ public class BotHandler {
     }
 
     public void answerToMessage(Update update){
-        TelegramBot bot = new TelegramBot(config, museumService);
+        TelegramBot bot = new TelegramBot(config, museumService, userService);
 
         message.handlerOfGeneralInfo(update, bot);
         message.handlerOfMuseum(update, bot);
@@ -37,5 +39,8 @@ public class BotHandler {
         message.handlerOfFullNameForMuseum(update, bot);
         message.handlerOfPhoneNumberForMuseum(update, bot);
         message.handlerOfCountOfPeopleForMuseum(update, bot);
+        message.handlerOfCloseExhibition(update, bot);
+        message.handlerOfHelp(update, bot);
+        message.handlerOfShow(update, bot);
     }
 }

@@ -5,6 +5,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
 import java.time.LocalDate;
+import java.util.List;
 
 @Repository
 public interface MuseumRepository extends JpaRepository<Museum, Long> {
@@ -16,4 +17,6 @@ public interface MuseumRepository extends JpaRepository<Museum, Long> {
     Integer countOfPeopleByDay(LocalDate date);
 
     Museum findByChatId(Long chatId);
+
+    List<Museum> findByDate(LocalDate date);
 }

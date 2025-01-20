@@ -28,11 +28,6 @@ public class MuseumService implements IMuseumService{
     }
 
     @Override
-    public Integer countOfPeopleByDay(LocalDate date) {
-        return repository.countOfPeopleByDay(date);
-    }
-
-    @Override
     public void setNewDayToExhibition(LocalDate date) {
         Museum museum = getById(1L);
         museum.setDate(date);
@@ -48,5 +43,10 @@ public class MuseumService implements IMuseumService{
     public LocalDate showDate(){
         Museum museum = getById(1L);
         return museum.getDate();
+    }
+
+    @Override
+    public List<Museum> getByDate(LocalDate date) {
+        return repository.findByDate(date);
     }
 }

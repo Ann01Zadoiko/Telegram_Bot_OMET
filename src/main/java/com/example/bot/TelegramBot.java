@@ -2,6 +2,7 @@ package com.example.bot;
 
 import com.example.config.BotConfig;
 import com.example.feature.museum.MuseumService;
+import com.example.feature.user.UserService;
 import com.example.handler.BotHandler;
 import com.example.handler.HandlerCallback;
 import com.example.handler.HandlerMessage;
@@ -31,6 +32,7 @@ public class TelegramBot extends TelegramLongPollingBot{
 
     private final BotConfig config;
     private final MuseumService museumService;
+    private final UserService userService;
 
     @Override
     public String getBotUsername() {
@@ -45,7 +47,12 @@ public class TelegramBot extends TelegramLongPollingBot{
     @SneakyThrows
     @Override
     public void onUpdateReceived(Update update) {
-        BotHandler botHandler = new BotHandler(new HandlerCallback(museumService), new HandlerMessage(museumService), config, museumService);
+        BotHandler botHandler = new BotHandler(
+                new HandlerCallback(museumService),
+                new HandlerMessage(museumService, userService),
+                config,
+                museumService,
+                userService);
 
         if (update.hasMessage() && update.getMessage().hasText()){
             botHandler.answerToMessage(update);

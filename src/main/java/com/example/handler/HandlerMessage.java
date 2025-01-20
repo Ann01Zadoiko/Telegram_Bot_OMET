@@ -8,6 +8,8 @@ import com.example.constance.museum.Registration;
 import com.example.constance.rent.Rent;
 import com.example.feature.museum.Museum;
 import com.example.feature.museum.MuseumService;
+import com.example.feature.user.User;
+import com.example.feature.user.UserService;
 import com.example.handler.button.Button;
 import com.example.handler.button.GeneralInfoButtons;
 import com.example.handler.button.MuseumButtons;
@@ -19,12 +21,14 @@ import org.telegram.telegrambots.meta.api.objects.Update;
 
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
+import java.util.List;
 
 @RequiredArgsConstructor
 @Service
 public class HandlerMessage {
 
     private final MuseumService museumService;
+    private final UserService userService;
 
     @SneakyThrows
     public void handlerOfStart(Update update, TelegramBot bot){
@@ -80,8 +84,7 @@ public class HandlerMessage {
         String text = message.getText();
         Museum museum = museumService.getById(1L);
 
-
-        if (text.contains(Function.SET_NEW_DAY)){
+        if (MessageChecker.isSetDate(text) && userService.hasPermission(chatId)){
 
             String dayString = text.substring(9);
 
@@ -140,7 +143,7 @@ public class HandlerMessage {
             byChatId.setCountOfPeople(Integer.parseInt(text));
             museumService.save(byChatId);
 
-            bot.sendMessage(chatId, Registration.STEP_8.getText() + "\n" + Registration.STEP_7.getText());
+            bot.sendMessage(chatId, Registration.STEP_8.getText() + byChatId.getDate() + " на 12:00\n" + Registration.STEP_7.getText());
         }
     }
 
@@ -152,7 +155,7 @@ public class HandlerMessage {
 
         Museum museum = museumService.getById(1L);
 
-        if (MessageChecker.isClose(text)){
+        if (MessageChecker.isClose(text) && userService.hasPermission(chatId)){
             museum.setClose(true);
             museumService.save(museum);
 
@@ -160,4 +163,43 @@ public class HandlerMessage {
         }
     }
 
+    @SneakyThrows
+    public void handlerOfHelp(Update update, TelegramBot bot){
+        Message message = update.getMessage();
+        Long chatId = message.getChatId();
+        String text = message.getText();
+
+        if (MessageChecker.isHelp(text) && userService.hasPermission(chatId)){
+            bot.sendMessage(chatId, Function.HELP_TEXT);
+        }
+    }
+
+    @SneakyThrows
+    public void handlerOfShow(Update update, TelegramBot bot){
+        Message message = update.getMessage();
+        Long chatId = message.getChatId();
+        String text = message.getText();
+
+        String dayString = text.substring(6);
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd.MM.yyyy");
+        LocalDate date = LocalDate.parse(dayString, formatter);
+
+        if (MessageChecker.isShow(text) && userService.hasPermission(chatId)){
+            String answer = "";
+            int number = 1;
+            int count = 0;
+
+            List<Museum> byDate = museumService.getByDate(date);
+            for (Museum museum: byDate){
+                if (museum.getId() != 1L){
+                    answer += (number++) + ". " + museum.getFullName() + "    " + museum.getPhoneNumber() + "    " + museum.getCountOfPeople() + "\n";
+                    count += museum.getCountOfPeople();
+                }
+            }
+
+            answer += "Всього: " + count;
+
+            bot.sendMessage(chatId, answer);
+        }
+    }
 }

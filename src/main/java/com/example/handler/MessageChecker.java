@@ -39,7 +39,8 @@ public class MessageChecker {
         String[] s = value.split(" ");
         if (s.length == 1 && !value.startsWith("/start")  && !value.equals(Button.MUSEUM.getFullName())
         && !value.equals(Button.RENT.getFullName()) && !value.equals(Function.SET_NEW_DAY) && !value.equals(Function.CLOSE)
-        && !value.equals(Function.SHOW) && !value.startsWith("0") && !value.startsWith("+380")){
+        && !value.equals(Function.SHOW) && !value.startsWith("0") && !value.startsWith("+380")
+        && !value.equals(Function.HELP) && value.length() > 2){
             return true;
         }
         return false;
@@ -71,7 +72,7 @@ public class MessageChecker {
 
     public static boolean isSetDate(String value){
         String[] s = value.split(" ");
-        if (value.startsWith("/setDate") && s.length == 2){
+        if (value.startsWith(Function.SET_NEW_DAY) && s.length == 2){
             return true;
         }
         return false;
@@ -103,5 +104,9 @@ public class MessageChecker {
             return true;
         }
         return false;
+    }
+
+    public static boolean isHelp(String value){
+        return value.equals(Function.HELP);
     }
 }

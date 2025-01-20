@@ -1,6 +1,29 @@
 package com.example.feature.user;
 
-public class UserService {
+import lombok.RequiredArgsConstructor;
+import org.springframework.stereotype.Service;
+
+@Service
+@RequiredArgsConstructor
+public class UserService implements IUserService{
+
+    private final UserRepository repository;
+
+
+    @Override
+    public User getById(Long id) {
+        return repository.getById(id);
+    }
+
+    @Override
+    public boolean hasPermission(Long chatId) {
+        return (getByChatId(chatId).getPermission() == 1);
+    }
+
+    @Override
+    public User getByChatId(Long chatId){
+        return repository.findByChatId(chatId);
+    }
 }
 //change date in museum
 //close museum
