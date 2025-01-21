@@ -6,7 +6,11 @@ import com.example.feature.museum.MuseumService;
 import com.example.feature.user.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.telegram.telegrambots.meta.api.objects.Message;
+import org.telegram.telegrambots.meta.api.objects.PhotoSize;
 import org.telegram.telegrambots.meta.api.objects.Update;
+
+import java.util.List;
 
 @Service
 @RequiredArgsConstructor
@@ -26,6 +30,7 @@ public class BotHandler {
         callback.handlerOfVacancy(update, bot);
         callback.handlerOfBack(update, bot);
         callback.handlerOfYesOrNoMuseum(update, bot);
+        callback.handlerOfSkip(update, bot);
     }
 
     public void answerToMessage(Update update){
@@ -42,5 +47,10 @@ public class BotHandler {
         message.handlerOfCloseExhibition(update, bot);
         message.handlerOfHelp(update, bot);
         message.handlerOfShow(update, bot);
+        message.handlerOfComplaintButton(update, bot);
+        message.handlerOfFullNameComplaint(update, bot);
+        message.handlerOfPhoneNumberComplaint(update, bot);
+        message.handlerOfMessageOfComplaint(update, bot);
+
     }
 }

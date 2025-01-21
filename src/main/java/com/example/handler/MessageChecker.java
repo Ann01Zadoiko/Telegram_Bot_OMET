@@ -81,7 +81,7 @@ public class MessageChecker {
 
     public static boolean isComplaint(String value){
         String[] s = value.split(" ");
-        if (s.length > 2){
+        if (s.length >= 3 && !value.startsWith(Button.COMPLAINT.getFullName())){
             return true;
         }
         return false;
@@ -89,14 +89,18 @@ public class MessageChecker {
 
     public static boolean isShow(String value){
         String[] s = value.split(" ");
-        if (s.length == 2 && value.startsWith(Function.SHOW)){
+        if (s.length == 2 &&
+                value.startsWith(Function.SHOW) &&
+                !value.startsWith(Function.SET_NEW_DAY) &&
+                !value.equals(Button.COMPLAINT.getFullName()) &&
+                !value.equals(Button.GENERAL_INFO.getFullName())){
             return true;
         }
         return false;
     }
 
     public static boolean isClose(String value){
-        return (value.equals(Function.CLOSE)) ? true : false;
+        return (value.equals(Function.CLOSE));
     }
 
     public static boolean isCountOfPeople(String value){
@@ -108,5 +112,9 @@ public class MessageChecker {
 
     public static boolean isHelp(String value){
         return value.equals(Function.HELP);
+    }
+
+    public static boolean isComplaintButton(String value){
+        return value.equals(Button.COMPLAINT.getFullName());
     }
 }

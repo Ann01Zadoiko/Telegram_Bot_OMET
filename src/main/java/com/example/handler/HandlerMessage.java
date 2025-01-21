@@ -2,27 +2,27 @@ package com.example.handler;
 
 import com.example.bot.TelegramBot;
 import com.example.constance.Function;
-
-
+import com.example.constance.complaint.Complain;
 import com.example.constance.museum.Registration;
 import com.example.constance.rent.Rent;
 import com.example.feature.museum.Museum;
 import com.example.feature.museum.MuseumService;
-import com.example.feature.user.User;
 import com.example.feature.user.UserService;
 import com.example.handler.button.Button;
 import com.example.handler.button.GeneralInfoButtons;
 import com.example.handler.button.MuseumButtons;
+import com.example.handler.button.SkipButton;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.telegram.telegrambots.meta.api.objects.Message;
 import org.telegram.telegrambots.meta.api.objects.Update;
-
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
 
+@Slf4j
 @RequiredArgsConstructor
 @Service
 public class HandlerMessage {
@@ -39,6 +39,7 @@ public class HandlerMessage {
         if (text.equals(Function.START)) {
             bot.sendMessage(chatId, Function.WELCOME);
         }
+
     }
 
     @SneakyThrows
@@ -84,7 +85,7 @@ public class HandlerMessage {
         String text = message.getText();
         Museum museum = museumService.getById(1L);
 
-        if (MessageChecker.isSetDate(text) && userService.hasPermission(chatId)){
+        if (MessageChecker.isSetDate(text) && userService.existsByChatId(chatId)){
 
             String dayString = text.substring(9);
 
@@ -108,9 +109,10 @@ public class HandlerMessage {
 
         //add check
         if (MessageChecker.isFullNameMuseum(text)){
-            Museum byChatId = museumService.getByChatId(chatId);
-            byChatId.setFullName(text);
-            museumService.save(byChatId);
+            List<Museum> byChatId = museumService.getByChatId(chatId);
+            Museum museum = byChatId.get(byChatId.size() - 1);
+            museum.setFullName(text);
+            museumService.save(museum);
 
             bot.sendMessage(chatId, Registration.STEP_3.getText());
         }
@@ -123,9 +125,10 @@ public class HandlerMessage {
         String text = message.getText();
         //add check
         if (MessageChecker.isPhoneNumberMuseum(text)){
-            Museum byChatId = museumService.getByChatId(chatId);
-            byChatId.setPhoneNumber(text);
-            museumService.save(byChatId);
+            List<Museum> byChatId = museumService.getByChatId(chatId);
+            Museum museum = byChatId.get(byChatId.size() - 1);
+            museum.setPhoneNumber(text);
+            museumService.save(museum);
 
             bot.sendMessage(chatId, Registration.STEP_4.getText());
         }
@@ -139,11 +142,12 @@ public class HandlerMessage {
 
         //add check
         if (MessageChecker.isCountOfPeople(text)){
-            Museum byChatId = museumService.getByChatId(chatId);
-            byChatId.setCountOfPeople(Integer.parseInt(text));
-            museumService.save(byChatId);
+            List<Museum> byChatId = museumService.getByChatId(chatId);
+            Museum museum = byChatId.get(byChatId.size() - 1);
+            museum.setCountOfPeople(Integer.parseInt(text));
+            museumService.save(museum);
 
-            bot.sendMessage(chatId, Registration.STEP_8.getText() + byChatId.getDate() + " на 12:00\n" + Registration.STEP_7.getText());
+            bot.sendMessage(chatId, Registration.STEP_8.getText() + museum.getDate() + " на 12:00\n" + Registration.STEP_7.getText());
         }
     }
 
@@ -155,7 +159,7 @@ public class HandlerMessage {
 
         Museum museum = museumService.getById(1L);
 
-        if (MessageChecker.isClose(text) && userService.hasPermission(chatId)){
+        if (MessageChecker.isClose(text) && userService.existsByChatId(chatId)){
             museum.setClose(true);
             museumService.save(museum);
 
@@ -169,7 +173,7 @@ public class HandlerMessage {
         Long chatId = message.getChatId();
         String text = message.getText();
 
-        if (MessageChecker.isHelp(text) && userService.hasPermission(chatId)){
+        if (MessageChecker.isHelp(text) && userService.existsByChatId(chatId)){
             bot.sendMessage(chatId, Function.HELP_TEXT);
         }
     }
@@ -180,11 +184,11 @@ public class HandlerMessage {
         Long chatId = message.getChatId();
         String text = message.getText();
 
-        String dayString = text.substring(6);
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd.MM.yyyy");
-        LocalDate date = LocalDate.parse(dayString, formatter);
+        if (MessageChecker.isShow(text) && userService.existsByChatId(chatId)){
+            String dayString = text.substring(6);
+            DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd.MM.yyyy");
+            LocalDate date = LocalDate.parse(dayString, formatter);
 
-        if (MessageChecker.isShow(text) && userService.hasPermission(chatId)){
             String answer = "";
             int number = 1;
             int count = 0;
@@ -200,6 +204,50 @@ public class HandlerMessage {
             answer += "Всього: " + count;
 
             bot.sendMessage(chatId, answer);
+        }
+    }
+
+    @SneakyThrows
+    public void handlerOfComplaintButton(Update update, TelegramBot bot){
+        Message message = update.getMessage();
+        Long chatId = message.getChatId();
+        String text = message.getText();
+
+        if (MessageChecker.isComplaintButton(text)){
+            bot.sendMessage(chatId, Complain.STEP_1.getText() + "\n" + Complain.STEP_2.getText());
+        }
+    }
+
+    @SneakyThrows
+    public void handlerOfFullNameComplaint(Update update, TelegramBot bot){
+        Message message = update.getMessage();
+        Long chatId = message.getChatId();
+        String text = message.getText();
+
+        if (MessageChecker.isFullNameComplaint(text)){
+            bot.sendMessage(chatId, Complain.STEP_3.getText());
+        }
+    }
+
+    @SneakyThrows
+    public void handlerOfPhoneNumberComplaint(Update update, TelegramBot bot){
+        Message message = update.getMessage();
+        Long chatId = message.getChatId();
+        String text = message.getText();
+
+        if (MessageChecker.isPhoneNumberComplaint(text)){
+            bot.sendMessage(chatId, Complain.STEP_4.getText());
+        }
+    }
+
+    @SneakyThrows
+    public void handlerOfMessageOfComplaint(Update update, TelegramBot bot){
+        Message message = update.getMessage();
+        Long chatId = message.getChatId();
+        String text = message.getText();
+
+        if (MessageChecker.isComplaint(text)){
+            bot.sendMessage(chatId, Complain.STEP_5.getText(), SkipButton.getButtons("SKIP_AUDIO"));
         }
     }
 }

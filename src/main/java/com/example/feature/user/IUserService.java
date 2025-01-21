@@ -7,4 +7,6 @@ public interface IUserService {
     boolean hasPermission(Long chatId);
 
     User getByChatId(Long chatId);
+
+    boolean existsByChatId(Long chatId);
 }

@@ -1,6 +1,7 @@
 package com.example.bot;
 
 import com.example.config.BotConfig;
+import com.example.constance.complaint.Complain;
 import com.example.feature.museum.MuseumService;
 import com.example.feature.user.UserService;
 import com.example.handler.BotHandler;
@@ -16,13 +17,11 @@ import org.telegram.telegrambots.meta.api.methods.AnswerCallbackQuery;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.methods.send.SendPhoto;
 import org.telegram.telegrambots.meta.api.methods.updatingmessages.EditMessageText;
-import org.telegram.telegrambots.meta.api.objects.CallbackQuery;
-import org.telegram.telegrambots.meta.api.objects.InputFile;
-import org.telegram.telegrambots.meta.api.objects.Message;
-import org.telegram.telegrambots.meta.api.objects.Update;
+import org.telegram.telegrambots.meta.api.objects.*;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.InlineKeyboardMarkup;
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 import java.io.File;
+import java.util.List;
 
 
 @Slf4j
@@ -56,6 +55,25 @@ public class TelegramBot extends TelegramLongPollingBot{
 
         if (update.hasMessage() && update.getMessage().hasText()){
             botHandler.answerToMessage(update);
+        }
+
+        if (update.hasMessage() && update.getMessage().hasPhoto()){
+            Message message = update.getMessage();
+            Long chatId = message.getChatId();
+            List<PhotoSize> photo = update.getMessage().getPhoto();
+
+            sendMessage(chatId, Complain.STEP_7.getText());
+
+        }
+
+        if (update.hasMessage() && (update.getMessage().hasVoice() || update.getMessage().hasAudio())){
+            Message message = update.getMessage();
+            Long chatId = message.getChatId();
+            Voice voice = update.getMessage().getVoice();
+            Audio audio = update.getMessage().getAudio();
+
+
+            sendMessage(chatId, Complain.STEP_6.getText(), SkipButton.getButtons("SKIP_PHOTO"));
         }
 
         if (update.hasCallbackQuery()){

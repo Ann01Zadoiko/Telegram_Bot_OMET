@@ -1,6 +1,7 @@
 package com.example.handler;
 
 import com.example.bot.TelegramBot;
+import com.example.constance.complaint.Complain;
 import com.example.constance.info.GeneralInfo;
 import com.example.constance.info.Study;
 import com.example.constance.museum.Registration;
@@ -157,5 +158,19 @@ public class HandlerCallback {
         }
     }
 
+    @SneakyThrows
+    public void handlerOfSkip(Update update, TelegramBot bot){
+        String data = update.getCallbackQuery().getData();
+        Long chatId = update.getCallbackQuery().getMessage().getChatId();
+        long messageId = update.getCallbackQuery().getMessage().getMessageId();
+
+        if (data.equals("SKIP_AUDIO")){
+            bot.sendMiniApp(chatId, SkipButton.getButtons("SKIP_PHOTO"), Complain.STEP_6.getText(), messageId, update.getCallbackQuery());
+        }
+
+        if (data.equals("SKIP_PHOTO")){
+            bot.sendMessage(chatId,  Complain.STEP_7.getText(), messageId, update.getCallbackQuery());
+        }
+    }
 
 }

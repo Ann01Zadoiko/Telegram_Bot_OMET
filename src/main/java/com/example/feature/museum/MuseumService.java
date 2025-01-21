@@ -35,7 +35,7 @@ public class MuseumService implements IMuseumService{
     }
 
     @Override
-    public Museum getByChatId(Long chatId){
+    public List<Museum> getByChatId(Long chatId){
         return repository.findByChatId(chatId);
     }
 

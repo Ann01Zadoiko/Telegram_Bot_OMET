@@ -13,7 +13,7 @@ public interface IMuseumService {
 
     void setNewDayToExhibition(LocalDate date);
 
-    Museum getByChatId(Long chatId);
+    List<Museum> getByChatId(Long chatId);
 
     LocalDate showDate();
 

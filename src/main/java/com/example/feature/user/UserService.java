@@ -22,7 +22,13 @@ public class UserService implements IUserService{
 
     @Override
     public User getByChatId(Long chatId){
+
         return repository.findByChatId(chatId);
+    }
+
+    @Override
+    public boolean existsByChatId(Long chatId) {
+        return repository.existsByChatId(chatId);
     }
 }
 //change date in museum
