@@ -2,6 +2,7 @@ package com.example.handler;
 
 import com.example.bot.TelegramBot;
 import com.example.config.BotConfig;
+import com.example.feature.complaint.ComplaintService;
 import com.example.feature.museum.MuseumService;
 import com.example.feature.user.UserService;
 import lombok.RequiredArgsConstructor;
@@ -21,9 +22,10 @@ public class BotHandler {
     private final BotConfig config;
     private final MuseumService museumService;
     private final UserService userService;
+    private final ComplaintService complaintService;
 
     public void answerToCallback(Update update){
-        TelegramBot bot = new TelegramBot(config, museumService, userService);
+        TelegramBot bot = new TelegramBot(config, museumService, userService, complaintService);
 
         callback.handlerOfGeneralInfo(update, bot);
         callback.handlerOfMuseum(update, bot);
@@ -34,7 +36,7 @@ public class BotHandler {
     }
 
     public void answerToMessage(Update update){
-        TelegramBot bot = new TelegramBot(config, museumService, userService);
+        TelegramBot bot = new TelegramBot(config, museumService, userService, complaintService);
 
         message.handlerOfGeneralInfo(update, bot);
         message.handlerOfMuseum(update, bot);
@@ -51,6 +53,6 @@ public class BotHandler {
         message.handlerOfFullNameComplaint(update, bot);
         message.handlerOfPhoneNumberComplaint(update, bot);
         message.handlerOfMessageOfComplaint(update, bot);
-
+        message.handlerOfCommandVacancy(update, bot);
     }
 }

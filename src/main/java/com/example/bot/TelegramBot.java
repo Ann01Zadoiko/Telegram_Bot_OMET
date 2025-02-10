@@ -2,6 +2,9 @@ package com.example.bot;
 
 import com.example.config.BotConfig;
 import com.example.constance.complaint.Complain;
+import com.example.email.EmailSender;
+import com.example.feature.complaint.Complaint;
+import com.example.feature.complaint.ComplaintService;
 import com.example.feature.museum.MuseumService;
 import com.example.feature.user.UserService;
 import com.example.handler.BotHandler;
@@ -14,14 +17,18 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 import org.telegram.telegrambots.bots.TelegramLongPollingBot;
 import org.telegram.telegrambots.meta.api.methods.AnswerCallbackQuery;
+import org.telegram.telegrambots.meta.api.methods.GetFile;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.methods.send.SendPhoto;
 import org.telegram.telegrambots.meta.api.methods.updatingmessages.EditMessageText;
 import org.telegram.telegrambots.meta.api.objects.*;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.InlineKeyboardMarkup;
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
+
 import java.io.File;
 import java.util.List;
+
+import static com.example.email.EmailSender.sendEmailWithAttachment;
 
 
 @Slf4j
@@ -32,6 +39,7 @@ public class TelegramBot extends TelegramLongPollingBot{
     private final BotConfig config;
     private final MuseumService museumService;
     private final UserService userService;
+    private final ComplaintService complaintService;
 
     @Override
     public String getBotUsername() {
@@ -48,10 +56,10 @@ public class TelegramBot extends TelegramLongPollingBot{
     public void onUpdateReceived(Update update) {
         BotHandler botHandler = new BotHandler(
                 new HandlerCallback(museumService),
-                new HandlerMessage(museumService, userService),
+                new HandlerMessage(museumService, userService, complaintService),
                 config,
                 museumService,
-                userService);
+                userService, complaintService);
 
         if (update.hasMessage() && update.getMessage().hasText()){
             botHandler.answerToMessage(update);
@@ -60,18 +68,31 @@ public class TelegramBot extends TelegramLongPollingBot{
         if (update.hasMessage() && update.getMessage().hasPhoto()){
             Message message = update.getMessage();
             Long chatId = message.getChatId();
-            List<PhotoSize> photo = update.getMessage().getPhoto();
+
+            //Получаем самое большое фото из списка
+            String fileId = update.getMessage().getPhoto().get(update.getMessage().getPhoto().size() - 1).getFileId();
+            processFileAndSendEmail(fileId, "photo.jpg", update.getMessage().getChatId());
 
             sendMessage(chatId, Complain.STEP_7.getText());
-
         }
 
         if (update.hasMessage() && (update.getMessage().hasVoice() || update.getMessage().hasAudio())){
             Message message = update.getMessage();
             Long chatId = message.getChatId();
-            Voice voice = update.getMessage().getVoice();
-            Audio audio = update.getMessage().getAudio();
 
+            List<Complaint> byChatId = complaintService.findByChatId(chatId);
+            Complaint complaint = byChatId.get(byChatId.size() - 1);
+
+            if (update.getMessage().hasVoice()){
+                processFileAndSendEmail(update.getMessage().getVoice().getFileId(), "voice.ogg", update.getMessage().getChatId());
+
+            }
+
+            if (update.getMessage().hasAudio()){
+                processFileAndSendEmail(update.getMessage().getAudio().getFileId(), "audio.mp3", update.getMessage().getChatId());
+            }
+
+            complaintService.save(complaint);
 
             sendMessage(chatId, Complain.STEP_6.getText(), SkipButton.getButtons("SKIP_PHOTO"));
         }
@@ -80,6 +101,28 @@ public class TelegramBot extends TelegramLongPollingBot{
             botHandler.answerToCallback(update);
         }
 
+    }
+
+    @SneakyThrows
+    private void processFileAndSendEmail(String fileId, String fileName, Long chatId) {
+        try {
+            // 1. Получить файл через Telegram Bot API
+            org.telegram.telegrambots.meta.api.objects.File telegramFile = execute(new GetFile(fileId));
+            String filePath = telegramFile.getFilePath();
+
+            // 2. Скачать файл с серверов Telegram
+            String fileUrl = "https://api.telegram.org/file/bot" + getBotToken() + "/" + filePath;
+            String localFilePath = EmailSender.downloadFile(fileUrl, fileName);
+
+            // 3. Отправить файл на email
+            sendEmailWithAttachment("recipient@example.com", "Файл из Telegram", "См. вложение.", localFilePath);
+
+            // 4. Уведомить пользователя
+            sendMessage(chatId, "Файл успешно отправлен на email!");
+        } catch (Exception e) {
+            e.printStackTrace();
+            sendMessage(chatId, "Ошибка обработки файла: " + e.getMessage());
+        }
     }
 
     @SneakyThrows

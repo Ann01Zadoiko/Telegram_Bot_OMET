@@ -5,13 +5,12 @@ import com.example.constance.Function;
 import com.example.constance.complaint.Complain;
 import com.example.constance.museum.Registration;
 import com.example.constance.rent.Rent;
+import com.example.feature.complaint.Complaint;
+import com.example.feature.complaint.ComplaintService;
 import com.example.feature.museum.Museum;
 import com.example.feature.museum.MuseumService;
 import com.example.feature.user.UserService;
-import com.example.handler.button.Button;
-import com.example.handler.button.GeneralInfoButtons;
-import com.example.handler.button.MuseumButtons;
-import com.example.handler.button.SkipButton;
+import com.example.handler.button.*;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
@@ -29,6 +28,7 @@ public class HandlerMessage {
 
     private final MuseumService museumService;
     private final UserService userService;
+    private final ComplaintService complaintService;
 
     @SneakyThrows
     public void handlerOfStart(Update update, TelegramBot bot){
@@ -214,6 +214,11 @@ public class HandlerMessage {
         String text = message.getText();
 
         if (MessageChecker.isComplaintButton(text)){
+            Complaint complain = new Complaint();
+            complain.setChatId(chatId);
+
+            complaintService.save(complain);
+
             bot.sendMessage(chatId, Complain.STEP_1.getText() + "\n" + Complain.STEP_2.getText());
         }
     }
@@ -225,6 +230,13 @@ public class HandlerMessage {
         String text = message.getText();
 
         if (MessageChecker.isFullNameComplaint(text)){
+
+            List<Complaint> byChatId = complaintService.findByChatId(chatId);
+            Complaint complaint = byChatId.get(byChatId.size() - 1);
+            complaint.setFullName(text);
+
+            complaintService.save(complaint);
+
             bot.sendMessage(chatId, Complain.STEP_3.getText());
         }
     }
@@ -236,6 +248,13 @@ public class HandlerMessage {
         String text = message.getText();
 
         if (MessageChecker.isPhoneNumberComplaint(text)){
+
+            List<Complaint> byChatId = complaintService.findByChatId(chatId);
+            Complaint complaint = byChatId.get(byChatId.size() - 1);
+            complaint.setPhoneNumber(text);
+
+            complaintService.save(complaint);
+
             bot.sendMessage(chatId, Complain.STEP_4.getText());
         }
     }
@@ -247,7 +266,25 @@ public class HandlerMessage {
         String text = message.getText();
 
         if (MessageChecker.isComplaint(text)){
+
+            List<Complaint> byChatId = complaintService.findByChatId(chatId);
+            Complaint complaint = byChatId.get(byChatId.size() - 1);
+            complaint.setText(text);
+
+            complaintService.save(complaint);
+
             bot.sendMessage(chatId, Complain.STEP_5.getText(), SkipButton.getButtons("SKIP_AUDIO"));
+        }
+    }
+
+    @SneakyThrows
+    public void handlerOfCommandVacancy(Update update, TelegramBot bot){
+        Message message = update.getMessage();
+        Long chatId = message.getChatId();
+        String text = message.getText();
+
+        if (text.equals(Function.VACANCY)){
+            bot.sendMessage(chatId, "Оберіть специфікацію", VacancyButtons.getButtonsSpecification());
         }
     }
 }

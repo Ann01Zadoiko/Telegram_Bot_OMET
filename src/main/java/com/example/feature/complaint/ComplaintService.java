@@ -30,4 +30,9 @@ public class ComplaintService implements IComplaintService{
     public List<Complaint> getAll() {
         return repository.findAll();
     }
+
+    @Override
+    public List<Complaint> findByChatId(Long chatId) {
+        return repository.findByChatId(chatId);
+    }
 }

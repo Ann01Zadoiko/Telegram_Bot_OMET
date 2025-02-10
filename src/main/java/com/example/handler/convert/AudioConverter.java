@@ -1,59 +1,44 @@
 package com.example.handler.convert;
 
-import com.pengrad.telegrambot.TelegramBot;
-import com.pengrad.telegrambot.model.Audio;
-import com.pengrad.telegrambot.request.GetFile;
-import com.pengrad.telegrambot.response.GetFileResponse;
 
-import java.io.InputStream;
-import java.net.URL;
+import org.telegram.telegrambots.meta.api.objects.Audio;
+import javax.sql.rowset.serial.SerialBlob;
+import java.io.ByteArrayOutputStream;
+
 import java.sql.Blob;
-import java.sql.Connection;
-import java.sql.PreparedStatement;
 
 public class AudioConverter {
 
-    private TelegramBot bot;
+    public Blob convertVoicesToBlob(Audio audio) throws Exception {
+        ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
 
-    public AudioConverter(String botToken) {
-        this.bot = new TelegramBot(botToken);
+        if (audio.getFileSize() == null || audio.getFileSize() <= 0) {
+            throw new IllegalArgumentException("Voice contains no file data or file size is zero");
+        }
+
+        // Здесь предполагается, что файл представлен как байты, полученные через соответствующий метод
+        byte[] fileBytes = getFileBytesFromVoice(audio);
+
+        if (fileBytes == null || fileBytes.length == 0) {
+            throw new IllegalArgumentException("Voice contains no file bytes");
+        }
+
+        try {
+            outputStream.write(fileBytes);
+        } catch (Exception e) {
+            throw new RuntimeException("Error writing file bytes to stream", e);
+        }
+
+        // Преобразование ByteArrayOutputStream в Blob
+        byte[] finalBytes = outputStream.toByteArray();
+        return new SerialBlob(finalBytes);
     }
 
-    public Blob convertAudioToBlob(Audio audio, Connection connection) throws Exception {
-        // Получение информации о файле
-        GetFile getFileRequest = new GetFile(audio.fileId());
-        GetFileResponse getFileResponse = bot.execute(getFileRequest);
-
-        if (!getFileResponse.isOk()) {
-            throw new RuntimeException("Failed to get file: " + getFileResponse.description());
-        }
-
-        // Получение пути к файлу
-        String filePath = getFileResponse.file().filePath();
-        String fileUrl = bot.getFullFilePath(getFileResponse.file());
-
-        try (InputStream inputStream = new URL(fileUrl).openStream()) {
-            // Чтение данных из InputStream
-            byte[] fileBytes = inputStream.readAllBytes();
-
-            // Создание объекта Blob
-            Blob blob = connection.createBlob();
-            blob.setBytes(1, fileBytes);
-            return blob;
-        }
-    }
-
-    public void saveAudioToDatabase(Audio audio, Connection connection) throws Exception {
-        Blob audioBlob = convertAudioToBlob(audio, connection);
-
-        String insertSQL = "INSERT INTO audio_messages (audio_data, title, performer, duration) VALUES (?, ?, ?, ?)";
-        try (PreparedStatement statement = connection.prepareStatement(insertSQL)) {
-            statement.setBlob(1, audioBlob);
-            statement.setString(2, audio.title());
-            statement.setString(3, audio.performer());
-            statement.setInt(4, audio.duration());
-            statement.executeUpdate();
-        }
+    // Пример метода для получения байтов файла (этот метод должен быть реализован в зависимости от вашей логики)
+    private byte[] getFileBytesFromVoice(Audio voice) {
+        // Логика для извлечения байтов файла из объекта Voice
+        // Например, через Telegram Bot API или сохранённые данные
+        return new byte[0]; // Верните реальные байты файла
     }
 }
 //CREATE TABLE audio_messages (

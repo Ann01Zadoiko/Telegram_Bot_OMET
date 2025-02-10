@@ -11,7 +11,8 @@ create table complaints(
     phone_number varchar(20),
     full_name varchar(50),
     image blob,
-    audio blob
+    audio blob,
+    chat_id bigint
 );
 
 create table museums(
@@ -22,4 +23,10 @@ create table museums(
     date date,
     close bit,
     chat_id bigint
+);
+
+create table vacancies(
+    id bigint primary key,
+    name varchar(100),
+    specification varchar(50)
 );

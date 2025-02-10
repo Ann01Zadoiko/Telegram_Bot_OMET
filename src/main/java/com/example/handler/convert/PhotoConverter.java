@@ -1,46 +1,52 @@
 package com.example.handler.convert;
 
-import com.pengrad.telegrambot.TelegramBot;
-import com.pengrad.telegrambot.model.PhotoSize;
-import com.pengrad.telegrambot.request.GetFile;
-import com.pengrad.telegrambot.response.GetFileResponse;
+import org.telegram.telegrambots.meta.api.objects.PhotoSize;
 
-import java.io.InputStream;
+import javax.sql.rowset.serial.SerialBlob;
+import java.io.ByteArrayOutputStream;
+
 import java.sql.Blob;
-import java.sql.Connection;
+
+import java.util.List;
 
 
 public class PhotoConverter {
 
-    private TelegramBot bot;
+    public Blob convertPhotoSizesToBlob(List<PhotoSize> photoSizes) throws Exception {
+        ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
 
-    public PhotoConverter(String botToken) {
-        this.bot = new TelegramBot(botToken);
+        for (PhotoSize photoSize : photoSizes) {
+            if (photoSize.getFileSize() == null || photoSize.getFileSize() <= 0) {
+                throw new IllegalArgumentException("PhotoSize contains no file data or file size is zero");
+            }
+
+
+
+            // Здесь предполагается, что файл представлен как байты, полученные через соответствующий метод
+            byte[] fileBytes = getFileBytesFromPhotoSize(photoSize);
+
+
+            if (fileBytes == null || fileBytes.length == 0) {
+                throw new IllegalArgumentException("PhotoSize contains no file bytes");
+            }
+
+            try {
+                outputStream.write(fileBytes);
+            } catch (Exception e) {
+                throw new RuntimeException("Error writing file bytes to stream", e);
+            }
+        }
+
+        // Преобразование ByteArrayOutputStream в Blob
+        byte[] finalBytes = outputStream.toByteArray();
+        return new SerialBlob(finalBytes);
     }
 
-
-    public Blob convertPhotoSizeToBlob(PhotoSize photoSize, Connection connection) throws Exception {
-        // Получение информации о файле
-        GetFile getFileRequest = new GetFile(photoSize.fileId());
-        GetFileResponse getFileResponse = bot.execute(getFileRequest);
-
-        if (!getFileResponse.isOk()) {
-            throw new RuntimeException("Failed to get file: " + getFileResponse.description());
-        }
-
-        // Получение файла
-        String filePath = getFileResponse.file().filePath();
-        String fileUrl = bot.getFullFilePath(getFileResponse.file());
-
-        try (InputStream inputStream = new java.net.URL(fileUrl).openStream()) {
-            // Преобразование InputStream в массив байтов
-            byte[] fileBytes = inputStream.readAllBytes();
-
-            // Сохранение в базе данных
-            Blob blob = connection.createBlob();
-            blob.setBytes(1, fileBytes);
-            return blob;
-        }
+    // Пример метода для получения байтов файла (этот метод должен быть реализован в зависимости от вашей логики)
+    private byte[] getFileBytesFromPhotoSize(PhotoSize photoSize) {
+        // Логика для извлечения байтов файла из объекта PhotoSize
+        // Например, через Telegram Bot API или сохранённые данные
+        return new byte[0]; // Верните реальные байты файла
     }
 
 }

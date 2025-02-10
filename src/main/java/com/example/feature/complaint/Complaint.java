@@ -30,4 +30,7 @@ public class Complaint {
 
     @Column(name = "audio")
     private Blob audio;
+
+    @Column(name = "chat_id")
+    private Long chatId;
 }

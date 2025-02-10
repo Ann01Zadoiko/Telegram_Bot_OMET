@@ -11,4 +11,6 @@ public interface IComplaintService {
     void deleteById(Long id);
 
     List<Complaint> getAll();
+
+    List<Complaint> findByChatId(Long chatId);
 }

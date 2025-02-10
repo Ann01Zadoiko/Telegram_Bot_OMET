@@ -9,7 +9,7 @@ public enum Complain {
     STEP_6("Чи є у Вас фото к даному повідомленню?"),
     STEP_7("Дякуємо за Ваш відгук!");
 
-    private String text;
+    private final String text;
 
     Complain(String text){
         this.text = text;
