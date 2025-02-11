@@ -11,6 +11,9 @@ import com.example.handler.BotHandler;
 import com.example.handler.HandlerCallback;
 import com.example.handler.HandlerMessage;
 import com.example.handler.button.*;
+import com.example.registration.RegistrationType;
+import com.example.registration.UserRegistration;
+import com.example.registration.UserStateManager;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
@@ -28,7 +31,6 @@ import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 import java.io.File;
 import java.util.List;
 
-import static com.example.email.EmailSender.sendEmailWithAttachment;
 
 
 @Slf4j
@@ -40,6 +42,7 @@ public class TelegramBot extends TelegramLongPollingBot{
     private final MuseumService museumService;
     private final UserService userService;
     private final ComplaintService complaintService;
+    private final UserStateManager stateManager = new UserStateManager();
 
     @Override
     public String getBotUsername() {
@@ -51,9 +54,18 @@ public class TelegramBot extends TelegramLongPollingBot{
         return config.getToken();
     }
 
+    // --- НАЧАЛО РЕГИСТРАЦИИ ---
     @SneakyThrows
-    @Override
+    private void startRegistration(Long chatId, RegistrationType type) {
+        stateManager.startRegistration(chatId, type);
+        sendMessage(chatId, (type == RegistrationType.MUSEUM) ?
+                "📝 Введите ваше полное имя (для записи в музей):" :
+                "📝 Введите ваше полное имя (для подачи жалобы):");
+    }
+
+    @SneakyThrows
     public void onUpdateReceived(Update update) {
+
         BotHandler botHandler = new BotHandler(
                 new HandlerCallback(museumService),
                 new HandlerMessage(museumService, userService, complaintService),
@@ -61,69 +73,143 @@ public class TelegramBot extends TelegramLongPollingBot{
                 museumService,
                 userService, complaintService);
 
-        if (update.hasMessage() && update.getMessage().hasText()){
-            botHandler.answerToMessage(update);
-        }
+        if (update.hasMessage() && update.getMessage().hasText()) {
+            Long chatId = update.getMessage().getChatId();
+            String messageText = update.getMessage().getText().trim();
 
-        if (update.hasMessage() && update.getMessage().hasPhoto()){
-            Message message = update.getMessage();
-            Long chatId = message.getChatId();
-
-            //Получаем самое большое фото из списка
-            String fileId = update.getMessage().getPhoto().get(update.getMessage().getPhoto().size() - 1).getFileId();
-            processFileAndSendEmail(fileId, "photo.jpg", update.getMessage().getChatId());
-
-            sendMessage(chatId, Complain.STEP_7.getText());
-        }
-
-        if (update.hasMessage() && (update.getMessage().hasVoice() || update.getMessage().hasAudio())){
-            Message message = update.getMessage();
-            Long chatId = message.getChatId();
-
-            List<Complaint> byChatId = complaintService.findByChatId(chatId);
-            Complaint complaint = byChatId.get(byChatId.size() - 1);
-
-            if (update.getMessage().hasVoice()){
-                processFileAndSendEmail(update.getMessage().getVoice().getFileId(), "voice.ogg", update.getMessage().getChatId());
-
+            // Если пользователь в процессе регистрации, обрабатываем только регистрацию
+            if (stateManager.isUserRegistering(chatId)) {
+                if (messageText.equalsIgnoreCase("/cancel")) {
+                    stateManager.removeUser(chatId);
+                    sendMessage(chatId, "❌ Регистрация отменена.");
+                } else {
+                    processRegistrationStep(chatId, messageText);
+                }
+                return; // Прерываем дальнейшую обработку, чтобы не реагировать на команды
             }
 
-            if (update.getMessage().hasAudio()){
-                processFileAndSendEmail(update.getMessage().getAudio().getFileId(), "audio.mp3", update.getMessage().getChatId());
+            // --- ОБРАБОТКА КОМАНД ---
+            switch (messageText.toLowerCase()) {
+
+                case "/register":
+                    startRegistration(chatId, RegistrationType.MUSEUM);
+                    break;
+
+                case "/complaint":
+                    startRegistration(chatId, RegistrationType.COMPLAINT);
+                    break;
+
+                default:
+                    sendMessage(chatId, "❓ Я не понимаю этот запрос. Попробуйте /start.");
             }
-
-            complaintService.save(complaint);
-
-            sendMessage(chatId, Complain.STEP_6.getText(), SkipButton.getButtons("SKIP_PHOTO"));
         }
 
         if (update.hasCallbackQuery()){
             botHandler.answerToCallback(update);
         }
-
     }
 
+//    @SneakyThrows
+//    @Override
+//    public void onUpdateReceived(Update update) {
+//        BotHandler botHandler = new BotHandler(
+//                new HandlerCallback(museumService),
+//                new HandlerMessage(museumService, userService, complaintService),
+//                config,
+//                museumService,
+//                userService, complaintService);
+//
+//        if (update.hasMessage() && update.getMessage().hasText()){
+//            botHandler.answerToMessage(update);
+//
+//            String text = update.getMessage().getText();
+//            Long chatId = update.getMessage().getChatId();
+//
+//            switch (text.toLowerCase()) {
+//
+//                case "/register":
+//                    startRegistration(chatId, RegistrationType.MUSEUM);
+//                    break;
+//
+//                case "/complaint":
+//                    startRegistration(chatId, RegistrationType.COMPLAINT);
+//                    break;
+//
+//                default:
+//                    sendMessage(chatId, "❓ Я не понимаю этот запрос. Попробуйте /start.");
+//            }
+//
+//
+//            // Если пользователь в процессе регистрации, обрабатываем только регистрацию
+//            if (stateManager.isUserRegistering(update.getMessage().getChatId())) {
+//                if (update.getMessage().getText().equalsIgnoreCase("/cancel")) {
+//                    stateManager.removeUser(update.getMessage().getChatId());
+//                    sendMessage(update.getMessage().getChatId(), "❌ Регистрация отменена.");
+//                } else {
+//                    processRegistrationStep(update.getMessage().getChatId(), update.getMessage().getText());
+//                }
+//                return; // Прерываем дальнейшую обработку, чтобы не реагировать на команды
+//            }
+//        }
+//
+//
+//
+//        if (update.hasCallbackQuery()){
+//            botHandler.answerToCallback(update);
+//        }
+//
+//    }
+
+    // --- ОБРАБОТКА ЭТАПОВ РЕГИСТРАЦИИ ---
     @SneakyThrows
-    private void processFileAndSendEmail(String fileId, String fileName, Long chatId) {
-        try {
-            // 1. Получить файл через Telegram Bot API
-            org.telegram.telegrambots.meta.api.objects.File telegramFile = execute(new GetFile(fileId));
-            String filePath = telegramFile.getFilePath();
+    private void processRegistrationStep(Long chatId, String messageText) {
+        UserRegistration userReg = stateManager.getUserRegistration(chatId);
+        RegistrationType type = userReg.getType();
 
-            // 2. Скачать файл с серверов Telegram
-            String fileUrl = "https://api.telegram.org/file/bot" + getBotToken() + "/" + filePath;
-            String localFilePath = EmailSender.downloadFile(fileUrl, fileName);
+        switch (userReg.getStep()) {
+            case 1:
+                userReg.setFullName(messageText);
+                userReg.nextStep();
+                sendMessage(chatId, "📞 Введите ваш номер телефона:");
+                break;
 
-            // 3. Отправить файл на email
-            sendEmailWithAttachment("recipient@example.com", "Файл из Telegram", "См. вложение.", localFilePath);
+            case 2:
+                userReg.setPhoneNumber(messageText);
+                userReg.nextStep();
+                if (type == RegistrationType.MUSEUM) {
+                    sendMessage(chatId, "👥 Введите количество человек:");
+                } else {
+                    sendMessage(chatId, "✍ Опишите вашу жалобу:");
+                }
+                break;
 
-            // 4. Уведомить пользователя
-            sendMessage(chatId, "Файл успешно отправлен на email!");
-        } catch (Exception e) {
-            e.printStackTrace();
-            sendMessage(chatId, "Ошибка обработки файла: " + e.getMessage());
+            case 3:
+                if (type == RegistrationType.MUSEUM) {
+                    try {
+                        int count = Integer.parseInt(messageText);
+                        userReg.setText("Количество человек: " + count);
+                        sendMessage(chatId, "✅ Регистрация в музей завершена!\n" +
+                                "Имя: " + userReg.getFullName() + "\n" +
+                                "Телефон: " + userReg.getPhoneNumber() + "\n" +
+                                userReg.getText());
+                    } catch (NumberFormatException e) {
+                        sendMessage(chatId, "❌ Пожалуйста, введите число.");
+                        return;
+                    }
+                } else {
+                    userReg.setText(messageText);
+                    sendMessage(chatId, "✅ Жалоба подана!\n" +
+                            "Имя: " + userReg.getFullName() + "\n" +
+                            "Телефон: " + userReg.getPhoneNumber() + "\n" +
+                            "Жалоба: " + userReg.getText());
+                }
+                stateManager.removeUser(chatId);
+                break;
         }
     }
+
+
+
 
     @SneakyThrows
     public void sendMessage(long chatId, String text, long messageId, CallbackQuery callbackQuery) throws TelegramApiException {

@@ -24,6 +24,7 @@ public class BotHandler {
     private final UserService userService;
     private final ComplaintService complaintService;
 
+
     public void answerToCallback(Update update){
         TelegramBot bot = new TelegramBot(config, museumService, userService, complaintService);
 
@@ -43,16 +44,16 @@ public class BotHandler {
         message.handlerOfRent(update, bot);
         message.handlerOfStart(update, bot);
         message.handlerOfNewDayToMuseum(update, bot);
-        message.handlerOfFullNameForMuseum(update, bot);
-        message.handlerOfPhoneNumberForMuseum(update, bot);
-        message.handlerOfCountOfPeopleForMuseum(update, bot);
+    //    message.handlerOfFullNameForMuseum(update, bot);
+    //    message.handlerOfPhoneNumberForMuseum(update, bot);
+    //    message.handlerOfCountOfPeopleForMuseum(update, bot);
         message.handlerOfCloseExhibition(update, bot);
         message.handlerOfHelp(update, bot);
         message.handlerOfShow(update, bot);
-        message.handlerOfComplaintButton(update, bot);
-        message.handlerOfFullNameComplaint(update, bot);
-        message.handlerOfPhoneNumberComplaint(update, bot);
-        message.handlerOfMessageOfComplaint(update, bot);
+    //    message.handlerOfComplaintButton(update, bot);
+     //   message.handlerOfFullNameComplaint(update, bot);
+     //   message.handlerOfPhoneNumberComplaint(update, bot);
+     //   message.handlerOfMessageOfComplaint(update, bot);
         message.handlerOfCommandVacancy(update, bot);
     }
 }
