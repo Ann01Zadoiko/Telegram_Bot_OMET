@@ -15,6 +15,7 @@ import com.example.constance.info.tracks.TracksTrolls;
 import com.example.constance.info.vacancy.Specification;
 import com.example.constance.info.vacancy.VacancyWithExperience;
 import com.example.constance.info.vacancy.VacancyWithoutExperience;
+import com.example.registration.RegistrationType;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import org.springframework.stereotype.Service;
@@ -138,6 +139,7 @@ public class HandlerCallback {
         }
     }
 
+
     public void handlerOfYesOrNoMuseum(Update update, TelegramBot bot){
         String data = update.getCallbackQuery().getData();
         Long chatId = update.getCallbackQuery().getMessage().getChatId();
@@ -150,7 +152,8 @@ public class HandlerCallback {
 
             museumService.save(museum);
 
-            bot.executeEditMessage(Registration.STEP_2.getText(), chatId, messageId, null);
+            bot.startRegistration(chatId, RegistrationType.MUSEUM);
+
         }
 
         if (data.equals("NO_MUSEUM")){

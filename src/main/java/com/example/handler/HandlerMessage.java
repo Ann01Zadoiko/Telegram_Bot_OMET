@@ -101,55 +101,6 @@ public class HandlerMessage {
         }
     }
 
-    @SneakyThrows
-    public void handlerOfFullNameForMuseum(Update update, TelegramBot bot){
-        Message message = update.getMessage();
-        Long chatId = message.getChatId();
-        String text = message.getText();
-
-        //add check
-        if (MessageChecker.isFullNameMuseum(text)){
-            List<Museum> byChatId = museumService.getByChatId(chatId);
-            Museum museum = byChatId.get(byChatId.size() - 1);
-            museum.setFullName(text);
-            museumService.save(museum);
-
-            bot.sendMessage(chatId, Registration.STEP_3.getText());
-        }
-    }
-
-    @SneakyThrows
-    public void handlerOfPhoneNumberForMuseum(Update update, TelegramBot bot){
-        Message message = update.getMessage();
-        Long chatId = message.getChatId();
-        String text = message.getText();
-        //add check
-        if (MessageChecker.isPhoneNumberMuseum(text)){
-            List<Museum> byChatId = museumService.getByChatId(chatId);
-            Museum museum = byChatId.get(byChatId.size() - 1);
-            museum.setPhoneNumber(text);
-            museumService.save(museum);
-
-            bot.sendMessage(chatId, Registration.STEP_4.getText());
-        }
-    }
-
-    @SneakyThrows
-    public void handlerOfCountOfPeopleForMuseum(Update update, TelegramBot bot){
-        Message message = update.getMessage();
-        Long chatId = message.getChatId();
-        String text = message.getText();
-
-        //add check
-        if (MessageChecker.isCountOfPeople(text)){
-            List<Museum> byChatId = museumService.getByChatId(chatId);
-            Museum museum = byChatId.get(byChatId.size() - 1);
-            museum.setCountOfPeople(Integer.parseInt(text));
-            museumService.save(museum);
-
-            bot.sendMessage(chatId, Registration.STEP_8.getText() + museum.getDate() + " на 12:00\n" + Registration.STEP_7.getText());
-        }
-    }
 
     @SneakyThrows
     public void handlerOfCloseExhibition(Update update, TelegramBot bot){
@@ -207,75 +158,7 @@ public class HandlerMessage {
         }
     }
 
-    @SneakyThrows
-    public void handlerOfComplaintButton(Update update, TelegramBot bot){
-        Message message = update.getMessage();
-        Long chatId = message.getChatId();
-        String text = message.getText();
 
-        if (MessageChecker.isComplaintButton(text)){
-            Complaint complain = new Complaint();
-            complain.setChatId(chatId);
-
-            complaintService.save(complain);
-
-            bot.sendMessage(chatId, Complain.STEP_1.getText() + "\n" + Complain.STEP_2.getText());
-        }
-    }
-
-    @SneakyThrows
-    public void handlerOfFullNameComplaint(Update update, TelegramBot bot){
-        Message message = update.getMessage();
-        Long chatId = message.getChatId();
-        String text = message.getText();
-
-        if (MessageChecker.isFullNameComplaint(text)){
-
-            List<Complaint> byChatId = complaintService.findByChatId(chatId);
-            Complaint complaint = byChatId.get(byChatId.size() - 1);
-            complaint.setFullName(text);
-
-            complaintService.save(complaint);
-
-            bot.sendMessage(chatId, Complain.STEP_3.getText());
-        }
-    }
-
-    @SneakyThrows
-    public void handlerOfPhoneNumberComplaint(Update update, TelegramBot bot){
-        Message message = update.getMessage();
-        Long chatId = message.getChatId();
-        String text = message.getText();
-
-        if (MessageChecker.isPhoneNumberComplaint(text)){
-
-            List<Complaint> byChatId = complaintService.findByChatId(chatId);
-            Complaint complaint = byChatId.get(byChatId.size() - 1);
-            complaint.setPhoneNumber(text);
-
-            complaintService.save(complaint);
-
-            bot.sendMessage(chatId, Complain.STEP_4.getText());
-        }
-    }
-
-    @SneakyThrows
-    public void handlerOfMessageOfComplaint(Update update, TelegramBot bot){
-        Message message = update.getMessage();
-        Long chatId = message.getChatId();
-        String text = message.getText();
-
-        if (MessageChecker.isComplaint(text)){
-
-            List<Complaint> byChatId = complaintService.findByChatId(chatId);
-            Complaint complaint = byChatId.get(byChatId.size() - 1);
-            complaint.setText(text);
-
-            complaintService.save(complaint);
-
-            bot.sendMessage(chatId, Complain.STEP_5.getText(), SkipButton.getButtons("SKIP_AUDIO"));
-        }
-    }
 
     @SneakyThrows
     public void handlerOfCommandVacancy(Update update, TelegramBot bot){

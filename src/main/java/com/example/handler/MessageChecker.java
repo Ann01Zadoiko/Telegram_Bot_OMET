@@ -35,40 +35,6 @@ public class MessageChecker {
         return false;
     }
 
-    public static boolean isFullNameMuseum(String value){
-        String[] s = value.split(" ");
-        if (s.length == 1 && !value.startsWith("/start")  && !value.equals(Button.MUSEUM.getFullName())
-        && !value.equals(Button.RENT.getFullName()) && !value.equals(Function.SET_NEW_DAY) && !value.equals(Function.CLOSE)
-        && !value.equals(Function.SHOW) && !value.startsWith("0") && !value.startsWith("+380")
-        && !value.equals(Function.HELP) && value.length() > 2){
-            return true;
-        }
-        return false;
-    }
-
-    public static boolean isFullNameComplaint(String value){
-        String[] s = value.split(" ");
-        if (s.length == 2 && (!value.startsWith("/setDate")) &&
-        !value.startsWith(Function.SHOW)  && !value.equals(Button.COMPLAINT.getFullName())
-                && !value.equals(Button.GENERAL_INFO.getFullName())){
-            return true;
-        }
-        return false;
-    }
-
-    public static boolean isPhoneNumberMuseum(String value){
-        if (value.startsWith("0") && value.length() == 10){
-            return true;
-        }
-        return false;
-    }
-
-    public static boolean isPhoneNumberComplaint(String value){
-        if (value.startsWith("+380") && value.length() == 13){
-            return true;
-        }
-        return false;
-    }
 
     public static boolean isSetDate(String value){
         String[] s = value.split(" ");
@@ -78,14 +44,6 @@ public class MessageChecker {
         return false;
     }
 
-
-    public static boolean isComplaint(String value){
-        String[] s = value.split(" ");
-        if (s.length >= 3 && !value.startsWith(Button.COMPLAINT.getFullName())){
-            return true;
-        }
-        return false;
-    }
 
     public static boolean isShow(String value){
         String[] s = value.split(" ");
@@ -114,7 +72,5 @@ public class MessageChecker {
         return value.equals(Function.HELP);
     }
 
-    public static boolean isComplaintButton(String value){
-        return value.equals(Button.COMPLAINT.getFullName());
-    }
+
 }

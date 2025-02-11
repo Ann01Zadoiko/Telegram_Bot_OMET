@@ -1,9 +1,6 @@
 package com.example.bot;
 
 import com.example.config.BotConfig;
-import com.example.constance.complaint.Complain;
-import com.example.email.EmailSender;
-import com.example.feature.complaint.Complaint;
 import com.example.feature.complaint.ComplaintService;
 import com.example.feature.museum.MuseumService;
 import com.example.feature.user.UserService;
@@ -20,7 +17,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 import org.telegram.telegrambots.bots.TelegramLongPollingBot;
 import org.telegram.telegrambots.meta.api.methods.AnswerCallbackQuery;
-import org.telegram.telegrambots.meta.api.methods.GetFile;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.methods.send.SendPhoto;
 import org.telegram.telegrambots.meta.api.methods.updatingmessages.EditMessageText;
@@ -29,9 +25,6 @@ import org.telegram.telegrambots.meta.api.objects.replykeyboard.InlineKeyboardMa
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 
 import java.io.File;
-import java.util.List;
-
-
 
 @Slf4j
 @RequiredArgsConstructor
@@ -42,7 +35,7 @@ public class TelegramBot extends TelegramLongPollingBot{
     private final MuseumService museumService;
     private final UserService userService;
     private final ComplaintService complaintService;
-    private final UserStateManager stateManager = new UserStateManager();
+    private final UserStateManager stateManager;
 
     @Override
     public String getBotUsername() {
@@ -56,7 +49,8 @@ public class TelegramBot extends TelegramLongPollingBot{
 
     // --- НАЧАЛО РЕГИСТРАЦИИ ---
     @SneakyThrows
-    private void startRegistration(Long chatId, RegistrationType type) {
+    public void startRegistration(Long chatId, RegistrationType type) {
+        log.info("🚀 Начата регистрация chatId: {}, тип: {}", chatId, type);
         stateManager.startRegistration(chatId, type);
         sendMessage(chatId, (type == RegistrationType.MUSEUM) ?
                 "📝 Введите ваше полное имя (для записи в музей):" :
@@ -71,7 +65,7 @@ public class TelegramBot extends TelegramLongPollingBot{
                 new HandlerMessage(museumService, userService, complaintService),
                 config,
                 museumService,
-                userService, complaintService);
+                userService, complaintService, stateManager);
 
         if (update.hasMessage() && update.getMessage().hasText()) {
             Long chatId = update.getMessage().getChatId();
@@ -83,25 +77,13 @@ public class TelegramBot extends TelegramLongPollingBot{
                     stateManager.removeUser(chatId);
                     sendMessage(chatId, "❌ Регистрация отменена.");
                 } else {
+                    log.info("🟡 Пользователь {} находится в процессе регистрации. Передаем в processRegistrationStep()", chatId);
                     processRegistrationStep(chatId, messageText);
                 }
                 return; // Прерываем дальнейшую обработку, чтобы не реагировать на команды
             }
 
-            // --- ОБРАБОТКА КОМАНД ---
-            switch (messageText.toLowerCase()) {
-
-                case "/register":
-                    startRegistration(chatId, RegistrationType.MUSEUM);
-                    break;
-
-                case "/complaint":
-                    startRegistration(chatId, RegistrationType.COMPLAINT);
-                    break;
-
-                default:
-                    sendMessage(chatId, "❓ Я не понимаю этот запрос. Попробуйте /start.");
-            }
+            botHandler.answerToMessage(update, stateManager);
         }
 
         if (update.hasCallbackQuery()){
@@ -109,73 +91,31 @@ public class TelegramBot extends TelegramLongPollingBot{
         }
     }
 
-//    @SneakyThrows
-//    @Override
-//    public void onUpdateReceived(Update update) {
-//        BotHandler botHandler = new BotHandler(
-//                new HandlerCallback(museumService),
-//                new HandlerMessage(museumService, userService, complaintService),
-//                config,
-//                museumService,
-//                userService, complaintService);
-//
-//        if (update.hasMessage() && update.getMessage().hasText()){
-//            botHandler.answerToMessage(update);
-//
-//            String text = update.getMessage().getText();
-//            Long chatId = update.getMessage().getChatId();
-//
-//            switch (text.toLowerCase()) {
-//
-//                case "/register":
-//                    startRegistration(chatId, RegistrationType.MUSEUM);
-//                    break;
-//
-//                case "/complaint":
-//                    startRegistration(chatId, RegistrationType.COMPLAINT);
-//                    break;
-//
-//                default:
-//                    sendMessage(chatId, "❓ Я не понимаю этот запрос. Попробуйте /start.");
-//            }
-//
-//
-//            // Если пользователь в процессе регистрации, обрабатываем только регистрацию
-//            if (stateManager.isUserRegistering(update.getMessage().getChatId())) {
-//                if (update.getMessage().getText().equalsIgnoreCase("/cancel")) {
-//                    stateManager.removeUser(update.getMessage().getChatId());
-//                    sendMessage(update.getMessage().getChatId(), "❌ Регистрация отменена.");
-//                } else {
-//                    processRegistrationStep(update.getMessage().getChatId(), update.getMessage().getText());
-//                }
-//                return; // Прерываем дальнейшую обработку, чтобы не реагировать на команды
-//            }
-//        }
-//
-//
-//
-//        if (update.hasCallbackQuery()){
-//            botHandler.answerToCallback(update);
-//        }
-//
-//    }
-
     // --- ОБРАБОТКА ЭТАПОВ РЕГИСТРАЦИИ ---
     @SneakyThrows
-    private void processRegistrationStep(Long chatId, String messageText) {
+    public void processRegistrationStep(Long chatId, String messageText) {
+        log.info("🔹 processRegistrationStep() вызван для chatId: {}, step: {}", chatId, stateManager.getUserRegistration(chatId).getStep());
+
         UserRegistration userReg = stateManager.getUserRegistration(chatId);
         RegistrationType type = userReg.getType();
 
         switch (userReg.getStep()) {
             case 1:
+                log.info("✅ Пользователь ввел имя: {}", messageText);
+
                 userReg.setFullName(messageText);
                 userReg.nextStep();
+                stateManager.updateUserRegistration(chatId, userReg); // 👈 ОБНОВЛЯЕМ СОСТОЯНИЕ
                 sendMessage(chatId, "📞 Введите ваш номер телефона:");
                 break;
 
             case 2:
+                log.info("✅ Пользователь ввел номер телефона: {}", messageText);
+
                 userReg.setPhoneNumber(messageText);
                 userReg.nextStep();
+                stateManager.updateUserRegistration(chatId, userReg); // 👈 ОБНОВЛЯЕМ СОСТОЯНИЕ
+
                 if (type == RegistrationType.MUSEUM) {
                     sendMessage(chatId, "👥 Введите количество человек:");
                 } else {
@@ -184,6 +124,8 @@ public class TelegramBot extends TelegramLongPollingBot{
                 break;
 
             case 3:
+                log.info("✅ Пользователь ввел последний шаг: {}", messageText);
+
                 if (type == RegistrationType.MUSEUM) {
                     try {
                         int count = Integer.parseInt(messageText);
@@ -207,9 +149,6 @@ public class TelegramBot extends TelegramLongPollingBot{
                 break;
         }
     }
-
-
-
 
     @SneakyThrows
     public void sendMessage(long chatId, String text, long messageId, CallbackQuery callbackQuery) throws TelegramApiException {
