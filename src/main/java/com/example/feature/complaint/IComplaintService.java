@@ -13,4 +13,6 @@ public interface IComplaintService {
     List<Complaint> getAll();
 
     List<Complaint> findByChatId(Long chatId);
+
+    boolean existsByChatId(Long chatId);
 }

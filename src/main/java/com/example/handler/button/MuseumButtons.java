@@ -34,7 +34,7 @@ public class MuseumButtons {
         return markup;
     }
 
-    public static InlineKeyboardMarkup getButtonsYesOrNo(){
+    public static InlineKeyboardMarkup getButtonsYesOrNo(String yes, String no){
         InlineKeyboardMarkup markup = new InlineKeyboardMarkup();
 
         List<List<InlineKeyboardButton>> row = new ArrayList<>();
@@ -42,26 +42,22 @@ public class MuseumButtons {
         InlineKeyboardButton button = InlineKeyboardButton
                 .builder()
                 .text("Так")
-                .callbackData("YES_MUSEUM")
+                .callbackData(yes)
                 .build();
 
         List<InlineKeyboardButton> buttons = new ArrayList<>();
         buttons.add(button);
-
         row.add(buttons);
 
         InlineKeyboardButton button1 = InlineKeyboardButton
                 .builder()
                 .text("Ні")
-                .callbackData("NO_MUSEUM")
+                .callbackData(no)
                 .build();
 
         List<InlineKeyboardButton> buttons1 = new ArrayList<>();
         buttons1.add(button1);
-
         row.add(buttons1);
-
-
         markup.setKeyboard(row);
 
         return markup;

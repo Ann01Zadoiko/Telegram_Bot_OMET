@@ -5,11 +5,19 @@ public class UserRegistration {
     private String fullName;
     private String phoneNumber;
     private String text;// Используем для жалобы
-    private int countOfPeople;
     private int step = 1;
-    private RegistrationType type; // Тип регистрации
+    private RegistrationType type;
 
-    public UserRegistration(RegistrationType type) {
+    public UserRegistration(RegistrationType type, int step) {
+        this.type = type;
+        this.step = step;
+    }
+
+    public RegistrationType getType() {
+        return type;
+    }
+
+    public void setType(RegistrationType type) {
         this.type = type;
     }
 
@@ -21,11 +29,6 @@ public class UserRegistration {
         return step;
     }
 
-    public RegistrationType getType() {
-        return type;
-    }
-
-    // Геттеры и сеттеры
     public String getFullName() { return fullName; }
 
     public void setFullName(String fullName) { this.fullName = fullName; }
@@ -38,11 +41,4 @@ public class UserRegistration {
 
     public void setText(String text) { this.text = text; }
 
-    public int getCountOfPeople() {
-        return countOfPeople;
-    }
-
-    public void setCountOfPeople(int countOfPeople) {
-        this.countOfPeople = countOfPeople;
-    }
 }

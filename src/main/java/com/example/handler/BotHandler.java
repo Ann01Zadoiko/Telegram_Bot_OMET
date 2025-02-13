@@ -5,15 +5,18 @@ import com.example.config.BotConfig;
 import com.example.feature.complaint.ComplaintService;
 import com.example.feature.museum.MuseumService;
 import com.example.feature.user.UserService;
+import com.example.registration.ComplaintRegistration;
+import com.example.registration.MuseumRegistration;
 import com.example.registration.RegistrationType;
-import com.example.registration.UserRegistration;
 import com.example.registration.UserStateManager;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 
 import org.telegram.telegrambots.meta.api.objects.Update;
 
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class BotHandler {
@@ -25,10 +28,11 @@ public class BotHandler {
     private final UserService userService;
     private final ComplaintService complaintService;
     private final UserStateManager stateManager;
-
+    private final MuseumRegistration museumRegistration;
+    private final ComplaintRegistration complaintRegistration;
 
     public void answerToCallback(Update update){
-        TelegramBot bot = new TelegramBot(config, museumService, userService, complaintService, stateManager);
+        TelegramBot bot = new TelegramBot(config, museumService, userService, complaintService, stateManager, museumRegistration, complaintRegistration);
 
         callback.handlerOfGeneralInfo(update, bot);
         callback.handlerOfMuseum(update, bot);
@@ -36,11 +40,36 @@ public class BotHandler {
         callback.handlerOfBack(update, bot);
         callback.handlerOfYesOrNoMuseum(update, bot);
         callback.handlerOfSkip(update, bot);
+        callback.handlerOfYesOrNoComplaint(update, bot);
     }
 
     @SneakyThrows
     public void answerToMessage(Update update, UserStateManager stateManager){
-        TelegramBot bot = new TelegramBot(config, museumService, userService, complaintService, stateManager);
+        TelegramBot bot = new TelegramBot(config, museumService, userService, complaintService, stateManager, museumRegistration, complaintRegistration);
+
+        // Если пользователь в процессе регистрации, обрабатываем только нужный тип регистрации
+        if (stateManager.isUserRegistering(update.getMessage().getChatId())) {
+            if (update.getMessage().getText().equalsIgnoreCase("/cancel")) {
+                stateManager.removeUser(update.getMessage().getChatId());
+                bot.sendMessage(update.getMessage().getChatId(), "❌ Регистрация отменена.");
+            } else {
+                log.info("🟡 Пользователь {} находится в процессе регистрации.", update.getMessage().getChatId());
+
+                RegistrationType type = stateManager.getUserRegistrationType(update.getMessage().getChatId());
+
+                if (type == RegistrationType.MUSEUM) {
+                    museumRegistration.processRegistrationStep(update.getMessage().getChatId(), update.getMessage().getText(), bot);
+                }
+
+                if (type == RegistrationType.COMPLAINT) {
+                    complaintRegistration.processRegistrationStep(update.getMessage().getChatId(), update.getMessage().getText(), bot);
+                }
+//                else {
+//                    bot.sendMessage(update.getMessage().getChatId(), "❌ Неизвестный тип регистрации.");
+//                }
+            }
+            return; // Прерываем дальнейшую обработку
+        }
 
         message.handlerOfGeneralInfo(update, bot);
         message.handlerOfMuseum(update, bot);
@@ -51,7 +80,7 @@ public class BotHandler {
         message.handlerOfHelp(update, bot);
         message.handlerOfShow(update, bot);
         message.handlerOfCommandVacancy(update, bot);
+        message.handlerOfComplaint(update, bot);
     }
-
 
 }

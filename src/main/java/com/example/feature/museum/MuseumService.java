@@ -49,4 +49,9 @@ public class MuseumService implements IMuseumService{
     public List<Museum> getByDate(LocalDate date) {
         return repository.findByDate(date);
     }
+
+    @Override
+    public boolean existsByChatId(Long chatId) {
+        return repository.existsByChatId(chatId);
+    }
 }

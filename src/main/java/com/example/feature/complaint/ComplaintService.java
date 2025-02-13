@@ -35,4 +35,9 @@ public class ComplaintService implements IComplaintService{
     public List<Complaint> findByChatId(Long chatId) {
         return repository.findByChatId(chatId);
     }
+
+    @Override
+    public boolean existsByChatId(Long chatId) {
+        return repository.existsByChatId(chatId);
+    }
 }

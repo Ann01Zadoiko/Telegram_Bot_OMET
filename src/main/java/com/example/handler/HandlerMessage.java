@@ -88,7 +88,6 @@ public class HandlerMessage {
         if (MessageChecker.isSetDate(text) && userService.existsByChatId(chatId)){
 
             String dayString = text.substring(9);
-
             DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd.MM.yyyy");
             LocalDate date = LocalDate.parse(dayString, formatter);
             museum.setClose(false);
@@ -151,14 +150,11 @@ public class HandlerMessage {
                     count += museum.getCountOfPeople();
                 }
             }
-
             answer += "Всього: " + count;
 
             bot.sendMessage(chatId, answer);
         }
     }
-
-
 
     @SneakyThrows
     public void handlerOfCommandVacancy(Update update, TelegramBot bot){
@@ -168,6 +164,16 @@ public class HandlerMessage {
 
         if (text.equals(Function.VACANCY)){
             bot.sendMessage(chatId, "Оберіть специфікацію", VacancyButtons.getButtonsSpecification());
+        }
+    }
+
+    public void handlerOfComplaint(Update update, TelegramBot bot){
+        Message message = update.getMessage();
+        Long chatId = message.getChatId();
+        String text = message.getText();
+
+        if (text.equals("Скарги та пропозиції")) {
+            bot.sendMessage(chatId, Complain.STEP_1.getText(), MuseumButtons.getButtonsYesOrNo("YES_COMPLAINT", "NO_COMPLAINT"));
         }
     }
 }

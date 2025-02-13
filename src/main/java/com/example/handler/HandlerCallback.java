@@ -5,6 +5,9 @@ import com.example.constance.complaint.Complain;
 import com.example.constance.info.GeneralInfo;
 import com.example.constance.info.Study;
 import com.example.constance.museum.Registration;
+import com.example.email.EmailSender;
+import com.example.feature.complaint.Complaint;
+import com.example.feature.complaint.ComplaintService;
 import com.example.feature.museum.Museum;
 import com.example.feature.museum.MuseumService;
 import com.example.handler.button.*;
@@ -15,17 +18,23 @@ import com.example.constance.info.tracks.TracksTrolls;
 import com.example.constance.info.vacancy.Specification;
 import com.example.constance.info.vacancy.VacancyWithExperience;
 import com.example.constance.info.vacancy.VacancyWithoutExperience;
-import com.example.registration.RegistrationType;
+import com.example.registration.ComplaintRegistration;
+import com.example.registration.MuseumRegistration;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import org.springframework.stereotype.Service;
 import org.telegram.telegrambots.meta.api.objects.Update;
+
+import java.util.List;
 
 @RequiredArgsConstructor
 @Service
 public class HandlerCallback {
 
     private final MuseumService museumService;
+    private final MuseumRegistration museumRegistration;
+    private final ComplaintRegistration complaintRegistration;
+    private final ComplaintService complaintService;
 
     @SneakyThrows
     public void handlerOfMuseum(Update update, TelegramBot bot){
@@ -49,7 +58,7 @@ public class HandlerCallback {
                     if (museum.isClose()){
                         bot.executeEditMessage(textClose, chatId, messageId, BackButton.getButtons("BACK_MUSEUM"));
                     } else {
-                        bot.executeEditMessage(textOpen, chatId, messageId, MuseumButtons.getButtonsYesOrNo());
+                        bot.executeEditMessage(textOpen, chatId, messageId, MuseumButtons.getButtonsYesOrNo("YES_MUSEUM", "NO_MUSEUM"));
                     }
                 }
             }
@@ -75,6 +84,7 @@ public class HandlerCallback {
 
                 case TRACKS ->
                     bot.sendMiniApp(chatId, TracksButtons.getButtonsTracks(), "Маршрут", messageId, update.getCallbackQuery());
+
             }
         }
     }
@@ -139,7 +149,6 @@ public class HandlerCallback {
         }
     }
 
-
     public void handlerOfYesOrNoMuseum(Update update, TelegramBot bot){
         String data = update.getCallbackQuery().getData();
         Long chatId = update.getCallbackQuery().getMessage().getChatId();
@@ -149,16 +158,31 @@ public class HandlerCallback {
             Museum museum = new Museum();
             museum.setDate(museumService.showDate());
             museum.setChatId(chatId);
-
             museumService.save(museum);
-
-            bot.startRegistration(chatId, RegistrationType.MUSEUM);
-
+            museumRegistration.startRegistration(chatId, bot);
         }
 
         if (data.equals("NO_MUSEUM")){
             bot.executeEditMessage("Музей", chatId, messageId, MuseumButtons.getButtons());
         }
+    }
+
+    public void handlerOfYesOrNoComplaint(Update update, TelegramBot bot){
+        String data = update.getCallbackQuery().getData();
+        Long chatId = update.getCallbackQuery().getMessage().getChatId();
+        long messageId = update.getCallbackQuery().getMessage().getMessageId();
+
+        if (data.equals("YES_COMPLAINT")){
+            Complaint complaint = new Complaint();
+            complaint.setChatId(chatId);
+
+            complaintService.save(complaint);
+
+            complaintRegistration.startRegistration(chatId, bot);
+        }
+
+//        if (data.equals("NO_COMPLAINT")){
+//        }
     }
 
     @SneakyThrows
@@ -167,11 +191,14 @@ public class HandlerCallback {
         Long chatId = update.getCallbackQuery().getMessage().getChatId();
         long messageId = update.getCallbackQuery().getMessage().getMessageId();
 
-        if (data.equals("SKIP_AUDIO")){
-            bot.sendMiniApp(chatId, SkipButton.getButtons("SKIP_PHOTO"), Complain.STEP_6.getText(), messageId, update.getCallbackQuery());
-        }
-
         if (data.equals("SKIP_PHOTO")){
+            List<Complaint> byChatId = complaintService.findByChatId(chatId);
+            Complaint complaint = byChatId.get(byChatId.size() - 1);
+
+            EmailSender.sendEmailWithAttachment("info@oget.od.ua",
+                    "Скарга",
+                    complaint.getFullName() + "\n" + complaint.getPhoneNumber() + "\n" + complaint.getText());
+
             bot.sendMessage(chatId,  Complain.STEP_7.getText(), messageId, update.getCallbackQuery());
         }
     }

@@ -9,4 +9,6 @@ import java.util.List;
 public interface ComplaintRepository extends JpaRepository<Complaint, Long> {
 
     List<Complaint> findByChatId(Long chatId);
+
+    boolean existsByChatId(Long chatId);
 }

@@ -19,4 +19,6 @@ public interface MuseumRepository extends JpaRepository<Museum, Long> {
     List<Museum> findByChatId(Long chatId);
 
     List<Museum> findByDate(LocalDate date);
+
+    boolean existsByChatId(Long chatId);
 }
