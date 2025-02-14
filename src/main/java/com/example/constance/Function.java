@@ -14,5 +14,5 @@ public interface Function {
     String SHOW = "/show";
     String CLOSE = "/close";
     String HELP = "/help";
-    String VACANCY = "/vacancy";
+
 }

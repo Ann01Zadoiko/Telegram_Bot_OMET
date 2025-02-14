@@ -3,6 +3,7 @@ package com.example.handler;
 import com.example.bot.TelegramBot;
 import com.example.constance.Function;
 import com.example.constance.complaint.Complain;
+import com.example.constance.info.vacancy.Vacancy;
 import com.example.constance.museum.Registration;
 import com.example.constance.rent.Rent;
 import com.example.feature.complaint.Complaint;
@@ -10,6 +11,7 @@ import com.example.feature.complaint.ComplaintService;
 import com.example.feature.museum.Museum;
 import com.example.feature.museum.MuseumService;
 import com.example.feature.user.UserService;
+import com.example.feature.vacancy.VacancyService;
 import com.example.handler.button.*;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
@@ -29,6 +31,7 @@ public class HandlerMessage {
     private final MuseumService museumService;
     private final UserService userService;
     private final ComplaintService complaintService;
+    private final VacancyService vacancyService;
 
     @SneakyThrows
     public void handlerOfStart(Update update, TelegramBot bot){
@@ -156,16 +159,7 @@ public class HandlerMessage {
         }
     }
 
-    @SneakyThrows
-    public void handlerOfCommandVacancy(Update update, TelegramBot bot){
-        Message message = update.getMessage();
-        Long chatId = message.getChatId();
-        String text = message.getText();
 
-        if (text.equals(Function.VACANCY)){
-            bot.sendMessage(chatId, "Оберіть специфікацію", VacancyButtons.getButtonsSpecification());
-        }
-    }
 
     public void handlerOfComplaint(Update update, TelegramBot bot){
         Message message = update.getMessage();
@@ -174,6 +168,32 @@ public class HandlerMessage {
 
         if (text.equals("Скарги та пропозиції")) {
             bot.sendMessage(chatId, Complain.STEP_1.getText(), MuseumButtons.getButtonsYesOrNo("YES_COMPLAINT", "NO_COMPLAINT"));
+        }
+    }
+
+    public void handlerOfVacancyCommand(Update update, TelegramBot bot){
+        Message message = update.getMessage();
+        Long chatId = message.getChatId();
+        String text = message.getText();
+
+        if (text.equals("/vacancy")){
+            bot.sendMessage(chatId, Vacancy.STEP_1.getText(), VacancyButtons.getButtonsSpecification());
+        }
+    }
+
+    @SneakyThrows
+    public void handlerOfVacancyChange(Update update, TelegramBot bot){
+        Message message = update.getMessage();
+        Long chatId = message.getChatId();
+        String text = message.getText();
+
+        if (text.split("\n").length > 2){
+            com.example.feature.vacancy.Vacancy vacancy = vacancyService.getAll().get(vacancyService.getAll().size() - 1);
+            vacancy.setName(text);
+
+            vacancyService.save(vacancy);
+
+            bot.sendMessage(chatId, Vacancy.STEP_3.getText());
         }
     }
 }

@@ -4,20 +4,20 @@ import com.example.bot.TelegramBot;
 import com.example.constance.complaint.Complain;
 import com.example.constance.info.GeneralInfo;
 import com.example.constance.info.Study;
+import com.example.constance.info.vacancy.Vacancy;
 import com.example.constance.museum.Registration;
 import com.example.email.EmailSender;
 import com.example.feature.complaint.Complaint;
 import com.example.feature.complaint.ComplaintService;
 import com.example.feature.museum.Museum;
 import com.example.feature.museum.MuseumService;
+import com.example.feature.vacancy.VacancyService;
 import com.example.handler.button.*;
 import com.example.constance.museum.MuseumEnum;
 import com.example.constance.museum.MuseumInfo;
 import com.example.constance.info.tracks.TracksTrams;
 import com.example.constance.info.tracks.TracksTrolls;
 import com.example.constance.info.vacancy.Specification;
-import com.example.constance.info.vacancy.VacancyWithExperience;
-import com.example.constance.info.vacancy.VacancyWithoutExperience;
 import com.example.registration.ComplaintRegistration;
 import com.example.registration.MuseumRegistration;
 import lombok.RequiredArgsConstructor;
@@ -35,6 +35,7 @@ public class HandlerCallback {
     private final MuseumRegistration museumRegistration;
     private final ComplaintRegistration complaintRegistration;
     private final ComplaintService complaintService;
+    private final VacancyService vacancyService;
 
     @SneakyThrows
     public void handlerOfMuseum(Update update, TelegramBot bot){
@@ -98,18 +99,42 @@ public class HandlerCallback {
         if (MessageChecker.isEnumValueSpecification(data)){
             switch (Specification.valueOf(data)){
                 case WITH_EXPERIENCE -> {
-                    String text = "";
-                    for (VacancyWithExperience vacancy: VacancyWithExperience.values()){
-                       text += "- " + vacancy.getName() + "\n";
+                    if (chatId == 391736560){
+                        com.example.feature.vacancy.Vacancy vacancy = new com.example.feature.vacancy.Vacancy();
+                        vacancy.setSpecification("З досвідом роботи");
+                        vacancyService.save(vacancy);
+
+                        bot.sendMessage(chatId, Vacancy.STEP_2.getText());
+                    } else {
+                        String text = "";
+                        List<com.example.feature.vacancy.Vacancy> withEx = vacancyService.getBySpecification("З досвідом роботи");
+                        String [] with = withEx.get(withEx.size()-1).getName().split("\n");
+
+                        for (int i = 0; i < with.length; i++) {
+                            text += "- " + with[i] + "\n";
+                        }
+
+                        bot.executeEditMessage(text, chatId , messageId, BackButton.getButtons("BACK_VACANCY"));
                     }
-                    bot.executeEditMessage(text, chatId , messageId, BackButton.getButtons("BACK_VACANCY"));
                 }
                 case WITHOUT_EXPERIENCE -> {
-                    String text = "";
-                    for (VacancyWithoutExperience vacancy: VacancyWithoutExperience.values()){
-                        text += "- " + vacancy.getName() + "\n";
+                    if (chatId == 391736560){
+                        com.example.feature.vacancy.Vacancy vacancy = new com.example.feature.vacancy.Vacancy();
+                        vacancy.setSpecification("Без досвіду роботи");
+                        vacancyService.save(vacancy);
+
+                        bot.sendMessage(chatId, Vacancy.STEP_2.getText());
+                    } else {
+                        String text = "";
+                        List<com.example.feature.vacancy.Vacancy> withput = vacancyService.getBySpecification("Без досвіду роботи");
+                        String [] with = withput.get(withput.size()-1).getName().split("\n");
+
+                        for (int i = 0; i < with.length; i++) {
+                            text += "- " + with[i] + "\n";
+                        }
+
+                        bot.executeEditMessage(text, chatId , messageId, BackButton.getButtons("BACK_VACANCY"));
                     }
-                    bot.executeEditMessage(text, chatId , messageId, BackButton.getButtons("BACK_VACANCY"));
                 }
             }
         }

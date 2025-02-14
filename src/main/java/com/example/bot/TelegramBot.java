@@ -7,6 +7,7 @@ import com.example.feature.complaint.Complaint;
 import com.example.feature.complaint.ComplaintService;
 import com.example.feature.museum.MuseumService;
 import com.example.feature.user.UserService;
+import com.example.feature.vacancy.VacancyService;
 import com.example.handler.BotHandler;
 import com.example.handler.HandlerCallback;
 import com.example.handler.HandlerMessage;
@@ -43,6 +44,7 @@ public class TelegramBot extends TelegramLongPollingBot{
     private final UserStateManager stateManager;
     private final MuseumRegistration museumRegistration;
     private final ComplaintRegistration complaintRegistration;
+    private final VacancyService vacancyService;
 
     @Override
     public String getBotUsername() {
@@ -57,15 +59,16 @@ public class TelegramBot extends TelegramLongPollingBot{
     @SneakyThrows
     public void onUpdateReceived(Update update) {
         BotHandler botHandler = new BotHandler(
-                new HandlerCallback(museumService, museumRegistration, complaintRegistration, complaintService),
-                new HandlerMessage(museumService, userService, complaintService),
+                new HandlerCallback(museumService, museumRegistration, complaintRegistration, complaintService, vacancyService),
+                new HandlerMessage(museumService, userService, complaintService, vacancyService),
                 config,
                 museumService,
                 userService,
                 complaintService,
                 stateManager,
                 museumRegistration,
-                complaintRegistration);
+                complaintRegistration,
+                vacancyService);
 
         if (update.hasMessage() && update.getMessage().hasText()) {
             botHandler.answerToMessage(update, stateManager);

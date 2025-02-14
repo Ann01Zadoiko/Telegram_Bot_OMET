@@ -11,4 +11,8 @@ public interface IVacancyService {
     void saveAll(List<Vacancy> vacancies);
 
     List<Vacancy> getBySpecification(String specification);
+
+    Vacancy getByLastId();
+
+    List<Vacancy> getAll();
 }

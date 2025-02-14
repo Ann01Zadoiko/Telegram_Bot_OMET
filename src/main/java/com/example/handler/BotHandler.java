@@ -5,6 +5,7 @@ import com.example.config.BotConfig;
 import com.example.feature.complaint.ComplaintService;
 import com.example.feature.museum.MuseumService;
 import com.example.feature.user.UserService;
+import com.example.feature.vacancy.VacancyService;
 import com.example.registration.ComplaintRegistration;
 import com.example.registration.MuseumRegistration;
 import com.example.registration.RegistrationType;
@@ -30,9 +31,10 @@ public class BotHandler {
     private final UserStateManager stateManager;
     private final MuseumRegistration museumRegistration;
     private final ComplaintRegistration complaintRegistration;
+    private final VacancyService vacancyService;
 
     public void answerToCallback(Update update){
-        TelegramBot bot = new TelegramBot(config, museumService, userService, complaintService, stateManager, museumRegistration, complaintRegistration);
+        TelegramBot bot = new TelegramBot(config, museumService, userService, complaintService, stateManager, museumRegistration, complaintRegistration, vacancyService);
 
         callback.handlerOfGeneralInfo(update, bot);
         callback.handlerOfMuseum(update, bot);
@@ -45,7 +47,7 @@ public class BotHandler {
 
     @SneakyThrows
     public void answerToMessage(Update update, UserStateManager stateManager){
-        TelegramBot bot = new TelegramBot(config, museumService, userService, complaintService, stateManager, museumRegistration, complaintRegistration);
+        TelegramBot bot = new TelegramBot(config, museumService, userService, complaintService, stateManager, museumRegistration, complaintRegistration, vacancyService);
 
         // Если пользователь в процессе регистрации, обрабатываем только нужный тип регистрации
         if (stateManager.isUserRegistering(update.getMessage().getChatId())) {
@@ -64,9 +66,7 @@ public class BotHandler {
                 if (type == RegistrationType.COMPLAINT) {
                     complaintRegistration.processRegistrationStep(update.getMessage().getChatId(), update.getMessage().getText(), bot);
                 }
-//                else {
-//                    bot.sendMessage(update.getMessage().getChatId(), "❌ Неизвестный тип регистрации.");
-//                }
+
             }
             return; // Прерываем дальнейшую обработку
         }
@@ -79,8 +79,9 @@ public class BotHandler {
         message.handlerOfCloseExhibition(update, bot);
         message.handlerOfHelp(update, bot);
         message.handlerOfShow(update, bot);
-        message.handlerOfCommandVacancy(update, bot);
         message.handlerOfComplaint(update, bot);
+        message.handlerOfVacancyCommand(update, bot);
+        message.handlerOfVacancyChange(update, bot);
     }
 
 }

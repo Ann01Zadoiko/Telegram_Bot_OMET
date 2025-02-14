@@ -26,7 +26,7 @@ create table museums(
 );
 
 create table vacancies(
-    id bigint primary key,
-    name varchar(100),
+    id bigint auto_increment primary key,
+    name text,
     specification varchar(50)
 );
