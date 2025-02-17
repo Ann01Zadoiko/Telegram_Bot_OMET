@@ -5,6 +5,7 @@ import com.example.constance.complaint.Complain;
 import com.example.constance.info.GeneralInfo;
 import com.example.constance.info.Study;
 import com.example.constance.info.vacancy.Vacancy;
+import com.example.constance.info.vacancy.VacancyText;
 import com.example.constance.museum.Registration;
 import com.example.email.EmailSender;
 import com.example.feature.complaint.Complaint;
@@ -81,7 +82,7 @@ public class HandlerCallback {
                     bot.sendMiniApp(chatId, LinkButtons.createLinksGeneralInfoButtons(), "Соціальні мережі", messageId, update.getCallbackQuery());
 
                 case VACANCY ->
-                    bot.sendMiniApp(chatId, VacancyButtons.getButtonsSpecification(), "Вакансії", messageId, update.getCallbackQuery());
+                    bot.sendMiniApp(chatId, VacancyButtons.getButtonsSpecification("WITH_EXPERIENCE", "WITHOUT_EXPERIENCE"), "Вакансії", messageId, update.getCallbackQuery());
 
                 case TRACKS ->
                     bot.sendMiniApp(chatId, TracksButtons.getButtonsTracks(), "Маршрут", messageId, update.getCallbackQuery());
@@ -96,47 +97,44 @@ public class HandlerCallback {
         Long chatId = update.getCallbackQuery().getMessage().getChatId();
         long messageId = update.getCallbackQuery().getMessage().getMessageId();
 
-        if (MessageChecker.isEnumValueSpecification(data)){
-            switch (Specification.valueOf(data)){
-                case WITH_EXPERIENCE -> {
-                    if (chatId == 391736560){
-                        com.example.feature.vacancy.Vacancy vacancy = new com.example.feature.vacancy.Vacancy();
-                        vacancy.setSpecification("З досвідом роботи");
-                        vacancyService.save(vacancy);
+        if (data.equals("WITH_VACANCY") && chatId == 391736560){
+            com.example.feature.vacancy.Vacancy vacancy = new com.example.feature.vacancy.Vacancy();
+            vacancy.setSpecification("З досвідом роботи");
+            vacancyService.save(vacancy);
 
-                        bot.sendMessage(chatId, Vacancy.STEP_2.getText());
-                    } else {
-                        String text = "";
-                        List<com.example.feature.vacancy.Vacancy> withEx = vacancyService.getBySpecification("З досвідом роботи");
-                        String [] with = withEx.get(withEx.size()-1).getName().split("\n");
+            bot.sendMessage(chatId, Vacancy.STEP_2.getText());
+        }
 
-                        for (int i = 0; i < with.length; i++) {
-                            text += "- " + with[i] + "\n";
-                        }
+        if (data.equals("WITHOUT_VACANCY") && chatId == 391736560) {
+            com.example.feature.vacancy.Vacancy vacancy = new com.example.feature.vacancy.Vacancy();
+            vacancy.setSpecification("Без досвіду роботи");
+            vacancyService.save(vacancy);
 
-                        bot.executeEditMessage(text, chatId , messageId, BackButton.getButtons("BACK_VACANCY"));
-                    }
-                }
-                case WITHOUT_EXPERIENCE -> {
-                    if (chatId == 391736560){
-                        com.example.feature.vacancy.Vacancy vacancy = new com.example.feature.vacancy.Vacancy();
-                        vacancy.setSpecification("Без досвіду роботи");
-                        vacancyService.save(vacancy);
+            bot.sendMessage(chatId, Vacancy.STEP_2.getText());
+        }
 
-                        bot.sendMessage(chatId, Vacancy.STEP_2.getText());
-                    } else {
-                        String text = "";
-                        List<com.example.feature.vacancy.Vacancy> withput = vacancyService.getBySpecification("Без досвіду роботи");
-                        String [] with = withput.get(withput.size()-1).getName().split("\n");
+        if (data.equals("WITH_EXPERIENCE")){
+            String text = "";
+            List<com.example.feature.vacancy.Vacancy> withEx = vacancyService.getBySpecification("З досвідом роботи");
+            String [] with = withEx.get(withEx.size()-1).getName().split("\n");
 
-                        for (int i = 0; i < with.length; i++) {
-                            text += "- " + with[i] + "\n";
-                        }
-
-                        bot.executeEditMessage(text, chatId , messageId, BackButton.getButtons("BACK_VACANCY"));
-                    }
-                }
+            for (int i = 0; i < with.length; i++) {
+                text += "- " + with[i] + "\n";
             }
+
+            bot.executeEditMessage(text + VacancyText.VACANCY_TEXT, chatId , messageId, BackButton.getButtons("BACK_VACANCY"));
+        }
+
+        if (data.equals("WITHOUT_EXPERIENCE")){
+            String text = "";
+            List<com.example.feature.vacancy.Vacancy> withput = vacancyService.getBySpecification("Без досвіду роботи");
+            String [] with = withput.get(withput.size()-1).getName().split("\n");
+
+            for (int i = 0; i < with.length; i++) {
+                text += "- " + with[i] + "\n";
+            }
+
+            bot.executeEditMessage(text + VacancyText.VACANCY_TEXT, chatId , messageId, BackButton.getButtons("BACK_VACANCY"));
         }
 
         if (data.equals("Трамвай")){
@@ -166,7 +164,7 @@ public class HandlerCallback {
         }
 
         if (data.equals("BACK_VACANCY")){
-            bot.executeEditMessage("Вакансії", chatId,  messageId, VacancyButtons.getButtonsSpecification());
+            bot.executeEditMessage("Вакансії", chatId,  messageId, VacancyButtons.getButtonsSpecification("WITH_EXPERIENCE", "WITHOUT_EXPERIENCE"));
         }
 
         if (data.equals("BACK_MUSEUM")){

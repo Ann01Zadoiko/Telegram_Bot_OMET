@@ -26,16 +26,6 @@ public class MessageChecker {
         return false;
     }
 
-    public static boolean isEnumValueSpecification(String value) {
-        for (Specification e : Specification.values()) {
-            if (e.name().equals(value)) {
-                return true;
-            }
-        }
-        return false;
-    }
-
-
     public static boolean isSetDate(String value){
         String[] s = value.split(" ");
         if (value.startsWith(Function.SET_NEW_DAY) && s.length == 2){
@@ -43,7 +33,6 @@ public class MessageChecker {
         }
         return false;
     }
-
 
     public static boolean isShow(String value){
         String[] s = value.split(" ");
@@ -61,16 +50,8 @@ public class MessageChecker {
         return (value.equals(Function.CLOSE));
     }
 
-    public static boolean isCountOfPeople(String value){
-        if (value.length() < 3){
-            return true;
-        }
-        return false;
-    }
-
     public static boolean isHelp(String value){
         return value.equals(Function.HELP);
     }
-
 
 }

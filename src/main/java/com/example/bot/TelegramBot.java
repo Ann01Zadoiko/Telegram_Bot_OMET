@@ -22,18 +22,21 @@ import org.springframework.stereotype.Component;
 import org.telegram.telegrambots.bots.TelegramLongPollingBot;
 import org.telegram.telegrambots.meta.api.methods.AnswerCallbackQuery;
 import org.telegram.telegrambots.meta.api.methods.GetFile;
+import org.telegram.telegrambots.meta.api.methods.commands.SetMyCommands;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.methods.send.SendPhoto;
 import org.telegram.telegrambots.meta.api.methods.updatingmessages.EditMessageText;
 import org.telegram.telegrambots.meta.api.objects.*;
+import org.telegram.telegrambots.meta.api.objects.commands.BotCommand;
+import org.telegram.telegrambots.meta.api.objects.commands.scope.BotCommandScopeDefault;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.InlineKeyboardMarkup;
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 
 import java.io.File;
+import java.util.ArrayList;
 import java.util.List;
 
 @Slf4j
-@RequiredArgsConstructor
 @Component
 public class TelegramBot extends TelegramLongPollingBot{
 
@@ -57,10 +60,28 @@ public class TelegramBot extends TelegramLongPollingBot{
     }
 
     @SneakyThrows
+    public TelegramBot(BotConfig config, MuseumService museumService, UserService userService, ComplaintService complaintService,
+                       UserStateManager stateManager, MuseumRegistration museumRegistration,
+                       ComplaintRegistration complaintRegistration, VacancyService vacancyService) {
+        this.config = config;
+        this.museumService = museumService;
+        this.userService = userService;
+        this.complaintService = complaintService;
+        this.stateManager = stateManager;
+        this.museumRegistration = museumRegistration;
+        this.complaintRegistration = complaintRegistration;
+        this.vacancyService = vacancyService;
+
+        List<BotCommand> listofCommands = new ArrayList<>();
+        listofCommands.add(new BotCommand("/help", "Пояснення дій у боті"));
+        this.execute(new SetMyCommands(listofCommands, new BotCommandScopeDefault(), null));
+    }
+
+    @SneakyThrows
     public void onUpdateReceived(Update update) {
         BotHandler botHandler = new BotHandler(
                 new HandlerCallback(museumService, museumRegistration, complaintRegistration, complaintService, vacancyService),
-                new HandlerMessage(museumService, userService, complaintService, vacancyService),
+                new HandlerMessage(museumService, userService, vacancyService),
                 config,
                 museumService,
                 userService,

@@ -4,9 +4,7 @@ import com.example.bot.TelegramBot;
 import com.example.constance.Function;
 import com.example.constance.complaint.Complain;
 import com.example.constance.info.vacancy.Vacancy;
-import com.example.constance.museum.Registration;
 import com.example.constance.rent.Rent;
-import com.example.feature.complaint.Complaint;
 import com.example.feature.complaint.ComplaintService;
 import com.example.feature.museum.Museum;
 import com.example.feature.museum.MuseumService;
@@ -30,7 +28,6 @@ public class HandlerMessage {
 
     private final MuseumService museumService;
     private final UserService userService;
-    private final ComplaintService complaintService;
     private final VacancyService vacancyService;
 
     @SneakyThrows
@@ -126,8 +123,16 @@ public class HandlerMessage {
         Long chatId = message.getChatId();
         String text = message.getText();
 
-        if (MessageChecker.isHelp(text) && userService.existsByChatId(chatId)){
-            bot.sendMessage(chatId, Function.HELP_TEXT);
+        if (MessageChecker.isHelp(text) && chatId == 391736560){
+            bot.sendMessage(chatId, Function.HELP_MUSEUM);
+        }
+
+        if (MessageChecker.isHelp(text) && chatId == 391736560){
+            bot.sendMessage(chatId, Function.HELP_VACANCY);
+        }
+
+        if (MessageChecker.isHelp(text) && !(userService.existsByChatId(chatId))){
+            bot.sendMessage(chatId, Function.HELP_GENERAL);
         }
     }
 
@@ -159,8 +164,6 @@ public class HandlerMessage {
         }
     }
 
-
-
     public void handlerOfComplaint(Update update, TelegramBot bot){
         Message message = update.getMessage();
         Long chatId = message.getChatId();
@@ -177,7 +180,7 @@ public class HandlerMessage {
         String text = message.getText();
 
         if (text.equals("/vacancy")){
-            bot.sendMessage(chatId, Vacancy.STEP_1.getText(), VacancyButtons.getButtonsSpecification());
+            bot.sendMessage(chatId, Vacancy.STEP_1.getText(), VacancyButtons.getButtonsSpecification("WITH_VACANCY", "WITHOUT_VACANCY"));
         }
     }
 
