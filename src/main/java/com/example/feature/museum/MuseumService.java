@@ -3,7 +3,9 @@ package com.example.feature.museum;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.sql.Date;
 import java.time.LocalDate;
+import java.time.ZoneId;
 import java.util.List;
 
 @Service
@@ -54,4 +56,12 @@ public class MuseumService implements IMuseumService{
     public boolean existsByChatId(Long chatId) {
         return repository.existsByChatId(chatId);
     }
+
+    @Override
+    public LocalDate getLastDay() {
+        List<LocalDate> allDates = repository.findAllDates();
+        return allDates.get(allDates.size()-1);
+    }
+
+
 }

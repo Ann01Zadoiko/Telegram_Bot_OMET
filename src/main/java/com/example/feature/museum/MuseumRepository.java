@@ -4,6 +4,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 
+import java.sql.Date;
 import java.time.LocalDate;
 import java.util.List;
 
@@ -21,4 +22,8 @@ public interface MuseumRepository extends JpaRepository<Museum, Long> {
     List<Museum> findByDate(LocalDate date);
 
     boolean existsByChatId(Long chatId);
+
+    @Query("SELECT DISTINCT m.date FROM Museum m")
+    List<LocalDate> findAllDates();
+
 }

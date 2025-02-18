@@ -73,7 +73,7 @@ public class TelegramBot extends TelegramLongPollingBot{
         this.vacancyService = vacancyService;
 
         List<BotCommand> listofCommands = new ArrayList<>();
-        listofCommands.add(new BotCommand("/help", "Пояснення дій у боті"));
+        listofCommands.add(new BotCommand("/help", "Пояснення дій у боті "));
         this.execute(new SetMyCommands(listofCommands, new BotCommandScopeDefault(), null));
     }
 

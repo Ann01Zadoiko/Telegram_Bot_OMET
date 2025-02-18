@@ -20,4 +20,6 @@ public interface IMuseumService {
     List<Museum> getByDate(LocalDate date);
 
     boolean existsByChatId(Long chatId);
+
+    LocalDate getLastDay();
 }
