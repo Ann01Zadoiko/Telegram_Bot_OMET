@@ -1,8 +1,5 @@
 package com.example.email;
 
-import org.telegram.telegrambots.meta.api.objects.PhotoSize;
-import org.telegram.telegrambots.meta.api.objects.Update;
-
 import javax.mail.*;
 import javax.mail.internet.*;
 import java.io.File;
@@ -11,7 +8,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
-import java.util.List;
 import java.util.Properties;
 
 public class EmailSender {
@@ -59,11 +55,10 @@ public class EmailSender {
 
             // Отправка письма
             Transport.send(message);
-            System.out.println("Email с вложением успешно отправлен!");
 
         } catch (Exception e) {
             e.printStackTrace();
-            System.err.println("Ошибка отправки email: " + e.getMessage());
+
         }
     }
 
@@ -110,11 +105,11 @@ public class EmailSender {
 
             // Отправка письма
             Transport.send(message);
-            System.out.println("Email с вложением успешно отправлен!");
+
 
         } catch (Exception e) {
             e.printStackTrace();
-            System.err.println("Ошибка отправки email: " + e.getMessage());
+
         }
     }
 

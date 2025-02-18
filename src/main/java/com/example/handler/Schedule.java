@@ -42,7 +42,7 @@ public class Schedule {
 
         LocalDate lastDay = museumService.getLastDay();
 
-        String answer = "";
+        String answer = lastDay + "\n";
         int number = 1;
         int count = 0;
 

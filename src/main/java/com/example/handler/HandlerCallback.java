@@ -18,7 +18,6 @@ import com.example.constance.museum.MuseumEnum;
 import com.example.constance.museum.MuseumInfo;
 import com.example.constance.info.tracks.TracksTrams;
 import com.example.constance.info.tracks.TracksTrolls;
-import com.example.constance.info.vacancy.Specification;
 import com.example.registration.ComplaintRegistration;
 import com.example.registration.MuseumRegistration;
 import lombok.RequiredArgsConstructor;
@@ -218,7 +217,8 @@ public class HandlerCallback {
             List<Complaint> byChatId = complaintService.findByChatId(chatId);
             Complaint complaint = byChatId.get(byChatId.size() - 1);
 
-            EmailSender.sendEmailWithAttachment("info@oget.od.ua",
+         //   EmailSender.sendEmailWithAttachment("info@oget.od.ua",
+            EmailSender.sendEmailWithAttachment("anna.zadoiko@gmail.com",
                     "Скарга",
                     complaint.getFullName() + "\n" + complaint.getPhoneNumber() + "\n" + complaint.getText());
 

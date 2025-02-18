@@ -121,11 +121,12 @@ public class TelegramBot extends TelegramLongPollingBot{
             String fileUrl = "https://api.telegram.org/file/bot" + getBotToken() + "/" + telegramFile.getFilePath();
             String localFilePath = EmailSender.downloadFile(fileUrl, "photo.jpg");
 
-            EmailSender.sendEmailWithAttachment("info@oget.od.ua", "Скарга", text, localFilePath);
-            sendMessage(update.getMessage().getChatId(), "Фото успешно отправлено на email!");
+          //  EmailSender.sendEmailWithAttachment("info@oget.od.ua", "Скарга", text, localFilePath);
+            EmailSender.sendEmailWithAttachment("anna.zadoiko@gmail.com", "Скарга", text, localFilePath);
+            sendMessage(update.getMessage().getChatId(), Complain.STEP_7.getText());
         } catch (Exception e) {
             e.printStackTrace();
-            sendMessage(update.getMessage().getChatId(), "Ошибка отправки фото: " + e.getMessage());
+            sendMessage(update.getMessage().getChatId(), "Помилка у відправки фото: " + e.getMessage());
         }
     }
 

@@ -5,7 +5,6 @@ import com.example.constance.Function;
 import com.example.constance.complaint.Complain;
 import com.example.constance.info.vacancy.Vacancy;
 import com.example.constance.rent.Rent;
-import com.example.feature.complaint.ComplaintService;
 import com.example.feature.museum.Museum;
 import com.example.feature.museum.MuseumService;
 import com.example.feature.user.UserService;
