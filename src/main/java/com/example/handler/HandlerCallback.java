@@ -217,8 +217,7 @@ public class HandlerCallback {
             List<Complaint> byChatId = complaintService.findByChatId(chatId);
             Complaint complaint = byChatId.get(byChatId.size() - 1);
 
-         //   EmailSender.sendEmailWithAttachment("info@oget.od.ua",
-            EmailSender.sendEmailWithAttachment("anna.zadoiko@gmail.com",
+            EmailSender.sendEmailWithAttachment("info@oget.od.ua",
                     "Скарга",
                     complaint.getFullName() + "\n" + complaint.getPhoneNumber() + "\n" + complaint.getText());
 
