@@ -53,8 +53,8 @@ public class HandlerCallback {
 
                 case REGISTRATION ->{
                     Museum museum = museumService.getById(1L);
-                    String textClose = Registration.STEP_9.getText() + "\n" + Registration.STEP_6.getText() + "\n" + Registration.STEP_7.getText();
-                    String textOpen =  Registration.STEP_1.getText() + museum.getDate() + " на 12:00?";
+                    String textClose = Registration.STEP_9.getText() + "\n" + Registration.STEP_10.getText();
+                    String textOpen =  Registration.STEP_1.getText() + museum.getDate().getDayOfMonth() + "." + museum.getDate().getMonth() + " на 12:00?";
 
                     if (museum.isClose()){
                         bot.executeEditMessage(textClose, chatId, messageId, BackButton.getButtons("BACK_MUSEUM"));
@@ -189,22 +189,23 @@ public class HandlerCallback {
         }
     }
 
+    @SneakyThrows
     public void handlerOfYesOrNoComplaint(Update update, TelegramBot bot){
         String data = update.getCallbackQuery().getData();
         Long chatId = update.getCallbackQuery().getMessage().getChatId();
-        long messageId = update.getCallbackQuery().getMessage().getMessageId();
+
 
         if (data.equals("YES_COMPLAINT")){
             Complaint complaint = new Complaint();
             complaint.setChatId(chatId);
 
             complaintService.save(complaint);
-
             complaintRegistration.startRegistration(chatId, bot);
         }
 
-//        if (data.equals("NO_COMPLAINT")){
-//        }
+        if (data.equals("NO_COMPLAINT")){
+            bot.sendMessage(chatId, "Гарного Вам дня!");
+        }
     }
 
     @SneakyThrows

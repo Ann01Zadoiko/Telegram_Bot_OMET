@@ -73,7 +73,7 @@ public class MuseumRegistration {
 
                     userReg.setText("Количество человек: " + count);
 
-                    bot.sendMessage(chatId, Registration.STEP_8.getText());
+                    bot.sendMessage(chatId, Registration.STEP_8.getText() + "\n" + Registration.STEP_7.getText());
                 } catch (NumberFormatException e) {
                     bot.sendMessage(chatId, "❌ Пожалуйста, введите число.");
                     return;

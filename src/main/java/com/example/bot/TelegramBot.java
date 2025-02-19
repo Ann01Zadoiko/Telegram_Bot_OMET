@@ -3,7 +3,6 @@ package com.example.bot;
 import com.example.config.BotConfig;
 import com.example.constance.complaint.Complain;
 import com.example.email.EmailSender;
-import com.example.feature.complaint.Complaint;
 import com.example.feature.complaint.ComplaintService;
 import com.example.feature.museum.MuseumService;
 import com.example.feature.user.UserService;
@@ -11,6 +10,7 @@ import com.example.feature.vacancy.VacancyService;
 import com.example.handler.BotHandler;
 import com.example.handler.HandlerCallback;
 import com.example.handler.HandlerMessage;
+import com.example.handler.HandlerPhoto;
 import com.example.handler.button.*;
 import com.example.registration.ComplaintRegistration;
 import com.example.registration.MuseumRegistration;
@@ -22,32 +22,30 @@ import org.springframework.stereotype.Component;
 import org.telegram.telegrambots.bots.TelegramLongPollingBot;
 import org.telegram.telegrambots.meta.api.methods.AnswerCallbackQuery;
 import org.telegram.telegrambots.meta.api.methods.GetFile;
-import org.telegram.telegrambots.meta.api.methods.commands.SetMyCommands;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.methods.send.SendPhoto;
 import org.telegram.telegrambots.meta.api.methods.updatingmessages.EditMessageText;
 import org.telegram.telegrambots.meta.api.objects.*;
-import org.telegram.telegrambots.meta.api.objects.commands.BotCommand;
-import org.telegram.telegrambots.meta.api.objects.commands.scope.BotCommandScopeDefault;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.InlineKeyboardMarkup;
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 
 import java.io.File;
-import java.util.ArrayList;
 import java.util.List;
 
+@RequiredArgsConstructor
 @Slf4j
 @Component
 public class TelegramBot extends TelegramLongPollingBot{
 
     private final BotConfig config;
-    private final MuseumService museumService;
-    private final UserService userService;
-    private final ComplaintService complaintService;
+//    private final MuseumService museumService;
+//    private final UserService userService;
+//    private final ComplaintService complaintService;
     private final UserStateManager stateManager;
-    private final MuseumRegistration museumRegistration;
-    private final ComplaintRegistration complaintRegistration;
-    private final VacancyService vacancyService;
+//    private final MuseumRegistration museumRegistration;
+//    private final ComplaintRegistration complaintRegistration;
+//    private final VacancyService vacancyService;
+    private final BotHandler botHandler;
 
     @Override
     public String getBotUsername() {
@@ -60,36 +58,19 @@ public class TelegramBot extends TelegramLongPollingBot{
     }
 
     @SneakyThrows
-    public TelegramBot(BotConfig config, MuseumService museumService, UserService userService, ComplaintService complaintService,
-                       UserStateManager stateManager, MuseumRegistration museumRegistration,
-                       ComplaintRegistration complaintRegistration, VacancyService vacancyService) {
-        this.config = config;
-        this.museumService = museumService;
-        this.userService = userService;
-        this.complaintService = complaintService;
-        this.stateManager = stateManager;
-        this.museumRegistration = museumRegistration;
-        this.complaintRegistration = complaintRegistration;
-        this.vacancyService = vacancyService;
-
-        List<BotCommand> listofCommands = new ArrayList<>();
-        listofCommands.add(new BotCommand("/help", "Пояснення дій у боті "));
-        this.execute(new SetMyCommands(listofCommands, new BotCommandScopeDefault(), null));
-    }
-
-    @SneakyThrows
     public void onUpdateReceived(Update update) {
-        BotHandler botHandler = new BotHandler(
-                new HandlerCallback(museumService, museumRegistration, complaintRegistration, complaintService, vacancyService),
-                new HandlerMessage(museumService, userService, vacancyService),
-                config,
-                museumService,
-                userService,
-                complaintService,
-                stateManager,
-                museumRegistration,
-                complaintRegistration,
-                vacancyService);
+//        BotHandler botHandler = new BotHandler(
+//                new HandlerCallback(museumService, museumRegistration, complaintRegistration, complaintService, vacancyService),
+//                new HandlerMessage(museumService, userService, vacancyService),
+//                config,
+//                museumService,
+//                userService,
+//                complaintService,
+//                stateManager,
+//                museumRegistration,
+//                complaintRegistration,
+//                vacancyService,
+//                new HandlerPhoto(complaintService));
 
         if (update.hasMessage() && update.getMessage().hasText()) {
             botHandler.answerToMessage(update, stateManager);
@@ -99,23 +80,27 @@ public class TelegramBot extends TelegramLongPollingBot{
             botHandler.answerToCallback(update);
         }
 
-        if (update.hasMessage() && update.getMessage().hasPhoto()){
-            List<Complaint> byChatId = complaintService.findByChatId(update.getMessage().getChatId());
-            Complaint complaint = byChatId.get(byChatId.size() - 1);
-
-            processPhotoAndSendEmail(update,
-                    complaint.getFullName() + "\n" + complaint.getPhoneNumber() + "\n" + complaint.getText());
-
-            sendMessage(update.getMessage().getChatId(), Complain.STEP_7.getText());
+        if (update.hasMessage() && (update.getMessage().hasPhoto() || update.getMessage().hasDocument())){
+            botHandler.answerToPhoto(update);
         }
     }
 
     @SneakyThrows
     public void processPhotoAndSendEmail(Update update, String text) {
         try {
-            List<PhotoSize> photos = update.getMessage().getPhoto();
-            PhotoSize bestPhoto = photos.get(photos.size() - 1);
-            String fileId = bestPhoto.getFileId();
+            String fileId = "";
+
+            if (update.getMessage().hasDocument()){
+                PhotoSize thumb = update.getMessage().getDocument().getThumb();
+                fileId = thumb.getFileId();
+            }
+
+            if (update.getMessage().hasPhoto()){
+                List<PhotoSize> photos = update.getMessage().getPhoto();
+                PhotoSize bestPhoto = photos.get(photos.size() - 1);
+                fileId = bestPhoto.getFileId();
+            }
+
 
             org.telegram.telegrambots.meta.api.objects.File telegramFile = execute(new GetFile(fileId));
             String fileUrl = "https://api.telegram.org/file/bot" + getBotToken() + "/" + telegramFile.getFilePath();

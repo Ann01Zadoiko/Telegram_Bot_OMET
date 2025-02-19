@@ -116,24 +116,6 @@ public class HandlerMessage {
         }
     }
 
-    @SneakyThrows
-    public void handlerOfHelp(Update update, TelegramBot bot){
-        Message message = update.getMessage();
-        Long chatId = message.getChatId();
-        String text = message.getText();
-
-        if (MessageChecker.isHelp(text) && chatId == 391736560){
-            bot.sendMessage(chatId, Function.HELP_MUSEUM);
-        }
-
-        if (MessageChecker.isHelp(text) && chatId == 391736560){
-            bot.sendMessage(chatId, Function.HELP_VACANCY);
-        }
-
-        if (MessageChecker.isHelp(text) && !(userService.existsByChatId(chatId))){
-            bot.sendMessage(chatId, Function.HELP_GENERAL);
-        }
-    }
 
     @SneakyThrows
     public void handlerOfShow(Update update, TelegramBot bot){

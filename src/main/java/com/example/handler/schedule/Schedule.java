@@ -1,13 +1,13 @@
-package com.example.handler;
+package com.example.handler.schedule;
 
 import com.example.bot.TelegramBot;
 import com.example.config.BotConfig;
 import com.example.feature.complaint.ComplaintService;
 import com.example.feature.museum.Museum;
 import com.example.feature.museum.MuseumService;
-import com.example.feature.user.User;
 import com.example.feature.user.UserService;
 import com.example.feature.vacancy.VacancyService;
+import com.example.handler.BotHandler;
 import com.example.registration.ComplaintRegistration;
 import com.example.registration.MuseumRegistration;
 import com.example.registration.UserStateManager;
@@ -24,7 +24,7 @@ import java.util.List;
 @Component
 @Slf4j
 @RequiredArgsConstructor
-public class Schedule {
+public class Schedule implements ISchedule {
 
     private final BotConfig config;
     private final MuseumService museumService;
@@ -34,8 +34,9 @@ public class Schedule {
     private final MuseumRegistration museumRegistration;
     private final ComplaintRegistration complaintRegistration;
     private final VacancyService vacancyService;
+    private final BotHandler botHandler;
     
-
+    @Override
     @SneakyThrows
     @Scheduled(cron = "0 0 18 * * *")
     public void dailyRemember() {
@@ -55,8 +56,7 @@ public class Schedule {
         }
         answer += "Всього: " + count;
 
-        new TelegramBot(config, museumService, userService, complaintService,
-                stateManager, museumRegistration, complaintRegistration, vacancyService).sendMessage(391736560, answer);
+        new TelegramBot(config, stateManager, botHandler).sendMessage(391736560, answer);
 
     }
 }
