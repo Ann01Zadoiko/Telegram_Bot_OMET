@@ -3,17 +3,8 @@ package com.example.bot;
 import com.example.config.BotConfig;
 import com.example.constance.complaint.Complain;
 import com.example.email.EmailSender;
-import com.example.feature.complaint.ComplaintService;
-import com.example.feature.museum.MuseumService;
-import com.example.feature.user.UserService;
-import com.example.feature.vacancy.VacancyService;
 import com.example.handler.BotHandler;
-import com.example.handler.HandlerCallback;
-import com.example.handler.HandlerMessage;
-import com.example.handler.HandlerPhoto;
 import com.example.handler.button.*;
-import com.example.registration.ComplaintRegistration;
-import com.example.registration.MuseumRegistration;
 import com.example.registration.UserStateManager;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
@@ -27,8 +18,6 @@ import org.telegram.telegrambots.meta.api.methods.send.SendPhoto;
 import org.telegram.telegrambots.meta.api.methods.updatingmessages.EditMessageText;
 import org.telegram.telegrambots.meta.api.objects.*;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.InlineKeyboardMarkup;
-import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
-
 import java.io.File;
 import java.util.List;
 
@@ -38,14 +27,9 @@ import java.util.List;
 public class TelegramBot extends TelegramLongPollingBot{
 
     private final BotConfig config;
-//    private final MuseumService museumService;
-//    private final UserService userService;
-//    private final ComplaintService complaintService;
     private final UserStateManager stateManager;
-//    private final MuseumRegistration museumRegistration;
-//    private final ComplaintRegistration complaintRegistration;
-//    private final VacancyService vacancyService;
     private final BotHandler botHandler;
+    private static final String LOG = "Reply sent: {}\nBy user: {}";
 
     @Override
     public String getBotUsername() {
@@ -59,18 +43,6 @@ public class TelegramBot extends TelegramLongPollingBot{
 
     @SneakyThrows
     public void onUpdateReceived(Update update) {
-//        BotHandler botHandler = new BotHandler(
-//                new HandlerCallback(museumService, museumRegistration, complaintRegistration, complaintService, vacancyService),
-//                new HandlerMessage(museumService, userService, vacancyService),
-//                config,
-//                museumService,
-//                userService,
-//                complaintService,
-//                stateManager,
-//                museumRegistration,
-//                complaintRegistration,
-//                vacancyService,
-//                new HandlerPhoto(complaintService));
 
         if (update.hasMessage() && update.getMessage().hasText()) {
             botHandler.answerToMessage(update, stateManager);
@@ -101,7 +73,6 @@ public class TelegramBot extends TelegramLongPollingBot{
                 fileId = bestPhoto.getFileId();
             }
 
-
             org.telegram.telegrambots.meta.api.objects.File telegramFile = execute(new GetFile(fileId));
             String fileUrl = "https://api.telegram.org/file/bot" + getBotToken() + "/" + telegramFile.getFilePath();
             String localFilePath = EmailSender.downloadFile(fileUrl, "photo.jpg");
@@ -109,7 +80,6 @@ public class TelegramBot extends TelegramLongPollingBot{
             EmailSender.sendEmailWithAttachment("info@oget.od.ua", "Скарга", text, localFilePath);
             sendMessage(update.getMessage().getChatId(), Complain.STEP_7.getText());
         } catch (Exception e) {
-            e.printStackTrace();
             sendMessage(update.getMessage().getChatId(), "Помилка у відправки фото: " + e.getMessage());
         }
     }
@@ -126,24 +96,21 @@ public class TelegramBot extends TelegramLongPollingBot{
 
         answerCallback(callbackQuery);
 
-        log.info("Reply sent: " + sendMessage.getText() + "\nBy user: " + sendMessage.getChatId());
+        log.info(LOG, sendMessage.getText(), sendMessage.getChatId());
     }
 
+    @SneakyThrows
     public void answerCallback(CallbackQuery callbackQuery) {
         AnswerCallbackQuery answer = new AnswerCallbackQuery();
         answer.setCallbackQueryId(callbackQuery.getId());
         answer.setShowAlert(false); // true, если хотите показать всплывающее окно
 
-        try {
-            execute(answer);
-        } catch (TelegramApiException e) {
-            e.printStackTrace();
-        }
+        execute(answer);
     }
 
     //send message for user
     @SneakyThrows
-    public void sendMessage(long chatId, String text) throws TelegramApiException {
+    public void sendMessage(long chatId, String text) {
         SendMessage sendMessage = SendMessage
                 .builder()
                 .chatId(chatId)
@@ -152,7 +119,7 @@ public class TelegramBot extends TelegramLongPollingBot{
                 .build();
         execute(sendMessage);
 
-        log.info("Reply sent: " + sendMessage.getText() + "\nBy user: " + sendMessage.getChatId());
+        log.info(LOG, sendMessage.getText(), sendMessage.getChatId());
     }
 
     @SneakyThrows
@@ -178,7 +145,7 @@ public class TelegramBot extends TelegramLongPollingBot{
                 .build();
         execute(sendMessage);
 
-        log.info("Reply sent: " + sendMessage.getText() + "\nBy user: " + sendMessage.getChatId());
+        log.info(LOG, sendMessage.getText(), sendMessage.getChatId());
     }
 
     @SneakyThrows
@@ -192,7 +159,7 @@ public class TelegramBot extends TelegramLongPollingBot{
                 .build();
         execute(editMessageText);
 
-        log.info("Reply sent: " + editMessageText.getText() + "\nBy user: " + editMessageText.getChatId());
+        log.info(LOG, editMessageText.getText(), editMessageText.getChatId());
     }
 
     @SneakyThrows

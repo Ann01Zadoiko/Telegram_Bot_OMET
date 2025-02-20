@@ -2,14 +2,9 @@ package com.example.handler.schedule;
 
 import com.example.bot.TelegramBot;
 import com.example.config.BotConfig;
-import com.example.feature.complaint.ComplaintService;
 import com.example.feature.museum.Museum;
 import com.example.feature.museum.MuseumService;
-import com.example.feature.user.UserService;
-import com.example.feature.vacancy.VacancyService;
 import com.example.handler.BotHandler;
-import com.example.registration.ComplaintRegistration;
-import com.example.registration.MuseumRegistration;
 import com.example.registration.UserStateManager;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
@@ -28,12 +23,7 @@ public class Schedule implements ISchedule {
 
     private final BotConfig config;
     private final MuseumService museumService;
-    private final UserService userService;
-    private final ComplaintService complaintService;
     private final UserStateManager stateManager;
-    private final MuseumRegistration museumRegistration;
-    private final ComplaintRegistration complaintRegistration;
-    private final VacancyService vacancyService;
     private final BotHandler botHandler;
     
     @Override

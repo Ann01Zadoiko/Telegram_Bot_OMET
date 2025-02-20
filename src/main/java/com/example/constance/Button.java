@@ -1,4 +1,4 @@
-package com.example.handler.button;
+package com.example.constance;
 
 public enum Button {
     RENT("Оренда"),

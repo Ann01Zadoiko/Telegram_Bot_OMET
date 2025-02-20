@@ -2,9 +2,8 @@ package com.example.handler;
 
 import com.example.constance.Function;
 import com.example.constance.info.GeneralInfo;
-import com.example.constance.info.vacancy.Specification;
 import com.example.constance.museum.MuseumEnum;
-import com.example.handler.button.Button;
+import com.example.constance.Button;
 
 public class MessageChecker {
 

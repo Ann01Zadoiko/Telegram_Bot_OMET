@@ -1,6 +1,7 @@
 package com.example.handler;
 
 import com.example.bot.TelegramBot;
+import com.example.constance.Button;
 import com.example.constance.complaint.Complain;
 import com.example.constance.info.GeneralInfo;
 import com.example.constance.info.Study;
@@ -25,6 +26,7 @@ import lombok.SneakyThrows;
 import org.springframework.stereotype.Service;
 import org.telegram.telegrambots.meta.api.objects.Update;
 
+import java.time.format.DateTimeFormatter;
 import java.util.List;
 
 @RequiredArgsConstructor
@@ -52,9 +54,12 @@ public class HandlerCallback {
                     bot.sendMiniApp(chatId, LinkButtons.createLinksMuseumButtons(), "Соціальні мережі", messageId, update.getCallbackQuery());
 
                 case REGISTRATION ->{
+                    // DateTimeFormatter instance to be provided to the API
+                    DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd.MM");
+
                     Museum museum = museumService.getById(1L);
                     String textClose = Registration.STEP_9.getText() + "\n" + Registration.STEP_10.getText();
-                    String textOpen =  Registration.STEP_1.getText() + museum.getDate().getDayOfMonth() + "." + museum.getDate().getMonth() + " на 12:00?";
+                    String textOpen =  Registration.STEP_1.getText() + museum.getDate().format(formatter) + " на 12:00?";
 
                     if (museum.isClose()){
                         bot.executeEditMessage(textClose, chatId, messageId, BackButton.getButtons("BACK_MUSEUM"));

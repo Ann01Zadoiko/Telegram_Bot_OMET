@@ -2,10 +2,6 @@ package com.example.handler;
 
 import com.example.bot.TelegramBot;
 import com.example.config.BotConfig;
-import com.example.feature.complaint.ComplaintService;
-import com.example.feature.museum.MuseumService;
-import com.example.feature.user.UserService;
-import com.example.feature.vacancy.VacancyService;
 import com.example.registration.ComplaintRegistration;
 import com.example.registration.MuseumRegistration;
 import com.example.registration.RegistrationType;
@@ -14,7 +10,6 @@ import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
-
 import org.telegram.telegrambots.meta.api.objects.Update;
 
 @Slf4j
@@ -25,19 +20,15 @@ public class BotHandler {
     private final HandlerCallback callback;
     private final HandlerMessage message;
     private final BotConfig config;
- //   private final MuseumService museumService;
- //   private final UserService userService;
- //   private final ComplaintService complaintService;
     private final UserStateManager stateManager;
     private final MuseumRegistration museumRegistration;
     private final ComplaintRegistration complaintRegistration;
-//    private final VacancyService vacancyService;
     private final HandlerPhoto handlerOfPhoto;
 
     public void answerToCallback(Update update){
-      //  TelegramBot bot = new TelegramBot(config, museumService, userService, complaintService, stateManager, museumRegistration, complaintRegistration, vacancyService);
-
-        TelegramBot bot = new TelegramBot(config, stateManager,
+        TelegramBot bot = new TelegramBot(
+                config,
+                stateManager,
                 new BotHandler(callback,message,config, stateManager, museumRegistration, complaintRegistration, handlerOfPhoto));
 
         callback.handlerOfGeneralInfo(update, bot);
@@ -51,9 +42,9 @@ public class BotHandler {
 
     @SneakyThrows
     public void answerToMessage(Update update, UserStateManager stateManager){
-     //   TelegramBot bot = new TelegramBot(config, museumService, userService, complaintService, stateManager, museumRegistration, complaintRegistration, vacancyService);
-
-        TelegramBot bot = new TelegramBot(config, stateManager,
+        TelegramBot bot = new TelegramBot(
+                config,
+                stateManager,
                 new BotHandler(callback,message,config, stateManager, museumRegistration, complaintRegistration, handlerOfPhoto));
 
         // Если пользователь в процессе регистрации, обрабатываем только нужный тип регистрации
@@ -91,10 +82,11 @@ public class BotHandler {
     }
 
     public void answerToPhoto(Update update){
-       //TelegramBot bot = new TelegramBot(config, museumService, userService, complaintService, stateManager, museumRegistration, complaintRegistration, vacancyService);
-
-        TelegramBot bot = new TelegramBot(config, stateManager,
+        TelegramBot bot = new TelegramBot(
+                config,
+                stateManager,
                 new BotHandler(callback,message,config, stateManager, museumRegistration, complaintRegistration, handlerOfPhoto));
+
         handlerOfPhoto.handlerOfPhoto(update, bot);
     }
 
