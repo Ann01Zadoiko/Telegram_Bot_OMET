@@ -225,7 +225,7 @@ public class HandlerCallback {
 
             EmailSender.sendEmailWithAttachment("info@oget.od.ua",
                     "Скарга",
-                    complaint.getFullName() + "\n" + complaint.getPhoneNumber() + "\n" + complaint.getText());
+                    complaint.getFullName() + "\n" + complaint.getPhoneNumber() + "\n" + complaint.getText(), chatId);
 
             bot.sendMessage(chatId,  Complain.STEP_7.getText(), messageId, update.getCallbackQuery());
         }

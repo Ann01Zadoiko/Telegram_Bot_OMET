@@ -59,6 +59,8 @@ public class TelegramBot extends TelegramLongPollingBot{
 
     @SneakyThrows
     public void processPhotoAndSendEmail(Update update, String text) {
+        Long chatId = update.getMessage().getChatId();
+
         try {
             String fileId = "";
 
@@ -77,10 +79,10 @@ public class TelegramBot extends TelegramLongPollingBot{
             String fileUrl = "https://api.telegram.org/file/bot" + getBotToken() + "/" + telegramFile.getFilePath();
             String localFilePath = EmailSender.downloadFile(fileUrl, "photo.jpg");
 
-            EmailSender.sendEmailWithAttachment("info@oget.od.ua", "Скарга", text, localFilePath);
-            sendMessage(update.getMessage().getChatId(), Complain.STEP_7.getText());
+            EmailSender.sendEmailWithAttachment("info@oget.od.ua", "Скарга", text, localFilePath, chatId);
+            sendMessage(chatId, Complain.STEP_7.getText());
         } catch (Exception e) {
-            sendMessage(update.getMessage().getChatId(), "Помилка у відправки фото: " + e.getMessage());
+            sendMessage(chatId, "Помилка у відправки фото: " + e.getMessage());
         }
     }
 

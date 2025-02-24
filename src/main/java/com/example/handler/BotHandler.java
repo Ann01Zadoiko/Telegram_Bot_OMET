@@ -2,6 +2,7 @@ package com.example.handler;
 
 import com.example.bot.TelegramBot;
 import com.example.config.BotConfig;
+import com.example.email.EmailSender;
 import com.example.registration.ComplaintRegistration;
 import com.example.registration.MuseumRegistration;
 import com.example.registration.RegistrationType;
@@ -24,6 +25,7 @@ public class BotHandler {
     private final MuseumRegistration museumRegistration;
     private final ComplaintRegistration complaintRegistration;
     private final HandlerPhoto handlerOfPhoto;
+
 
     public void answerToCallback(Update update){
         TelegramBot bot = new TelegramBot(

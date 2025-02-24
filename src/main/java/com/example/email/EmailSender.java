@@ -1,5 +1,13 @@
 package com.example.email;
 
+import com.example.bot.TelegramBot;
+import com.example.config.BotConfig;
+import com.example.constance.complaint.Complain;
+import com.example.handler.BotHandler;
+import com.example.registration.UserStateManager;
+import lombok.RequiredArgsConstructor;
+import org.springframework.stereotype.Service;
+
 import javax.mail.*;
 import javax.mail.internet.*;
 import java.io.File;
@@ -10,9 +18,15 @@ import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.Properties;
 
+@Service
+@RequiredArgsConstructor
 public class EmailSender {
 
-    public static void sendEmailWithAttachment(String recipient, String subject, String text) {
+    private final BotConfig config;
+    private final UserStateManager stateManager;
+    private final BotHandler botHandler;
+
+    public static void sendEmailWithAttachment(String recipient, String subject, String text, Long chatId) {
         final String senderEmail = "the.rain.frog01@gmail.com"; // Укажите свой email
         final String senderPassword = "gadi tshe lfjc voer"; // Пароль или app-specific пароль
 
@@ -56,13 +70,14 @@ public class EmailSender {
             // Отправка письма
             Transport.send(message);
 
+
         } catch (Exception e) {
             e.printStackTrace();
 
         }
     }
 
-    public static void sendEmailWithAttachment(String recipient, String subject, String text, String filePath) {
+    public static void sendEmailWithAttachment(String recipient, String subject, String text, String filePath, Long chatId) {
         final String senderEmail = "the.rain.frog01@gmail.com"; // Укажите свой email
         final String senderPassword = "gadi tshe lfjc voer"; // Пароль или app-specific пароль
 
@@ -105,6 +120,7 @@ public class EmailSender {
 
             // Отправка письма
             Transport.send(message);
+
 
 
         } catch (Exception e) {

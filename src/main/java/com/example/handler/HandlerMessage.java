@@ -8,6 +8,7 @@ import com.example.constance.info.vacancy.Vacancy;
 import com.example.constance.rent.Rent;
 import com.example.feature.museum.Museum;
 import com.example.feature.museum.MuseumService;
+import com.example.feature.user.User;
 import com.example.feature.user.UserService;
 import com.example.feature.vacancy.VacancyService;
 import com.example.handler.button.*;
@@ -161,7 +162,8 @@ public class HandlerMessage {
         Long chatId = message.getChatId();
         String text = message.getText();
 
-        if (text.equals("/vacancy")){
+
+        if (text.equals("/vacancy") && userService.existsByChatId(chatId)){
             bot.sendMessage(chatId, Vacancy.STEP_1.getText(), VacancyButtons.getButtonsSpecification("WITH_VACANCY", "WITHOUT_VACANCY"));
         }
     }
@@ -172,7 +174,7 @@ public class HandlerMessage {
         Long chatId = message.getChatId();
         String text = message.getText();
 
-        if (text.split("\n").length > 2){
+        if (text.split("\n").length > 2  && userService.existsByChatId(chatId)){
             com.example.feature.vacancy.Vacancy vacancy = vacancyService.getAll().get(vacancyService.getAll().size() - 1);
             vacancy.setName(text);
 

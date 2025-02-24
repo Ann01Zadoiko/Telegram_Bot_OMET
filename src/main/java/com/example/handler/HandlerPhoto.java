@@ -26,7 +26,6 @@ public class HandlerPhoto {
         bot.processPhotoAndSendEmail(update,
                 complaint.getFullName() + "\n" + complaint.getPhoneNumber() + "\n" + complaint.getText());
 
-        bot.sendMessage(update.getMessage().getChatId(), Complain.STEP_7.getText());
     }
 
 }

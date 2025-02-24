@@ -2,6 +2,7 @@ package com.example.handler.schedule;
 
 import com.example.bot.TelegramBot;
 import com.example.config.BotConfig;
+import com.example.email.EmailSender;
 import com.example.feature.museum.Museum;
 import com.example.feature.museum.MuseumService;
 import com.example.handler.BotHandler;
@@ -25,7 +26,7 @@ public class Schedule implements ISchedule {
     private final MuseumService museumService;
     private final UserStateManager stateManager;
     private final BotHandler botHandler;
-    
+
     @Override
     @SneakyThrows
     @Scheduled(cron = "0 0 18 * * *")
@@ -47,6 +48,7 @@ public class Schedule implements ISchedule {
         answer += "Всього: " + count;
 
         new TelegramBot(config, stateManager, botHandler).sendMessage(391736560, answer);
+  //      new TelegramBot(config, stateManager, botHandler).sendMessage(310615920, answer);
 
     }
 }
