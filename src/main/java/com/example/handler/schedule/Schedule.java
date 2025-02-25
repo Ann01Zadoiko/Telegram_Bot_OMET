@@ -48,7 +48,7 @@ public class Schedule implements ISchedule {
         answer += "Всього: " + count;
 
         new TelegramBot(config, stateManager, botHandler).sendMessage(391736560, answer);
-  //      new TelegramBot(config, stateManager, botHandler).sendMessage(310615920, answer);
+        new TelegramBot(config, stateManager, botHandler).sendMessage(310615920, answer);
 
     }
 }
