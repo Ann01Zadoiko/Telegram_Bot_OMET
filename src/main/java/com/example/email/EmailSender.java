@@ -1,10 +1,6 @@
 package com.example.email;
 
-import com.example.bot.TelegramBot;
-import com.example.config.BotConfig;
-import com.example.constance.complaint.Complain;
-import com.example.handler.BotHandler;
-import com.example.registration.UserStateManager;
+
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -21,10 +17,6 @@ import java.util.Properties;
 @Service
 @RequiredArgsConstructor
 public class EmailSender {
-
-    private final BotConfig config;
-    private final UserStateManager stateManager;
-    private final BotHandler botHandler;
 
     public static void sendEmailWithAttachment(String recipient, String subject, String text, Long chatId) {
         final String senderEmail = "the.rain.frog01@gmail.com"; // Укажите свой email

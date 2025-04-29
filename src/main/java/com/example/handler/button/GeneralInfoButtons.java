@@ -45,8 +45,8 @@ public class GeneralInfoButtons {
         //tracks
         InlineKeyboardButton button2 = InlineKeyboardButton
                 .builder()
-                .text(GeneralInfo.TRACKS.getFullName())
-                .callbackData(GeneralInfo.TRACKS.name())
+                .text(GeneralInfo.RENT.getFullName())
+                .callbackData(GeneralInfo.RENT.name())
                 .build();
 
         List<InlineKeyboardButton> buttons2 = new ArrayList<>();

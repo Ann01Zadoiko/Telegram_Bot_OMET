@@ -20,6 +20,6 @@ public class User {
     @Column(name = "permission")
     private int permission;
 
-    @Column(name = "username")
+    @Column(name = "role")
     private String username;
 }

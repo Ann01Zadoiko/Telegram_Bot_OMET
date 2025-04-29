@@ -49,8 +49,6 @@ public class MessageChecker {
         return (value.equals(Function.CLOSE));
     }
 
-    public static boolean isHelp(String value){
-        return value.equals(Function.HELP);
-    }
+
 
 }

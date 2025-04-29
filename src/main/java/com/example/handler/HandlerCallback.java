@@ -2,24 +2,24 @@ package com.example.handler;
 
 import com.example.bot.TelegramBot;
 import com.example.constance.Button;
-import com.example.constance.complaint.Complain;
 import com.example.constance.info.GeneralInfo;
 import com.example.constance.info.Study;
-import com.example.constance.info.vacancy.Vacancy;
 import com.example.constance.info.vacancy.VacancyText;
 import com.example.constance.museum.Registration;
-import com.example.email.EmailSender;
-import com.example.feature.complaint.Complaint;
+import com.example.constance.rent.Rent;
 import com.example.feature.complaint.ComplaintService;
 import com.example.feature.museum.Museum;
 import com.example.feature.museum.MuseumService;
+import com.example.feature.stop.Stop;
+import com.example.feature.stop.StopService;
+import com.example.feature.transport.Transport;
+import com.example.feature.transport.TransportService;
+import com.example.feature.user.UserService;
 import com.example.feature.vacancy.VacancyService;
 import com.example.handler.button.*;
 import com.example.constance.museum.MuseumEnum;
 import com.example.constance.museum.MuseumInfo;
-import com.example.constance.info.tracks.TracksTrams;
-import com.example.constance.info.tracks.TracksTrolls;
-import com.example.registration.ComplaintRegistration;
+import com.example.printer.TrackPrinter;
 import com.example.registration.MuseumRegistration;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
@@ -27,6 +27,7 @@ import org.springframework.stereotype.Service;
 import org.telegram.telegrambots.meta.api.objects.Update;
 
 import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
 import java.util.List;
 
 @RequiredArgsConstructor
@@ -35,9 +36,12 @@ public class HandlerCallback {
 
     private final MuseumService museumService;
     private final MuseumRegistration museumRegistration;
-    private final ComplaintRegistration complaintRegistration;
+   // private final ComplaintRegistration complaintRegistration;
     private final ComplaintService complaintService;
     private final VacancyService vacancyService;
+    private final TransportService transportService;
+    private final StopService stopService;
+    private final UserService userService;
 
     @SneakyThrows
     public void handlerOfMuseum(Update update, TelegramBot bot){
@@ -88,8 +92,12 @@ public class HandlerCallback {
                 case VACANCY ->
                     bot.sendMiniApp(chatId, VacancyButtons.getButtonsSpecification("WITH_EXPERIENCE", "WITHOUT_EXPERIENCE"), "Вакансії", messageId, update.getCallbackQuery());
 
-                case TRACKS ->
-                    bot.sendMiniApp(chatId, TracksButtons.getButtonsTracks(), "Маршрут", messageId, update.getCallbackQuery());
+                case RENT ->{
+                    for (Rent rent: Rent.values()){
+                        bot.sendMessage(chatId, rent.getDescription());
+                        bot.sendPhoto(chatId, rent.getPhoto());
+                    }
+                }
 
             }
         }
@@ -101,26 +109,10 @@ public class HandlerCallback {
         Long chatId = update.getCallbackQuery().getMessage().getChatId();
         long messageId = update.getCallbackQuery().getMessage().getMessageId();
 
-        if (data.equals("WITH_VACANCY") && chatId == 391736560){
-            com.example.feature.vacancy.Vacancy vacancy = new com.example.feature.vacancy.Vacancy();
-            vacancy.setSpecification("З досвідом роботи");
-            vacancyService.save(vacancy);
-
-            bot.sendMessage(chatId, Vacancy.STEP_2.getText());
-        }
-
-        if (data.equals("WITHOUT_VACANCY") && chatId == 391736560) {
-            com.example.feature.vacancy.Vacancy vacancy = new com.example.feature.vacancy.Vacancy();
-            vacancy.setSpecification("Без досвіду роботи");
-            vacancyService.save(vacancy);
-
-            bot.sendMessage(chatId, Vacancy.STEP_2.getText());
-        }
-
         if (data.equals("WITH_EXPERIENCE")){
             String text = "";
-            List<com.example.feature.vacancy.Vacancy> withEx = vacancyService.getBySpecification("З досвідом роботи");
-            String [] with = withEx.get(withEx.size()-1).getName().split("\n");
+            com.example.feature.vacancy.Vacancy withEx = vacancyService.getBySpecification("З досвідом роботи");
+            String [] with = withEx.getName().split("\n");
 
             for (int i = 0; i < with.length; i++) {
                 text += "- " + with[i] + "\n";
@@ -131,8 +123,8 @@ public class HandlerCallback {
 
         if (data.equals("WITHOUT_EXPERIENCE")){
             String text = "";
-            List<com.example.feature.vacancy.Vacancy> withput = vacancyService.getBySpecification("Без досвіду роботи");
-            String [] with = withput.get(withput.size()-1).getName().split("\n");
+            com.example.feature.vacancy.Vacancy withput = vacancyService.getBySpecification("Без досвіду роботи");
+            String [] with = withput.getName().split("\n");
 
             for (int i = 0; i < with.length; i++) {
                 text += "- " + with[i] + "\n";
@@ -142,19 +134,24 @@ public class HandlerCallback {
         }
 
         if (data.equals("Трамвай")){
-            String text = "";
-            for (TracksTrams vacancy: TracksTrams.values()){
-                text += vacancy.getNumber() + ": " + vacancy.getStartEnd()  + "\n";
+
+            List<String> numbers = transportService.getNumbersByType("трамвай");
+            List<String> numbCall = new ArrayList<>();
+            for (String number: numbers){
+                numbCall.add(number + " trambus");
             }
-            bot.executeEditMessage(text, chatId , messageId, BackButton.getButtons("BACK_TRACKS"));
+
+            bot.sendMiniApp(chatId, new GeneralButton().getButtons(numbers, numbCall), "Оберіть номер маршрут:", messageId, update.getCallbackQuery());
         }
 
         if (data.equals("Тролейбус")){
-            String text = "";
-            for (TracksTrolls vacancy: TracksTrolls.values()){
-                text += vacancy.getNumber() + ": " + vacancy.getStartEnd() + "\n";
+            List<String> trolls = transportService.getNumbersByType("тролейбус");
+            List<String> numbCall = new ArrayList<>();
+            for (String number: trolls){
+                numbCall.add(number + " trollbus");
             }
-            bot.executeEditMessage(text, chatId , messageId, BackButton.getButtons("BACK_TRACKS"));
+
+            bot.sendMiniApp(chatId, new GeneralButton().getButtons(trolls, numbCall), "Оберіть номер маршрут:", messageId, update.getCallbackQuery());
         }
     }
 
@@ -194,40 +191,89 @@ public class HandlerCallback {
         }
     }
 
-    @SneakyThrows
-    public void handlerOfYesOrNoComplaint(Update update, TelegramBot bot){
-        String data = update.getCallbackQuery().getData();
-        Long chatId = update.getCallbackQuery().getMessage().getChatId();
+//    @SneakyThrows
+//    public void handlerOfYesOrNoComplaint(Update update, TelegramBot bot){
+//        String data = update.getCallbackQuery().getData();
+//        Long chatId = update.getCallbackQuery().getMessage().getChatId();
+//
+//
+//        if (data.equals("YES_COMPLAINT")){
+//            Complaint complaint = new Complaint();
+//            complaint.setChatId(chatId);
+//
+//            complaintService.save(complaint);
+//            complaintRegistration.startRegistration(chatId, bot);
+//        }
+//
+//        if (data.equals("NO_COMPLAINT")){
+//            bot.sendMessage(chatId, "Гарного Вам дня!");
+//        }
+//    }
 
+//    @SneakyThrows
+//    public void handlerOfSkip(Update update, TelegramBot bot){
+//        String data = update.getCallbackQuery().getData();
+//        Long chatId = update.getCallbackQuery().getMessage().getChatId();
+//        long messageId = update.getCallbackQuery().getMessage().getMessageId();
+//
+//        if (data.equals("SKIP_PHOTO")){
+//            List<Complaint> byChatId = complaintService.findByChatId(chatId);
+//            Complaint complaint = byChatId.get(byChatId.size() - 1);
+//
+//            EmailSender.sendEmailWithAttachment("info@oget.od.ua",
+//                    "Скарга",
+//                    complaint.getFullName() + "\n" + complaint.getPhoneNumber() + "\n" + complaint.getText(), chatId);
+//
+//            bot.sendMessage(chatId,  Complain.STEP_7.getText(), messageId, update.getCallbackQuery());
+//        }
+//    }
 
-        if (data.equals("YES_COMPLAINT")){
-            Complaint complaint = new Complaint();
-            complaint.setChatId(chatId);
-
-            complaintService.save(complaint);
-            complaintRegistration.startRegistration(chatId, bot);
-        }
-
-        if (data.equals("NO_COMPLAINT")){
-            bot.sendMessage(chatId, "Гарного Вам дня!");
-        }
-    }
-
-    @SneakyThrows
-    public void handlerOfSkip(Update update, TelegramBot bot){
+    public void handlerOfTracks(Update update, TelegramBot bot){
         String data = update.getCallbackQuery().getData();
         Long chatId = update.getCallbackQuery().getMessage().getChatId();
         long messageId = update.getCallbackQuery().getMessage().getMessageId();
 
-        if (data.equals("SKIP_PHOTO")){
-            List<Complaint> byChatId = complaintService.findByChatId(chatId);
-            Complaint complaint = byChatId.get(byChatId.size() - 1);
+        if (data.contains("trollbus")){
+            String[] s = data.split(" ");
+            if (s[1].equals("trollbus")){
+                for (String number: transportService.getNumbersByType("тролейбус")){
+                    if (s[0].equals(number)){
+                        Transport byTypeAndNumber = transportService.getByTypeAndNumber("тролейбус", s[0]).get();
+                        bot.sendMiniApp(chatId, TrackButton.getButton(byTypeAndNumber), TrackPrinter.print(byTypeAndNumber), messageId,
+                                update.getCallbackQuery());
+                    }
+                }
+            }
 
-            EmailSender.sendEmailWithAttachment("info@oget.od.ua",
-                    "Скарга",
-                    complaint.getFullName() + "\n" + complaint.getPhoneNumber() + "\n" + complaint.getText(), chatId);
+        }
 
-            bot.sendMessage(chatId,  Complain.STEP_7.getText(), messageId, update.getCallbackQuery());
+        if (data.contains("trambus")){
+            String[] s = data.split(" ");
+            if (s[1].equals("trambus")){
+                for (String number: transportService.getNumbersByType("трамвай")){
+                    if (s[0].equals(number)){
+                        Transport byTypeAndNumber = transportService.getByTypeAndNumber("трамвай", s[0]).get();
+                        bot.sendMiniApp(chatId, TrackButton.getButton(byTypeAndNumber), TrackPrinter.print(byTypeAndNumber), messageId,
+                                update.getCallbackQuery());
+                    }
+                }
+            }
+
+        }
+    }
+
+    public void handlerForStops(Update update, TelegramBot bot){
+        String data = update.getCallbackQuery().getData();
+        Long chatId = update.getCallbackQuery().getMessage().getChatId();
+        long messageId = update.getCallbackQuery().getMessage().getMessageId();
+
+        if (data.startsWith("STOPS")){
+            String[] s = data.split(" ");
+            Transport byTypeAndNumber = transportService.getByTypeAndNumber(s[1], s[2]).get();
+            Stop stop = stopService.getByTransport(byTypeAndNumber);
+
+            bot.sendMessage(chatId, stop.getStopAcross(), messageId, update.getCallbackQuery());
+            bot.sendMessage(chatId, stop.getStopRightBack(), messageId, update.getCallbackQuery());
         }
     }
 

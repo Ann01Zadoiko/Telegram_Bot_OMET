@@ -2,10 +2,15 @@ package com.example.handler.schedule;
 
 import com.example.bot.TelegramBot;
 import com.example.config.BotConfig;
-import com.example.email.EmailSender;
 import com.example.feature.museum.Museum;
 import com.example.feature.museum.MuseumService;
 import com.example.handler.BotHandler;
+import com.example.handler.BotSenderService;
+import com.example.handler.command.complaint.ComplaintBotHandler;
+import com.example.handler.command.notice.NoticeBotHandler;
+import com.example.handler.command.stops.StopsBotHandler;
+import com.example.handler.command.tracks.TracksBotHandler;
+import com.example.handler.command.vacancy.VacancyBotHandler;
 import com.example.registration.UserStateManager;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
@@ -26,6 +31,12 @@ public class Schedule implements ISchedule {
     private final MuseumService museumService;
     private final UserStateManager stateManager;
     private final BotHandler botHandler;
+    private final TracksBotHandler tracksBotHandler;
+    private final StopsBotHandler stopsBotHandler;
+    private final BotSenderService botSenderService;
+    private final VacancyBotHandler vacancyBotHandler;
+    private final ComplaintBotHandler complaintBotHandler;
+    private final NoticeBotHandler noticeBotHandler;
 
     @Override
     @SneakyThrows
@@ -47,8 +58,17 @@ public class Schedule implements ISchedule {
         }
         answer += "Всього: " + count;
 
-        new TelegramBot(config, stateManager, botHandler).sendMessage(391736560, answer);
-        new TelegramBot(config, stateManager, botHandler).sendMessage(310615920, answer);
+        new TelegramBot(config,
+                stateManager,
+                botHandler,
+                tracksBotHandler,
+                stopsBotHandler,
+                botSenderService,
+                vacancyBotHandler,
+                complaintBotHandler,
+                noticeBotHandler).
+                sendMessage(391736560, answer);
+
 
     }
 }

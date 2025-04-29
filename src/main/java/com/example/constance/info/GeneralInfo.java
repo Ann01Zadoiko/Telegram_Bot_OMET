@@ -3,8 +3,8 @@ package com.example.constance.info;
 public enum GeneralInfo {
     VACANCY ("Вакансії"),
     STUDY ("Навчання"),
-    TRACKS ("Маршрути"),
-    SOCIAL_MEDIA ("Соціальні мережі");
+    SOCIAL_MEDIA ("Соціальні мережі"),
+    RENT("Оренда");
 
     private String fullName;
 

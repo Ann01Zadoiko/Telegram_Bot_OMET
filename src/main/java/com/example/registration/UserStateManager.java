@@ -4,12 +4,10 @@ import com.example.feature.complaint.ComplaintService;
 import com.example.feature.museum.MuseumService;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
-import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Service;
 
 import java.util.HashMap;
 import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
 
 @Service
 @RequiredArgsConstructor
@@ -58,9 +56,7 @@ public class UserStateManager {
         boolean hasComplaint = complaintService.existsByChatId(chatId);
         boolean hasMuseum = museumService.existsByChatId(chatId);
 
-        if (hasComplaint && !hasMuseum) {
-            return RegistrationType.COMPLAINT;
-        } else if (!hasComplaint && hasMuseum) {
+         if (!hasComplaint && hasMuseum) {
             return RegistrationType.MUSEUM;
         } else {
             return RegistrationType.UNKNOWN;

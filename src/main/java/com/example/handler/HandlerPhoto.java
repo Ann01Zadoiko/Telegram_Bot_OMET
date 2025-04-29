@@ -18,14 +18,14 @@ public class HandlerPhoto {
 
     private final ComplaintService complaintService;
 
-    @SneakyThrows
-    public void handlerOfPhoto(Update update, TelegramBot bot){
-        List<Complaint> byChatId = complaintService.findByChatId(update.getMessage().getChatId());
-        Complaint complaint = byChatId.get(byChatId.size() - 1);
-
-        bot.processPhotoAndSendEmail(update,
-                complaint.getFullName() + "\n" + complaint.getPhoneNumber() + "\n" + complaint.getText());
-
-    }
+//    @SneakyThrows
+//    public void handlerOfPhoto(Update update, TelegramBot bot){
+//        List<Complaint> byChatId = complaintService.findByChatId(update.getMessage().getChatId());
+//        Complaint complaint = byChatId.get(byChatId.size() - 1);
+//
+//        bot.processPhotoAndSendEmail(update,
+//                complaint.getFullName() + "\n" + complaint.getPhoneNumber() + "\n" + complaint.getText());
+//
+//    }
 
 }

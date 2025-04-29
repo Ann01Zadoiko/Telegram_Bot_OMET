@@ -5,10 +5,8 @@ import com.example.constance.Button;
 import com.example.constance.Function;
 import com.example.constance.complaint.Complain;
 import com.example.constance.info.vacancy.Vacancy;
-import com.example.constance.rent.Rent;
 import com.example.feature.museum.Museum;
 import com.example.feature.museum.MuseumService;
-import com.example.feature.user.User;
 import com.example.feature.user.UserService;
 import com.example.feature.vacancy.VacancyService;
 import com.example.handler.button.*;
@@ -20,6 +18,7 @@ import org.telegram.telegrambots.meta.api.objects.Message;
 import org.telegram.telegrambots.meta.api.objects.Update;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
 import java.util.List;
 
 @Slf4j
@@ -71,11 +70,8 @@ public class HandlerMessage {
         Long chatId = message.getChatId();
         String text = message.getText();
 
-        if (text.equals(Button.RENT.getFullName())){
-            for (Rent rent: Rent.values()){
-                bot.sendMessage(chatId, rent.getDescription());
-                bot.sendPhoto(chatId, rent.getPhoto());
-            }
+        if (text.equals(Button.INFO_TRACKS.getFullName())){
+            bot.sendMessage(chatId, "Оберіть тип транспортного засобу:", TracksButtons.getButtonsTracks());
         }
     }
 
@@ -147,40 +143,41 @@ public class HandlerMessage {
         }
     }
 
-    public void handlerOfComplaint(Update update, TelegramBot bot){
+//    public void handlerOfComplaint(Update update, TelegramBot bot){
+//        Message message = update.getMessage();
+//        Long chatId = message.getChatId();
+//        String text = message.getText();
+//
+//        if (text.equals("Скарги та пропозиції")) {
+//            bot.sendMessage(chatId, Complain.STEP_1.getText(), MuseumButtons.getButtonsYesOrNo("YES_COMPLAINT", "NO_COMPLAINT"));
+//        }
+//    }
+
+    public void handlerOfMuseumAndTracks(Update update, TelegramBot bot){
         Message message = update.getMessage();
         Long chatId = message.getChatId();
         String text = message.getText();
 
-        if (text.equals("Скарги та пропозиції")) {
-            bot.sendMessage(chatId, Complain.STEP_1.getText(), MuseumButtons.getButtonsYesOrNo("YES_COMPLAINT", "NO_COMPLAINT"));
+        if (text.equals("Управ муз")){
+            String answer = "/setDate (date) -- встанвлення дати\n" +
+                    "/close -- закріття записи\n" +
+                    "/show (date) -- відображення людей, які записался до екскурсії";
+
+            bot.sendMessage(chatId, answer);
         }
-    }
 
-    public void handlerOfVacancyCommand(Update update, TelegramBot bot){
-        Message message = update.getMessage();
-        Long chatId = message.getChatId();
-        String text = message.getText();
+        if (text.equals("Упр марш")){
+            String answer = "Оберіть дію:";
 
+            List<String> list = new ArrayList<>();
+            list.add("Вакансії");
+            list.add("Зупинки");
+            list.add("Маршрут");
+            list.add("Термінові повідомлення");
 
-        if (text.equals("/vacancy") && userService.existsByChatId(chatId)){
-            bot.sendMessage(chatId, Vacancy.STEP_1.getText(), VacancyButtons.getButtonsSpecification("WITH_VACANCY", "WITHOUT_VACANCY"));
+            bot.sendMessage(chatId, answer, new GeneralButton().getButtons(list, list));
         }
-    }
 
-    @SneakyThrows
-    public void handlerOfVacancyChange(Update update, TelegramBot bot){
-        Message message = update.getMessage();
-        Long chatId = message.getChatId();
-        String text = message.getText();
 
-        if (text.split("\n").length > 2  && userService.existsByChatId(chatId)){
-            com.example.feature.vacancy.Vacancy vacancy = vacancyService.getAll().get(vacancyService.getAll().size() - 1);
-            vacancy.setName(text);
-
-            vacancyService.save(vacancy);
-
-            bot.sendMessage(chatId, Vacancy.STEP_3.getText());
-        }
     }
 }

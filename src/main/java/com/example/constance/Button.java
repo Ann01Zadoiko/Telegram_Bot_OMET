@@ -1,10 +1,10 @@
 package com.example.constance;
 
 public enum Button {
-    RENT("Оренда"),
     MUSEUM("Музей"),
     COMPLAINT("Скарги та пропозиції"),
-    GENERAL_INFO("Загальна інформация");
+    GENERAL_INFO("Загальна інформация"),
+    INFO_TRACKS("Маршрути");
 
     private String fullName;
 

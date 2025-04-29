@@ -6,13 +6,7 @@ public interface IVacancyService {
 
     void save(Vacancy vacancy);
 
-    void deleteAdd();
-
-    void saveAll(List<Vacancy> vacancies);
-
-    List<Vacancy> getBySpecification(String specification);
-
-    Vacancy getByLastId();
+    Vacancy getBySpecification(String specification);
 
     List<Vacancy> getAll();
 }

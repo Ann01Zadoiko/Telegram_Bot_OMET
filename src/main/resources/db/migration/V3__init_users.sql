@@ -1,0 +1,1 @@
+insert into users(id, chat_id, permission, role) values(1, 391736560, 1, 'ADMIN');

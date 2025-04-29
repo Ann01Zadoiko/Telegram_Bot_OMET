@@ -6,6 +6,8 @@ import org.telegram.telegrambots.meta.api.objects.replykeyboard.InlineKeyboardMa
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.InlineKeyboardButton;
 import org.telegram.telegrambots.meta.api.objects.webapp.WebAppInfo;
 
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -17,7 +19,11 @@ public class LinkButtons {
 
         for (SocialMediaMuseum museum: SocialMediaMuseum.values()) {
             WebAppInfo webAppInfo = new WebAppInfo();
-            webAppInfo.setUrl(museum.getUrl());
+
+            String url = museum.getUrl();
+
+
+            webAppInfo.setUrl(url);
 
             // Привязываем к кнопке
             InlineKeyboardButton webAppButton = new InlineKeyboardButton();
