@@ -66,14 +66,14 @@ public class StopsBotHandler {
     }
 
     private void handleIdleState(Long chatId, UserSession session) {
-        if ("/stops".equals(session.getLastInput())) {
+        if ("Зупинки".equals(session.getLastInput())) {
             session.pushState(IDLE_STOP);
             session.setState(STOPS_ACTION_SELECTION);
             Map<String, String> actions = new LinkedHashMap<>();
-            actions.put("stop_add", "stop_add");
-            actions.put("stop_update", "stop_update");
-            actions.put("stop_delete", "stop_delete");
-            sender.sendCallbackKeyboard(chatId, "Выберите действие:", List.of("stop_add", "stop_update","stop_delete"), false);
+            actions.put("додати", "stop_add");
+            actions.put("оновити", "stop_update");
+            actions.put("видалити", "stop_delete");
+            sender.sendInlineKeyboard(chatId, "Оберіть дію:", actions);
 
             log.info("{} current state", session.getState().toString());
         }
@@ -83,7 +83,7 @@ public class StopsBotHandler {
         session.setPreviousAction(session.getLastInput());
         session.pushState(STOPS_ACTION_SELECTION);
         session.setState(STOP_SELECT_TYPE);
-        sender.sendCallbackKeyboard(chatId, "Выберите тип транспорта:", List.of("трамвай", "тролейбус"), false);
+        sender.sendCallbackKeyboard(chatId, "Оберіть тип транспортного засобу:", List.of("трамвай", "тролейбус"), false);
 
         log.info("{} current state", session.getState().toString());
         log.info("{} previous action", session.getPreviousAction());
@@ -97,16 +97,16 @@ public class StopsBotHandler {
 
         switch (session.getPreviousAction()) {
             case "stop_add" -> {
-                session.setState(STOP_ENTER_NAME_1);
-                sender.sendCallbackKeyboard(chatId, "Выберите номер маршрута:", numbers, false);
+                session.setState(STOP_SELECT_NUMBER);
+                sender.sendCallbackKeyboard(chatId, "Оберіть номер маршруту:", numbers, false);
             }
             case "stop_update" -> {
                 session.setState(STOP_UPDATE_SELECT_FIELD);
-                sender.sendCallbackKeyboard(chatId, "Выберите номер маршрута:", numbers, false);
+                sender.sendCallbackKeyboard(chatId, "Оберіть номер маршруту:", numbers, false);
             }
             case "stop_delete" -> {
                 session.setState(STOP_DELETE_NAME);
-                sender.sendCallbackKeyboard(chatId, "Выберите номер маршрута:", numbers, false);
+                sender.sendCallbackKeyboard(chatId, "Оберіть номер маршруту:", numbers, false);
             }
         }
 
@@ -116,18 +116,25 @@ public class StopsBotHandler {
 
     private void handleAddStopsState(Long chatId, UserSession session) {
         switch (session.getState()) {
+            case STOP_SELECT_NUMBER -> {
+                session.setTrackNumber(session.getLastInput());
+                session.pushState(STOP_SELECT_NUMBER);
+                session.setState(STOP_ENTER_NAME_1);
+                sender.sendMessage(chatId, "Введить список зупинок у прямому напрямку:");
+            }
+
             case STOP_ENTER_NAME_1 -> {
                 session.setStopsAcross(session.getLastInput());
                 session.pushState(STOP_ENTER_NAME_1);
                 session.setState(STOP_ENTER_NAME_2);
-                sender.sendMessage(chatId, "Введите остановки в прямом направлении:");
+                sender.sendMessage(chatId, "Введить список зупинок у зворотньому напрямку:");
             }
             case STOP_ENTER_NAME_2 -> {
                 session.setStopsRightBack(session.getLastInput());
                 session.pushState(STOP_ENTER_NAME_2);
                 saveStops(session);
                 session.setState(IDLE_STOP);
-                sender.sendMessage(chatId, "Введите остановки в обратном напрявлении:");
+                sender.sendMessage(chatId, "Зупинки додани");
             }
         }
         log.info("{} current state", session.getState().toString());
@@ -139,26 +146,26 @@ public class StopsBotHandler {
                 session.setTrackNumber(session.getLastInput());
                 session.pushState(STOP_UPDATE_SELECT_FIELD);
                 session.setState(STOP_UPDATE_ENTER_VALUE);
-                sender.sendCallbackKeyboard(chatId, "Что хотите обновить?",
-                        List.of("прямий напрямок", "зворотній напрямок", "Завершить"), false);
+                sender.sendCallbackKeyboard(chatId, "Що бажаєте оновити?",
+                        List.of("прямий напрямок", "зворотній напрямок", "Завершити"), false);
             }
             case STOP_UPDATE_ENTER_VALUE -> {
-                if ("Завершить".equals(session.getLastInput())) {
+                if ("Завершити".equals(session.getLastInput())) {
                     session.setState(IDLE_STOP);
-                    sender.sendMessage(chatId, "Обновление завершено ✅");
+                    sender.sendMessage(chatId, "Оновлення завершенно ✅");
                     return;
                 }
                 session.setUpdateField(session.getLastInput());
                 session.pushState(STOP_UPDATE_ENTER_VALUE);
                 session.setState(STOP_UPDATE_ENTER_NEW_VALUE);
-                sender.sendMessage(chatId, "Введите новое значение:");
+                sender.sendMessage(chatId, "Введить нове значення:");
             }
             case STOP_UPDATE_ENTER_NEW_VALUE -> {
                 String newValue = session.getLastInput();
                 updateStops(session, newValue); // вызываем обновление
                 session.setState(STOP_UPDATE_ENTER_VALUE); // возвращаемся к выбору следующего поля
-                sender.sendCallbackKeyboard(chatId, "Что хотите обновить ещё?",
-                        List.of("прямий напрямок", "зворотній напрямок", "Завершить"), false);
+                sender.sendCallbackKeyboard(chatId, "Що бажаєте оновити ще?",
+                        List.of("прямий напрямок", "зворотній напрямок", "Завершити"), false);
             }
         }
 
@@ -170,14 +177,20 @@ public class StopsBotHandler {
         stopService.delete(transport);
 
         session.setState(IDLE_STOP);
-        sender.sendMessage(chatId, "Остановки удалены ✅");
+        sender.sendMessage(chatId, "Зупиник видалені ✅");
 
         log.info("{} current state", session.getState().toString());
     }
 
     private void saveStops(UserSession session) {
+        Optional<Transport> optional = transportService.getByTypeAndNumber(session.getTransportType(), session.getTrackNumber());
 
-        Transport transport = transportService.getByTypeAndNumber(session.getTransportType(), session.getTrackNumber()).get();
+        if (optional.isEmpty()) {
+            log.warn("Transport not found for type={} and number={}", session.getTransportType(), session.getTrackNumber());
+            return;
+        }
+
+        Transport transport = optional.get();
 
         Stop stop = new Stop();
         stop.setTransport(transport);

@@ -1,5 +1,10 @@
 package com.example.registration;
 
+import lombok.Getter;
+import lombok.Setter;
+
+@Getter
+@Setter
 public class UserRegistration {
 
     private String fullName;
@@ -17,28 +22,9 @@ public class UserRegistration {
         return type;
     }
 
-    public void setType(RegistrationType type) {
-        this.type = type;
-    }
-
     public void nextStep() {
         step++;
     }
 
-    public int getStep() {
-        return step;
-    }
-
-    public String getFullName() { return fullName; }
-
-    public void setFullName(String fullName) { this.fullName = fullName; }
-
-    public String getPhoneNumber() { return phoneNumber; }
-
-    public void setPhoneNumber(String phoneNumber) { this.phoneNumber = phoneNumber; }
-
-    public String getText() { return text; }
-
-    public void setText(String text) { this.text = text; }
 
 }

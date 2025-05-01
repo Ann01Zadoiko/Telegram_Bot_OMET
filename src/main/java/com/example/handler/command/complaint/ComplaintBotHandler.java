@@ -37,17 +37,17 @@ public class ComplaintBotHandler {
             text = update.getMessage().getText();
         }
 
-        if (update.hasCallbackQuery()){
+        if (update.hasCallbackQuery() ){
             chatId = update.getCallbackQuery().getMessage().getChatId();
             text = update.getCallbackQuery().getData(); // ВАЖНО!
         }
 
-        if (update.getMessage().hasDocument()){
+        if (update.hasMessage() && update.getMessage().hasDocument()){
             PhotoSize thumb = update.getMessage().getDocument().getThumb();
             text = thumb.getFileId();
         }
 
-        if (update.getMessage().hasPhoto()) {
+        if (update.hasMessage() && update.getMessage().hasPhoto()) {
             List<PhotoSize> photos = update.getMessage().getPhoto();
             PhotoSize bestPhoto = photos.get(photos.size() - 1);
             text = bestPhoto.getFileId();
@@ -79,13 +79,13 @@ public class ComplaintBotHandler {
             session.pushState(IDLE_COMPLAINT);
             session.setState(COMPLAINT_SELECT);
 
-            List<String> list = List.of("Yes", "No");
-            sender.sendCallbackKeyboard(chatId, "Желаете оставить отзыв", list, false);
+            List<String> list = List.of("Так", "Ні");
+            sender.sendCallbackKeyboard(chatId, "Бажаете залишити повідомлення?", list, false);
         }
     }
 
     private void handlerStartComplaint(Long chatId, UserSession session){
-        if (session.getLastInput().equals("No")){
+        if (session.getLastInput().equals("Ні")){
             session.pushState(COMPLAINT_SELECT);
             session.setState(IDLE_COMPLAINT);
 
@@ -121,7 +121,7 @@ public class ComplaintBotHandler {
                 session.pushState(COMPLAINT_ENTER_TEXT);
                 session.setState(COMPLAINT_SEND_PHOTO);
 
-                sender.sendCallbackKeyboard(chatId, Complain.STEP_6.getText(), List.of("Skip"), false);
+                sender.sendCallbackKeyboard(chatId, Complain.STEP_6.getText(), List.of("Пропустити"), false);
             }
 
             case COMPLAINT_SEND_PHOTO -> {
@@ -133,7 +133,7 @@ public class ComplaintBotHandler {
                 List<Complaint> byChatId = complaintService.findByChatId(chatId);
                 Complaint complaint = byChatId.get(byChatId.size() - 1);
 
-                if (session.getLastInput().equals("Skip")){
+                if (session.getLastInput().equals("Пропустити")){
                     EmailSender.sendEmailWithAttachment("info@oget.od.ua",
                             "Скарга",
                             complaint.getFullName() + "\n" + complaint.getPhoneNumber() + "\n" + complaint.getText(), chatId);

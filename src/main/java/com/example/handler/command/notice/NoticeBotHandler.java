@@ -1,20 +1,18 @@
 package com.example.handler.command.notice;
 
+import com.example.constance.notice.NoticeEnum;
 import com.example.feature.notice.Notice;
 import com.example.feature.notice.NoticeService;
 import com.example.feature.transport.Transport;
 import com.example.feature.transport.TransportService;
 import com.example.handler.BotSenderService;
-import com.example.handler.command.notice.UserSession;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 import org.telegram.telegrambots.meta.api.objects.Update;
 
 import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
 import java.util.*;
-import java.util.stream.Stream;
 
 import static com.example.handler.command.notice.NoticeBotState.*;
 
@@ -54,15 +52,16 @@ public class NoticeBotHandler {
 
         switch (session.getState()) {
             case IDLE_NOTICE -> handleIdleState(chatId, session);
-
+            case NOTICE_SELECT_TYPE, NOTICE_SELECT_NUMBER,
+                 NOTICE_SELECT_NOTIFICATION -> handleCreateNotice(chatId, session);
         }
     }
 
     private void handleIdleState(Long chatId, UserSession session) {
-        if ("/notice".equals(session.getLastInput())) {
+        if ("Термінові повідомлення".equals(session.getLastInput())) {
             session.pushState(IDLE_NOTICE);
             session.setState(NOTICE_SELECT_TYPE);
-            sender.sendCallbackKeyboard(chatId, "Выберите тип транспорта:",  List.of("трамвай", "тролейбус"), false);
+            sender.sendCallbackKeyboard(chatId, "Оберіть тип транспортного засобу:",  List.of("трамвай", "тролейбус"), false);
 
             log.info("{} current state", session.getState().toString());
         }
@@ -76,7 +75,7 @@ public class NoticeBotHandler {
                 session.setState(NOTICE_SELECT_NUMBER);
 
                 List<String> numbers = transportService.getNumbersByType(session.getTransportType());
-                sender.sendCallbackKeyboard(chatId, "Выберите номер маршрута:", numbers, false);
+                sender.sendCallbackKeyboard(chatId, "Оберіть номер маршруту:", numbers, false);
             }
 
             case NOTICE_SELECT_NUMBER -> {
@@ -84,8 +83,8 @@ public class NoticeBotHandler {
                 session.pushState(NOTICE_SELECT_NUMBER);
                 session.setState(NOTICE_SELECT_NOTIFICATION);
 
-                List<String> list = List.of("ДТП", "Ремонт", "Перекытие улиц", "Перекрытие стороним ТЗ", "возобновленно");
-                sender.sendCallbackKeyboard(chatId, "Выберите уведомление", list, false);
+                List<String> list = Arrays.stream(NoticeEnum.values()).map(NoticeEnum::getName).toList();
+                sender.sendCallbackKeyboard(chatId, "Оберіть повідомлення", list, false);
             }
 
             case NOTICE_SELECT_NOTIFICATION -> {
@@ -95,7 +94,7 @@ public class NoticeBotHandler {
                 session.pushState(NOTICE_SELECT_NOTIFICATION);
                 session.setState(IDLE_NOTICE);
 
-                sender.sendMessage(chatId, "Уведомление созаднно");
+                sender.sendMessage(chatId, "Повідомлення створенно");
             }
         }
     }
@@ -117,4 +116,3 @@ public class NoticeBotHandler {
 
 
 }
-//"ДТП", "ремонт", "перекриття вулиць", "перекриття шляху стороннім тансортом"

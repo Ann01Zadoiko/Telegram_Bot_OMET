@@ -3,12 +3,11 @@ package com.example.handler;
 import com.example.bot.TelegramBot;
 import com.example.constance.Button;
 import com.example.constance.Function;
-import com.example.constance.complaint.Complain;
-import com.example.constance.info.vacancy.Vacancy;
+
 import com.example.feature.museum.Museum;
 import com.example.feature.museum.MuseumService;
 import com.example.feature.user.UserService;
-import com.example.feature.vacancy.VacancyService;
+
 import com.example.handler.button.*;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
@@ -28,7 +27,6 @@ public class HandlerMessage {
 
     private final MuseumService museumService;
     private final UserService userService;
-    private final VacancyService vacancyService;
 
     @SneakyThrows
     public void handlerOfStart(Update update, TelegramBot bot){
@@ -143,15 +141,6 @@ public class HandlerMessage {
         }
     }
 
-//    public void handlerOfComplaint(Update update, TelegramBot bot){
-//        Message message = update.getMessage();
-//        Long chatId = message.getChatId();
-//        String text = message.getText();
-//
-//        if (text.equals("Скарги та пропозиції")) {
-//            bot.sendMessage(chatId, Complain.STEP_1.getText(), MuseumButtons.getButtonsYesOrNo("YES_COMPLAINT", "NO_COMPLAINT"));
-//        }
-//    }
 
     public void handlerOfMuseumAndTracks(Update update, TelegramBot bot){
         Message message = update.getMessage();

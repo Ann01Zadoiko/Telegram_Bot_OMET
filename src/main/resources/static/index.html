@@ -1,0 +1,115 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Термінові повідомлення</title>
+    <style>
+        :root {
+          --main-bg: #ffffff;
+          --accent: #0088cc;
+          --text-color: #333;
+          --notice-bg: #f9f9f9;
+          --border-radius: 12px;
+        }
+
+        body {
+          font-family: 'Segoe UI', sans-serif;
+          background-color: var(--main-bg);
+          color: var(--text-color);
+          margin: 0;
+          padding: 20px;
+          box-sizing: border-box;
+        }
+
+        h1 {
+          text-align: center;
+          color: var(--accent);
+          margin-bottom: 10px;
+        }
+
+        h2 {
+          margin-top: 30px;
+          color: #666;
+          font-size: 18px;
+          border-bottom: 1px solid #ddd;
+          padding-bottom: 5px;
+        }
+
+        .notice {
+          background: var(--notice-bg);
+          padding: 12px 16px;
+          margin: 8px 0;
+          border-radius: var(--border-radius);
+          box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
+        }
+
+        .close-btn {
+          display: block;
+          margin: 30px auto 10px;
+          padding: 12px 24px;
+          background-color: var(--accent);
+          color: #fff;
+          font-size: 16px;
+          font-weight: 600;
+          border: none;
+          border-radius: var(--border-radius);
+          cursor: pointer;
+          transition: background-color 0.2s ease;
+        }
+
+        .close-btn:hover {
+          background-color: #0075b0;
+        }
+
+        .empty-message {
+          text-align: center;
+          color: #999;
+          font-style: italic;
+          margin-top: 40px;
+        }
+    </style>
+</head>
+<body>
+<h1>Термінові повідомлення</h1>
+<div id="notices"></div>
+<button class="close-btn" onclick="Telegram.WebApp.close()">Закрити</button>
+
+<script src="https://telegram.org/js/telegram-web-app.js"></script>
+<script>
+    const userId = Telegram.WebApp.initDataUnsafe.user?.id;
+
+    fetch(`/api/notices/grouped?userId=${userId}`)
+      .then(res => res.json())
+      .then(groups => {
+        const container = document.getElementById('notices');
+        if (!groups || groups.length === 0) {
+          container.innerHTML = '<p class="empty-message">На даний момент повідомлень немає.</p>';
+          return;
+        }
+
+        groups.forEach(group => {
+          const dateHeader = document.createElement('h2');
+          dateHeader.textContent = formatDate(group.date);
+          container.appendChild(dateHeader);
+
+          group.notices.forEach(notice => {
+            const div = document.createElement('div');
+            div.className = 'notice';
+            div.textContent = notice.text;
+            container.appendChild(div);
+          });
+        });
+      })
+      .catch(err => {
+        document.getElementById('notices').innerHTML = '<p class="empty-message">Не вдалося завантажити повідомлення.</p>';
+        console.error(err);
+      });
+
+    function formatDate(dateStr) {
+      const options = { day: 'numeric', month: 'long', year: 'numeric' };
+      return new Date(dateStr).toLocaleDateString('ru-RU', options);
+    }
+</script>
+</body>
+</html>

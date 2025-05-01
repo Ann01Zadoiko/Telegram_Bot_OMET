@@ -7,8 +7,6 @@ import com.example.handler.button.KeyboardButtons;
 import org.springframework.stereotype.Component;
 import org.telegram.telegrambots.meta.api.methods.GetFile;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
-import org.telegram.telegrambots.meta.api.objects.PhotoSize;
-import org.telegram.telegrambots.meta.api.objects.Update;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.InlineKeyboardMarkup;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.InlineKeyboardButton;
 import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
@@ -27,17 +25,33 @@ public class BotSenderService {
         this.bot = bot;
     }
 
-
     public void sendMessage(Long chatId, String text) {
-        SendMessage message = new SendMessage();
-        message.setChatId(chatId.toString());
-        message.setText(text);
-        message.setReplyMarkup(KeyboardButtons.getButtons());
 
-        try {
-            bot.execute(message);
-        } catch (TelegramApiException e) {
-            e.printStackTrace();
+
+        if (391736560L == chatId) {
+
+            SendMessage sendMessage = SendMessage
+                    .builder()
+                    .chatId(chatId)
+                    .text(text)
+                    .replyMarkup(KeyboardButtons.getButtonsAdmin())
+                    .build();
+            try {
+                bot.execute(sendMessage);
+            } catch (TelegramApiException e) {
+                throw new RuntimeException(e);
+            }
+        } else {
+            SendMessage message = new SendMessage();
+            message.setChatId(chatId.toString());
+            message.setText(text);
+            message.setReplyMarkup(KeyboardButtons.getButtons());
+
+            try {
+                bot.execute(message);
+            } catch (TelegramApiException e) {
+                e.printStackTrace();
+            }
         }
     }
 

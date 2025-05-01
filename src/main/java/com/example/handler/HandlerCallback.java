@@ -7,14 +7,12 @@ import com.example.constance.info.Study;
 import com.example.constance.info.vacancy.VacancyText;
 import com.example.constance.museum.Registration;
 import com.example.constance.rent.Rent;
-import com.example.feature.complaint.ComplaintService;
 import com.example.feature.museum.Museum;
 import com.example.feature.museum.MuseumService;
 import com.example.feature.stop.Stop;
 import com.example.feature.stop.StopService;
 import com.example.feature.transport.Transport;
 import com.example.feature.transport.TransportService;
-import com.example.feature.user.UserService;
 import com.example.feature.vacancy.VacancyService;
 import com.example.handler.button.*;
 import com.example.constance.museum.MuseumEnum;
@@ -36,12 +34,10 @@ public class HandlerCallback {
 
     private final MuseumService museumService;
     private final MuseumRegistration museumRegistration;
-   // private final ComplaintRegistration complaintRegistration;
-    private final ComplaintService complaintService;
     private final VacancyService vacancyService;
     private final TransportService transportService;
     private final StopService stopService;
-    private final UserService userService;
+
 
     @SneakyThrows
     public void handlerOfMuseum(Update update, TelegramBot bot){
@@ -54,8 +50,12 @@ public class HandlerCallback {
                 case INFO ->
                     bot.sendMessage(chatId, MuseumInfo.TEXT_1, messageId, update.getCallbackQuery());
 
-                case SOCIAL_MEDIA_MUSEUM ->
-                    bot.sendMiniApp(chatId, LinkButtons.createLinksMuseumButtons(), "Соціальні мережі", messageId, update.getCallbackQuery());
+                case SOCIAL_MEDIA_MUSEUM ->{
+                    String text = "Соціальні мережі:\nFacebook\nhttps://www.facebook.com/museumoget/";
+
+                    bot.sendMiniApp(chatId, LinkButtons.createLinksMuseumButtons(), text, messageId, update.getCallbackQuery());
+
+                }
 
                 case REGISTRATION ->{
                     // DateTimeFormatter instance to be provided to the API
@@ -86,8 +86,11 @@ public class HandlerCallback {
                 case STUDY ->
                     bot.sendMessage(chatId, Study.TEXT, messageId, update.getCallbackQuery());
 
-                case SOCIAL_MEDIA ->
-                    bot.sendMiniApp(chatId, LinkButtons.createLinksGeneralInfoButtons(), "Соціальні мережі", messageId, update.getCallbackQuery());
+                case SOCIAL_MEDIA ->{
+                    String text = "Соціальні мережі:\nFacebook\nhttps://www.facebook.com/kp.oget/";
+
+                    bot.sendMiniApp(chatId, LinkButtons.createLinksGeneralInfoButtons(), text, messageId, update.getCallbackQuery());
+                }
 
                 case VACANCY ->
                     bot.sendMiniApp(chatId, VacancyButtons.getButtonsSpecification("WITH_EXPERIENCE", "WITHOUT_EXPERIENCE"), "Вакансії", messageId, update.getCallbackQuery());
@@ -191,42 +194,6 @@ public class HandlerCallback {
         }
     }
 
-//    @SneakyThrows
-//    public void handlerOfYesOrNoComplaint(Update update, TelegramBot bot){
-//        String data = update.getCallbackQuery().getData();
-//        Long chatId = update.getCallbackQuery().getMessage().getChatId();
-//
-//
-//        if (data.equals("YES_COMPLAINT")){
-//            Complaint complaint = new Complaint();
-//            complaint.setChatId(chatId);
-//
-//            complaintService.save(complaint);
-//            complaintRegistration.startRegistration(chatId, bot);
-//        }
-//
-//        if (data.equals("NO_COMPLAINT")){
-//            bot.sendMessage(chatId, "Гарного Вам дня!");
-//        }
-//    }
-
-//    @SneakyThrows
-//    public void handlerOfSkip(Update update, TelegramBot bot){
-//        String data = update.getCallbackQuery().getData();
-//        Long chatId = update.getCallbackQuery().getMessage().getChatId();
-//        long messageId = update.getCallbackQuery().getMessage().getMessageId();
-//
-//        if (data.equals("SKIP_PHOTO")){
-//            List<Complaint> byChatId = complaintService.findByChatId(chatId);
-//            Complaint complaint = byChatId.get(byChatId.size() - 1);
-//
-//            EmailSender.sendEmailWithAttachment("info@oget.od.ua",
-//                    "Скарга",
-//                    complaint.getFullName() + "\n" + complaint.getPhoneNumber() + "\n" + complaint.getText(), chatId);
-//
-//            bot.sendMessage(chatId,  Complain.STEP_7.getText(), messageId, update.getCallbackQuery());
-//        }
-//    }
 
     public void handlerOfTracks(Update update, TelegramBot bot){
         String data = update.getCallbackQuery().getData();
@@ -271,6 +238,10 @@ public class HandlerCallback {
             String[] s = data.split(" ");
             Transport byTypeAndNumber = transportService.getByTypeAndNumber(s[1], s[2]).get();
             Stop stop = stopService.getByTransport(byTypeAndNumber);
+
+            if (stop == null){
+                bot.sendMessage(chatId, "На даний час немає повного списку зупинок", messageId, update.getCallbackQuery());
+            }
 
             bot.sendMessage(chatId, stop.getStopAcross(), messageId, update.getCallbackQuery());
             bot.sendMessage(chatId, stop.getStopRightBack(), messageId, update.getCallbackQuery());

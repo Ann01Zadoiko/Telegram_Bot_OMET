@@ -4,8 +4,6 @@ import jakarta.persistence.*;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-import java.sql.Blob;
-
 @Data
 @NoArgsConstructor
 @Entity
@@ -24,9 +22,6 @@ public class Complaint {
 
     @Column(name = "full_name")
     private String fullName;
-
-    @Column(name = "image")
-    private Blob image;
 
     @Column(name = "chat_id")
     private Long chatId;

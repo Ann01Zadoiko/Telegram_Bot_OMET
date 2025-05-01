@@ -47,14 +47,9 @@ public class EmailSender {
             MimeBodyPart textPart = new MimeBodyPart();
             textPart.setText(text);
 
-//            // Вложение
-//            MimeBodyPart attachmentPart = new MimeBodyPart();
-//            attachmentPart.attachFile(new File(filePath)); // Укажите путь к файлу
-
             // Комбинируем текст и вложение
             Multipart multipart = new MimeMultipart();
             multipart.addBodyPart(textPart);
-      //      multipart.addBodyPart(attachmentPart);
 
             // Устанавливаем содержимое письма
             message.setContent(multipart);
@@ -98,7 +93,7 @@ public class EmailSender {
             MimeBodyPart textPart = new MimeBodyPart();
             textPart.setText(text);
 
-//            // Вложение
+            // Вложение
             MimeBodyPart attachmentPart = new MimeBodyPart();
             attachmentPart.attachFile(new File(filePath)); // Укажите путь к файлу
 

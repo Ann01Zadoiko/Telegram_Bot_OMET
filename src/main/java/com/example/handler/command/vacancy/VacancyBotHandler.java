@@ -57,7 +57,7 @@ public class VacancyBotHandler {
         if ("Вакансії".equals(session.getLastInput())) {
             session.pushState(IDLE_VACANCY);
             session.setState(VACANCY_ACTION_SELECTION);
-            sender.sendCallbackKeyboard(chatId, "Выберите действие:", List.of("З досвідом роботи","Без досвіду роботи"), false);
+            sender.sendCallbackKeyboard(chatId, "Оберіть дію:", List.of("З досвідом роботи","Без досвіду роботи"), false);
 
             log.info("{} current state", session.getState().toString());
         }
@@ -67,7 +67,7 @@ public class VacancyBotHandler {
         session.setSpecification(session.getLastInput());
         session.pushState(VACANCY_ACTION_SELECTION);
         session.setState(VACANCY_UPDATE);
-        sender.sendMessage(chatId, "Введите спсок вакансий:");
+        sender.sendMessage(chatId, "Введите список вакансій:");
     }
 
 
@@ -76,7 +76,7 @@ public class VacancyBotHandler {
         session.pushState(VACANCY_UPDATE);
         vacancy.setName(session.getLastInput());
         vacancyService.save(vacancy);
-        sender.sendMessage(chat, "Данные обновились");
+        sender.sendMessage(chat, "Дані оновился");
         session.setState(IDLE_VACANCY);
     }
 }

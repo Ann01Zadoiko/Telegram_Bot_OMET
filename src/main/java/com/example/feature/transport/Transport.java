@@ -43,7 +43,7 @@ public class Transport {
     @OneToOne(mappedBy = "transport", cascade = CascadeType.ALL)
     private Stop stop;
 
-    @OneToMany(mappedBy = "transport", cascade = CascadeType.ALL)
+    @OneToMany(mappedBy = "transport", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Notice> notices;
 
     @Override

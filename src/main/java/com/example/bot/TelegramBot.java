@@ -1,8 +1,6 @@
 package com.example.bot;
 
 import com.example.config.BotConfig;
-import com.example.constance.complaint.Complain;
-import com.example.email.EmailSender;
 import com.example.handler.BotHandler;
 import com.example.handler.BotSenderService;
 import com.example.handler.button.KeyboardButtons;
@@ -19,17 +17,15 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 import org.telegram.telegrambots.bots.TelegramLongPollingBot;
 import org.telegram.telegrambots.meta.api.methods.AnswerCallbackQuery;
-import org.telegram.telegrambots.meta.api.methods.GetFile;
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
 import org.telegram.telegrambots.meta.api.methods.send.SendPhoto;
 import org.telegram.telegrambots.meta.api.methods.updatingmessages.EditMessageText;
 import org.telegram.telegrambots.meta.api.objects.CallbackQuery;
 import org.telegram.telegrambots.meta.api.objects.InputFile;
-import org.telegram.telegrambots.meta.api.objects.PhotoSize;
 import org.telegram.telegrambots.meta.api.objects.Update;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.InlineKeyboardMarkup;
 import java.io.File;
-import java.util.List;
+
 
 
 @Slf4j
@@ -89,41 +85,8 @@ public class TelegramBot extends TelegramLongPollingBot {
             botHandler.answerToCallback(update);
         }
 
-//        if (update.hasMessage() && (update.getMessage().hasPhoto() || update.getMessage().hasDocument())) {
-//            botHandler.answerToPhoto(update);
-//        }
-
-
     }
 
-//    @SneakyThrows
-//    public void processPhotoAndSendEmail(Update update, String text) {
-//        Long chatId = update.getMessage().getChatId();
-//
-//        try {
-//            String fileId = "";
-//
-//            if (update.getMessage().hasDocument()) {
-//                PhotoSize thumb = update.getMessage().getDocument().getThumb();
-//                fileId = thumb.getFileId();
-//            }
-//
-//            if (update.getMessage().hasPhoto()) {
-//                List<PhotoSize> photos = update.getMessage().getPhoto();
-//                PhotoSize bestPhoto = photos.get(photos.size() - 1);
-//                fileId = bestPhoto.getFileId();
-//            }
-//
-//            org.telegram.telegrambots.meta.api.objects.File telegramFile = execute(new GetFile(fileId));
-//            String fileUrl = "https://api.telegram.org/file/bot" + getBotToken() + "/" + telegramFile.getFilePath();
-//            String localFilePath = EmailSender.downloadFile(fileUrl, "photo.jpg");
-//
-//            EmailSender.sendEmailWithAttachment("info@oget.od.ua", "Скарга", text, localFilePath, chatId);
-//            sendMessage(chatId, Complain.STEP_7.getText());
-//        } catch (Exception e) {
-//            sendMessage(chatId, "Помилка у відправки фото: " + e.getMessage());
-//        }
-//    }
 
     @SneakyThrows
     public void sendMessage(long chatId, String text, long messageId, CallbackQuery callbackQuery) {

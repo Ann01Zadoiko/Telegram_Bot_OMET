@@ -11,10 +11,4 @@ public interface Function {
     String SHOW = "/show";
     String CLOSE = "/close";
 
-    String NOTICE = "/notice";
-    String TRACKS = "/tracks";
-    String STOPS = "/stops";
-
-    String VACANCY = "/vacancy";
-
 }

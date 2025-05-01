@@ -26,8 +26,6 @@ public class BotHandler {
     private final BotConfig config;
     private final UserStateManager stateManager;
     private final MuseumRegistration museumRegistration;
-   // private final ComplaintRegistration complaintRegistration;
-    private final HandlerPhoto handlerOfPhoto;
     private final TracksBotHandler tracksBotHandler;
     private final StopsBotHandler stopsBotHandler;
     private final BotSenderService botSenderService;
@@ -40,7 +38,7 @@ public class BotHandler {
         TelegramBot bot = new TelegramBot(
                 config,
                 stateManager,
-                new BotHandler(callback,message,config, stateManager, museumRegistration, handlerOfPhoto, tracksBotHandler,
+                new BotHandler(callback,message,config, stateManager, museumRegistration, tracksBotHandler,
                         stopsBotHandler, botSenderService, vacancyBotHandler, complaintBotHandler,noticeBotHandler),
                 tracksBotHandler,
                 stopsBotHandler,
@@ -54,8 +52,6 @@ public class BotHandler {
         callback.handlerOfVacancy(update, bot);
         callback.handlerOfBack(update, bot);
         callback.handlerOfYesOrNoMuseum(update, bot);
-     //   callback.handlerOfSkip(update, bot);
-      //  callback.handlerOfYesOrNoComplaint(update, bot);
         callback.handlerOfTracks(update, bot);
         callback.handlerForStops(update, bot);
     }
@@ -65,7 +61,7 @@ public class BotHandler {
         TelegramBot bot = new TelegramBot(
                 config,
                 stateManager,
-                new BotHandler(callback,message,config, stateManager, museumRegistration, handlerOfPhoto, tracksBotHandler,
+                new BotHandler(callback,message,config, stateManager, museumRegistration, tracksBotHandler,
                         stopsBotHandler, botSenderService, vacancyBotHandler, complaintBotHandler,noticeBotHandler),
                 tracksBotHandler,
                 stopsBotHandler,
@@ -88,9 +84,6 @@ public class BotHandler {
                     museumRegistration.processRegistrationStep(update.getMessage().getChatId(), update.getMessage().getText(), bot);
                 }
 
-//                if (type == RegistrationType.COMPLAINT) {
-//                    complaintRegistration.processRegistrationStep(update.getMessage().getChatId(), update.getMessage().getText(), bot);
-//                }
 
             }
             return; // Прерываем дальнейшую обработку
@@ -103,22 +96,8 @@ public class BotHandler {
         message.handlerOfNewDayToMuseum(update, bot);
         message.handlerOfCloseExhibition(update, bot);
         message.handlerOfShow(update, bot);
-  //      message.handlerOfComplaint(update, bot);
         message.handlerOfMuseumAndTracks(update, bot);
     }
 
-//    public void answerToPhoto(Update update) {
-//        TelegramBot bot = new TelegramBot(
-//                config,
-//                stateManager,
-//                new BotHandler(callback,message,config, stateManager, museumRegistration, complaintRegistration, handlerOfPhoto, tracksBotHandler,
-//                        stopsBotHandler, botSenderService, vacancyBotHandler),
-//                tracksBotHandler,
-//                stopsBotHandler,
-//                botSenderService,
-//                vacancyBotHandler);
-//
-//        handlerOfPhoto.handlerOfPhoto(update, bot);
-//    }
 
 }

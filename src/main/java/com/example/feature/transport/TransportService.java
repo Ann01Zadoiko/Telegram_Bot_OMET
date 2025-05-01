@@ -1,6 +1,8 @@
 package com.example.feature.transport;
 
 
+import com.example.feature.notice.Notice;
+import com.example.feature.notice.NoticeRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -13,6 +15,7 @@ import java.util.Optional;
 public class TransportService implements ITransportService{
 
     private final TransportRepository repository;
+    private final NoticeRepository noticeRepository;
 
     @Override
     public void add(Transport transport) {
@@ -42,6 +45,11 @@ public class TransportService implements ITransportService{
     @Transactional
     @Override
     public void deleteByTypeAndNumberOfTrack(String type, String numberOfTrack) {
+        Transport transport = getByTypeAndNumber(type, numberOfTrack).get();
+
+        List<Notice> notices = noticeRepository.findByTransport(transport);
+        noticeRepository.deleteAll(notices);
+
         repository.deleteByTypeAndNumberOfTrack(type, numberOfTrack);
     }
 

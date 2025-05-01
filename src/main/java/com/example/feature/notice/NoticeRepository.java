@@ -19,4 +19,5 @@ public interface NoticeRepository extends JpaRepository<Notice, Long> {
 
     @Query("SELECT DISTINCT t.date FROM Notice t")
     List<LocalDate> findDistinctDays();
+
 }
