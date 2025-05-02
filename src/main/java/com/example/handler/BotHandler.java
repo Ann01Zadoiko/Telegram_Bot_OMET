@@ -54,6 +54,7 @@ public class BotHandler {
         callback.handlerOfYesOrNoMuseum(update, bot);
         callback.handlerOfTracks(update, bot);
         callback.handlerForStops(update, bot);
+        callback.handlerForNotice(update, bot);
     }
 
     @SneakyThrows
@@ -91,7 +92,7 @@ public class BotHandler {
 
         message.handlerOfGeneralInfo(update, bot);
         message.handlerOfMuseum(update, bot);
-        message.handlerOfRent(update, bot);
+        message.handlerOfTracks(update, bot);
         message.handlerOfStart(update, bot);
         message.handlerOfNewDayToMuseum(update, bot);
         message.handlerOfCloseExhibition(update, bot);

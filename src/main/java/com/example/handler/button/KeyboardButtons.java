@@ -17,13 +17,14 @@ public class KeyboardButtons {
 
         KeyboardRow row = new KeyboardRow();
 
+        row.add("Термінові повідомлення");
         row.add(Button.INFO_TRACKS.getFullName());
-        row.add(Button.MUSEUM.getFullName());
 
         keyboard.add(row);
 
         row = new KeyboardRow();
 
+        row.add(Button.MUSEUM.getFullName());
         row.add(Button.GENERAL_INFO.getFullName());
         row.add(Button.COMPLAINT.getFullName());
 
@@ -35,13 +36,14 @@ public class KeyboardButtons {
         return keyboardMarkup;
     }
 
-    public static ReplyKeyboardMarkup getButtonsAdmin(){
+    public static ReplyKeyboardMarkup getButtonsAdminAndEditor(){
         ReplyKeyboardMarkup keyboardMarkup = new ReplyKeyboardMarkup();
 
         List<KeyboardRow> keyboard = new ArrayList<>();
 
         KeyboardRow row = new KeyboardRow();
 
+        row.add("Термінові повідомлення");
         row.add(Button.INFO_TRACKS.getFullName());
         row.add(Button.MUSEUM.getFullName());
 
@@ -51,13 +53,7 @@ public class KeyboardButtons {
 
         row.add(Button.GENERAL_INFO.getFullName());
         row.add(Button.COMPLAINT.getFullName());
-
-        keyboard.add(row);
-
-        row = new KeyboardRow();
-
-        row.add("Упр марш");
-        row.add("Управ муз");
+        row.add("Керування ботом");
 
         keyboard.add(row);
 
@@ -74,8 +70,10 @@ public class KeyboardButtons {
 
         KeyboardRow row = new KeyboardRow();
 
+        row.add("Термінові повідомлення");
         row.add(Button.INFO_TRACKS.getFullName());
         row.add(Button.MUSEUM.getFullName());
+        row.add("Додати повідомлення");
 
         keyboard.add(row);
 

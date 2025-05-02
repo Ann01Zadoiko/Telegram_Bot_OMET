@@ -90,11 +90,14 @@ public class ComplaintBotHandler {
             session.setState(IDLE_COMPLAINT);
 
             sender.sendMessage(chatId, "Гарного Вам дня!");
-        } else {
+        } else if (session.getLastInput().equals("Так")){
             session.pushState(COMPLAINT_SELECT);
             session.setState(COMPLAINT_ENTER_FULL_NAME);
 
             sender.sendMessage(chatId, Complain.STEP_2.getText());
+        } else {
+            session.pushState(COMPLAINT_SELECT);
+            session.setState(IDLE_COMPLAINT);
         }
     }
 

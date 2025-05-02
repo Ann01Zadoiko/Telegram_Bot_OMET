@@ -122,7 +122,7 @@ public class TelegramBot extends TelegramLongPollingBot {
                     .builder()
                     .chatId(chatId)
                     .text(text)
-                    .replyMarkup(KeyboardButtons.getButtonsAdmin())
+                    .replyMarkup(KeyboardButtons.getButtonsAdminAndEditor())
                     .build();
             execute(sendMessage);
 

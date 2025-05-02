@@ -9,6 +9,8 @@ import com.example.constance.museum.Registration;
 import com.example.constance.rent.Rent;
 import com.example.feature.museum.Museum;
 import com.example.feature.museum.MuseumService;
+import com.example.feature.notice.Notice;
+import com.example.feature.notice.NoticeService;
 import com.example.feature.stop.Stop;
 import com.example.feature.stop.StopService;
 import com.example.feature.transport.Transport;
@@ -17,6 +19,7 @@ import com.example.feature.vacancy.VacancyService;
 import com.example.handler.button.*;
 import com.example.constance.museum.MuseumEnum;
 import com.example.constance.museum.MuseumInfo;
+import com.example.printer.NoticePrinter;
 import com.example.printer.TrackPrinter;
 import com.example.registration.MuseumRegistration;
 import lombok.RequiredArgsConstructor;
@@ -24,6 +27,7 @@ import lombok.SneakyThrows;
 import org.springframework.stereotype.Service;
 import org.telegram.telegrambots.meta.api.objects.Update;
 
+import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.List;
@@ -37,6 +41,7 @@ public class HandlerCallback {
     private final VacancyService vacancyService;
     private final TransportService transportService;
     private final StopService stopService;
+    private final NoticePrinter noticePrinter;
 
 
     @SneakyThrows
@@ -245,6 +250,20 @@ public class HandlerCallback {
 
             bot.sendMessage(chatId, stop.getStopAcross(), messageId, update.getCallbackQuery());
             bot.sendMessage(chatId, stop.getStopRightBack(), messageId, update.getCallbackQuery());
+        }
+    }
+
+    public void handlerForNotice(Update update, TelegramBot bot){
+        String data = update.getCallbackQuery().getData();
+        Long chatId = update.getCallbackQuery().getMessage().getChatId();
+        long messageId = update.getCallbackQuery().getMessage().getMessageId();
+
+        if (data.equals("Керування музеем") && chatId == 391736560L){
+            String answer = "/setDate (date) -- встанвлення дати\n" +
+                    "/close -- закріття записи\n" +
+                    "/show (date) -- відображення людей, які записался до екскурсії";
+
+            bot.sendMessage(chatId, answer, messageId, update.getCallbackQuery());
         }
     }
 

@@ -6,6 +6,7 @@ import lombok.RequiredArgsConstructor;
 import lombok.Setter;
 
 import java.time.LocalDate;
+import java.time.LocalTime;
 import java.util.ArrayDeque;
 import java.util.Deque;
 
@@ -22,7 +23,8 @@ public class UserSession {
     private String previousAction; // "добавить", "обновить", "удалить"
     private String transportType; // Тип транспорта
     private String trackNumber; // Тип транспорта
-    private LocalDate date; // Номер маршрута
+    private LocalDate date;
+    private LocalTime time;// Номер маршрута
     private String reason;
     private boolean relevance;
     private String updateField; // Обновляемое поле при редактировании

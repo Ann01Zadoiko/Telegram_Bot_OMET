@@ -50,6 +50,7 @@ create table stops (
 create table notices (
     id bigserial primary key,
     date date,
+    time time,
     reason text,
     relevance boolean,
     id_transport bigint,

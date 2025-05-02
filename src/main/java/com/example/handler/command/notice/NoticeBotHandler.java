@@ -12,6 +12,7 @@ import org.springframework.stereotype.Component;
 import org.telegram.telegrambots.meta.api.objects.Update;
 
 import java.time.LocalDate;
+import java.time.LocalTime;
 import java.util.*;
 
 import static com.example.handler.command.notice.NoticeBotState.*;
@@ -58,7 +59,7 @@ public class NoticeBotHandler {
     }
 
     private void handleIdleState(Long chatId, UserSession session) {
-        if ("Термінові повідомлення".equals(session.getLastInput())) {
+        if ("Додати повідомлення".equals(session.getLastInput())) {
             session.pushState(IDLE_NOTICE);
             session.setState(NOTICE_SELECT_TYPE);
             sender.sendCallbackKeyboard(chatId, "Оберіть тип транспортного засобу:",  List.of("трамвай", "тролейбус"), false);
@@ -88,7 +89,9 @@ public class NoticeBotHandler {
             }
 
             case NOTICE_SELECT_NOTIFICATION -> {
-                session.setReason(session.getLastInput());
+
+                String textByName = NoticeEnum.getTextByName(session.getLastInput());
+                session.setReason(textByName);
 
                 saveStops(session);
                 session.pushState(NOTICE_SELECT_NOTIFICATION);
@@ -108,6 +111,7 @@ public class NoticeBotHandler {
         notice.setTransport(transport);
         notice.setReason(session.getReason());
         notice.setRelevance(true);
+        notice.setTime(LocalTime.now());
 
         noticeService.save(notice);
 

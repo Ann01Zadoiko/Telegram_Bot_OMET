@@ -8,7 +8,6 @@ public enum NoticeEnum {
     CHOOSE_5("возоновленно","Возоновленно маршрут");
 
     private final String name;
-
     private final String text;
 
     NoticeEnum(String name, String text){
@@ -22,6 +21,15 @@ public enum NoticeEnum {
 
     public String getName(){
         return name;
+    }
+
+    public static String getTextByName(String name) {
+        for (NoticeEnum value : NoticeEnum.values()) {
+            if (value.name.equalsIgnoreCase(name)) {
+                return value.text;
+            }
+        }
+        return null; // или можно выбросить исключение, если не найдено
     }
 }
 //"ДТП", "ремонт", "перекриття вулиць", "перекриння шляху стороннім ТЗ", "возобновленно"

@@ -42,17 +42,6 @@ public class TransportService implements ITransportService{
         return repository.findNumbersByType(type);
     }
 
-    @Transactional
-    @Override
-    public void deleteByTypeAndNumberOfTrack(String type, String numberOfTrack) {
-        Transport transport = getByTypeAndNumber(type, numberOfTrack).get();
-
-        List<Notice> notices = noticeRepository.findByTransport(transport);
-        noticeRepository.deleteAll(notices);
-
-        repository.deleteByTypeAndNumberOfTrack(type, numberOfTrack);
-    }
-
     @Override
     public void updateField(Transport transport, String field, String value) {
         switch (field) {
@@ -68,4 +57,16 @@ public class TransportService implements ITransportService{
     public void update(Transport transport) {
         repository.save(transport); // или реализация вручную
     }
+
+    @Transactional
+    @Override
+    public void deleteByTypeAndNumberOfTrack(String type, String numberOfTrack) {
+        Transport transport = repository.findWithNoticesByTypeAndNumberOfTrack(type, numberOfTrack)
+                .orElseThrow(() -> new RuntimeException("Transport not found"));
+
+        noticeRepository.deleteAll(transport.getNotices()); // теперь точно загружены
+
+        repository.delete(transport);
+    }
+
 }

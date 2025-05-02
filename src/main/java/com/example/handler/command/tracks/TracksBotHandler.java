@@ -180,7 +180,7 @@ public class TracksBotHandler {
         sender.sendMessage(chatId, "Маршрут видален ✅");
 
         log.info("{} current state", session.getState().toString());
-        log.info(transportService.getByTypeAndNumber(session.getTransportType(), session.getLastInput()).get().toString());
+
     }
 
     private void saveTransport(UserSession session) {

@@ -9,6 +9,7 @@ import com.example.feature.museum.MuseumService;
 import com.example.feature.user.UserService;
 
 import com.example.handler.button.*;
+import com.example.printer.NoticePrinter;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
@@ -27,6 +28,7 @@ public class HandlerMessage {
 
     private final MuseumService museumService;
     private final UserService userService;
+    private final NoticePrinter noticePrinter;
 
     @SneakyThrows
     public void handlerOfStart(Update update, TelegramBot bot){
@@ -63,7 +65,7 @@ public class HandlerMessage {
     }
 
     @SneakyThrows
-    public void handlerOfRent(Update update, TelegramBot bot){
+    public void handlerOfTracks(Update update, TelegramBot bot){
         Message message = update.getMessage();
         Long chatId = message.getChatId();
         String text = message.getText();
@@ -147,26 +149,23 @@ public class HandlerMessage {
         Long chatId = message.getChatId();
         String text = message.getText();
 
-        if (text.equals("Управ муз")){
-            String answer = "/setDate (date) -- встанвлення дати\n" +
-                    "/close -- закріття записи\n" +
-                    "/show (date) -- відображення людей, які записался до екскурсії";
-
-            bot.sendMessage(chatId, answer);
-        }
-
-        if (text.equals("Упр марш")){
+        if (text.equals("Керування ботом") && chatId == 391736560L){
             String answer = "Оберіть дію:";
 
             List<String> list = new ArrayList<>();
+            list.add("Керування музеем");
             list.add("Вакансії");
             list.add("Зупинки");
             list.add("Маршрут");
-            list.add("Термінові повідомлення");
+            list.add("Додати повідомлення");
 
             bot.sendMessage(chatId, answer, new GeneralButton().getButtons(list, list));
         }
 
+        if (text.equals("Термінові повідомлення")){
+            String print = noticePrinter.print(LocalDate.now());
 
+            bot.sendMessage(chatId, print);
+        }
     }
 }

@@ -23,4 +23,8 @@ public interface TransportRepository extends JpaRepository<Transport, Long> {
     @Modifying(clearAutomatically = true)
     @Query("DELETE FROM Transport t WHERE t.type = :type AND t.numberOfTrack = :numberOfTrack")
     void deleteByTypeAndNumberOfTrack(String type, String numberOfTrack);
+
+    @Query("SELECT t FROM Transport t LEFT JOIN FETCH t.notices WHERE t.type = :type AND t.numberOfTrack = :numberOfTrack")
+    Optional<Transport> findWithNoticesByTypeAndNumberOfTrack(String type, String numberOfTrack);
+
 }

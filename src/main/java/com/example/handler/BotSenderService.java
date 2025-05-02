@@ -34,7 +34,7 @@ public class BotSenderService {
                     .builder()
                     .chatId(chatId)
                     .text(text)
-                    .replyMarkup(KeyboardButtons.getButtonsAdmin())
+                    .replyMarkup(KeyboardButtons.getButtonsAdminAndEditor())
                     .build();
             try {
                 bot.execute(sendMessage);

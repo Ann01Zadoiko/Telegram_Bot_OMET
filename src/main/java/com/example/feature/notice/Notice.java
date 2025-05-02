@@ -7,6 +7,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.time.LocalDate;
+import java.time.LocalTime;
 
 @Getter
 @Setter
@@ -21,6 +22,9 @@ public class Notice {
 
     @Column(name = "date")
     private LocalDate date;
+
+    @Column(name = "time")
+    private LocalTime time;
 
     @Column(name = "reason")
     private String reason;
