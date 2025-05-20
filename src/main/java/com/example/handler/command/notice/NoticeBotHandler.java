@@ -61,7 +61,8 @@ public class NoticeBotHandler {
     }
 
     private void handleIdleState(Long chatId, UserSession session) {
-        if ("Додати повідомлення".equals(session.getLastInput()) && chatId == 391736560L) {
+        boolean b = (796494502L == chatId) || (1037495749L == chatId) || ( chatId == 391736560L);
+        if ("Додати повідомлення".equals(session.getLastInput()) && b) {
             session.pushState(IDLE_NOTICE);
             session.setState(NOTICE_SELECT_TYPE);
             session.setTime(LocalTime.now());

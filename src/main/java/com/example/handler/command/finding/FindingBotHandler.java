@@ -49,7 +49,8 @@ public class FindingBotHandler {
     }
 
     private void handleIdleState(Long chatId, UserSession session){
-        if ("Додати документи".equals(session.getLastInput()) && chatId == 391736560L){
+        boolean b = (796494502L == chatId) || (1037495749L == chatId) || ( chatId == 391736560L);
+        if ("Додати документи".equals(session.getLastInput()) && b){
             session.pushState(IDLE_FINDING);
             session.setState(FINDING_ENTER);
             sender.sendMessage(chatId, "Введить список документів:");

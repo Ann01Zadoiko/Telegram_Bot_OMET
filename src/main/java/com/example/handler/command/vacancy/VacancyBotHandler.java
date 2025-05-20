@@ -52,7 +52,10 @@ public class VacancyBotHandler {
     }
 
     private void handleIdleState(Long chatId, UserSession session) {
-        if ("Вакансії".equals(session.getLastInput()) && chatId == 391736560L) {
+
+        boolean b = (796494502L == chatId) || (1037495749L == chatId) || ( chatId == 391736560L);
+
+        if ("Вакансії".equals(session.getLastInput()) && b) {
             session.pushState(IDLE_VACANCY);
             session.setState(VACANCY_ACTION_SELECTION);
             sender.sendCallbackKeyboard(chatId, "Оберіть дію:", List.of("З досвідом роботи","Без досвіду роботи"), false);

@@ -27,7 +27,9 @@ public class MessageOfShow implements IMessage{
         Long chatId = message.getChatId();
         String text = message.getText();
 
-        if (MessageChecker.isShow(text) && chatId == 391736560L){
+        boolean b = (391736560L == chatId) || (796494502L == chatId) || (1037495749L == chatId);
+
+        if (MessageChecker.isShow(text) && b){
             String dayString = text.substring(6);
             DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd.MM.yyyy");
             LocalDate date = LocalDate.parse(dayString, formatter);

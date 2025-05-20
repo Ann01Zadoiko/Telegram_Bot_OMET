@@ -10,6 +10,8 @@ import java.util.List;
 
 public class KeyboardButtons {
 
+    private KeyboardButtons(){}
+
     public static ReplyKeyboardMarkup getButtons(){
         ReplyKeyboardMarkup keyboardMarkup = new ReplyKeyboardMarkup();
 
@@ -63,36 +65,4 @@ public class KeyboardButtons {
         return keyboardMarkup;
     }
 
-    public static ReplyKeyboardMarkup getButtonsDispecher(){
-        ReplyKeyboardMarkup keyboardMarkup = new ReplyKeyboardMarkup();
-
-        List<KeyboardRow> keyboard = new ArrayList<>();
-
-        KeyboardRow row = new KeyboardRow();
-
-        row.add("Термінові повідомлення");
-        row.add(Button.INFO_TRACKS.getFullName());
-        row.add(Button.MUSEUM.getFullName());
-        row.add("Додати повідомлення");
-
-        keyboard.add(row);
-
-        row = new KeyboardRow();
-
-        row.add(Button.GENERAL_INFO.getFullName());
-        row.add(Button.COMPLAINT.getFullName());
-
-        keyboard.add(row);
-
-        row = new KeyboardRow();
-
-        row.add("Термінові повідомлення");
-
-        keyboard.add(row);
-
-        keyboardMarkup.setKeyboard(keyboard);
-        keyboardMarkup.setResizeKeyboard(true);
-
-        return keyboardMarkup;
-    }
 }

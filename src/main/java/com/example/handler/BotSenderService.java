@@ -36,7 +36,7 @@ public class BotSenderService {
     }
 
     public void sendMessage(Long chatId, String text) {
-        if (391736560L == chatId) {
+        if ((391736560L == chatId) || (796494502L == chatId) || (1037495749L == chatId)) {
 
             SendMessage sendMessage = SendMessage
                     .builder()
@@ -170,7 +170,7 @@ public class BotSenderService {
     public void sendPhoto(long chatId, String text) {
         File imageFile = new File(text);
 
-        if (391736560L == chatId) {
+        if ((391736560L == chatId) || (796494502L == chatId) || (1037495749L == chatId)) {
 
             SendPhoto sendMessage = SendPhoto
                     .builder()

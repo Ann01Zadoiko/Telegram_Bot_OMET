@@ -28,7 +28,8 @@ public class MessageOfNewDayToMuseum implements IMessage{
         String text = message.getText();
         Museum museum = museumService.getById(1L);
 
-        if (MessageChecker.isSetDate(text) && chatId == 391736560L){
+        boolean b = (391736560L == chatId) || (796494502L == chatId) || (1037495749L == chatId);
+        if (MessageChecker.isSetDate(text) && b){
 
             String dayString = text.substring(9);
             DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd.MM.yyyy");

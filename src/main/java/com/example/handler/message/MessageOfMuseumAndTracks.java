@@ -10,7 +10,6 @@ import org.springframework.stereotype.Service;
 import org.telegram.telegrambots.meta.api.objects.Message;
 import org.telegram.telegrambots.meta.api.objects.Update;
 
-import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -26,14 +25,28 @@ public class MessageOfMuseumAndTracks implements IMessage{
         Long chatId = message.getChatId();
         String text = message.getText();
 
+        boolean b = (796494502L == chatId) || (1037495749L == chatId);
+
         if (text.equals("Керування ботом") && chatId == 391736560L){
             String answer = "Оберіть дію:";
 
             List<String> list = new ArrayList<>();
-            list.add("Керування музеем");
+            list.add("Редагувати екскурсію");
             list.add("Вакансії");
             list.add("Зупинки");
             list.add("Маршрут");
+            list.add("Додати повідомлення");
+            list.add("Додати документи");
+
+            botSenderService.sendMessage(chatId, answer, new GeneralButton().getButtons(list, list));
+        }
+
+        if (text.equals("Керування ботом") && b){
+            String answer = "Оберіть дію:";
+
+            List<String> list = new ArrayList<>();
+            list.add("Редагувати екскурсію");
+            list.add("Вакансії");
             list.add("Додати повідомлення");
             list.add("Додати документи");
 
