@@ -1,12 +1,8 @@
 package com.example.feature.stop;
 
 import com.example.feature.transport.Transport;
-import com.example.feature.transport.TransportRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 
 @Service

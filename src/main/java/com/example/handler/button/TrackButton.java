@@ -30,7 +30,7 @@ public class TrackButton {
 
         InlineKeyboardButton button1 = InlineKeyboardButton
                 .builder()
-                .text("Зупинка")
+                .text("Зупинки")
                 .callbackData("STOPS " + transport.getType() + " " + transport.getNumberOfTrack())
                 .build();
 

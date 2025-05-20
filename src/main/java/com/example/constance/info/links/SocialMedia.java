@@ -3,7 +3,7 @@ package com.example.constance.info.links;
 public enum SocialMedia {
     SITE("https://oget.od.ua/", "Сайт"),
     //   FACEBOOK("https://www.facebook.com/kp.oget/", "Facebook"),
-    INSTAGRAM("https://www.instagram.com/kp_oget_staff_/", "Instagram");
+    INSTAGRAM("https://www.instagram.com/kp_omet?igsh=MWl4OGkyNnY3cHV2bg==", "Instagram");
 
     private String url;
     private String name;

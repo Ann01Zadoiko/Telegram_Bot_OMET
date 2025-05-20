@@ -31,14 +31,8 @@ public class Transport {
     @Column(name = "stops_start_end")
     private String stopsStartEnd;
 
-    @Column(name = "time_start_end")
-    private String time;
-
     @Column(name = "link")
     private String link;
-
-    @Column(name = "interval_time")
-    private String interval;
 
     @OneToOne(mappedBy = "transport", cascade = CascadeType.ALL)
     private Stop stop;
@@ -46,16 +40,31 @@ public class Transport {
     @OneToMany(mappedBy = "transport", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Notice> notices;
 
+    @Column(name = "interval_weekdays")
+    private String intervalWeekdays;
+
+    @Column(name = "interval_weekend")
+    private String intervalWeekend;
+
+    @Column(name = "time_start")
+    private String timeStart;
+
+    @Column(name = "time_end")
+    private String timeEnd;
+
     @Override
     public String toString() {
         return "Transport{" +
-                "interval='" + interval + '\'' +
-                ", link='" + link + '\'' +
-                ", time='" + time + '\'' +
-                ", stopsStartEnd='" + stopsStartEnd + '\'' +
-                ", numberOfTrack='" + numberOfTrack + '\'' +
+                "id=" + id +
                 ", type='" + type + '\'' +
-                ", id=" + id +
+                ", numberOfTrack='" + numberOfTrack + '\'' +
+                ", stopsStartEnd='" + stopsStartEnd + '\'' +
+                ", link='" + link + '\'' +
+                ", intervalWeekdays='" + intervalWeekdays + '\'' +
+                ", intervalWeekend='" + intervalWeekend + '\'' +
+                ", timeStart='" + timeStart + '\'' +
+                ", timeEnd='" + timeEnd + '\'' +
                 '}';
     }
 }
+

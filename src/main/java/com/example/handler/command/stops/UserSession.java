@@ -11,7 +11,7 @@ import java.util.Deque;
 @RequiredArgsConstructor
 @Getter
 @Setter
-public class UserSession {
+public class UserSession{
 
     private BotState state = BotState.IDLE_STOP; // Текущее состояние
     private final Deque<BotState> stateHistory = new ArrayDeque<>(); // История состояний

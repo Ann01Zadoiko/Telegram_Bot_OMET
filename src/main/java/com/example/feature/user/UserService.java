@@ -12,7 +12,7 @@ public class UserService implements IUserService{
 
     @Override
     public User getById(Long id) {
-        return repository.getById(id);
+        return repository.findById(id).get();
     }
 
     @Override
@@ -22,7 +22,6 @@ public class UserService implements IUserService{
 
     @Override
     public User getByChatId(Long chatId){
-
         return repository.findByChatId(chatId);
     }
 
@@ -31,7 +30,3 @@ public class UserService implements IUserService{
         return repository.existsByChatId(chatId);
     }
 }
-//change date in museum
-//close museum
-
-//chance vacancy

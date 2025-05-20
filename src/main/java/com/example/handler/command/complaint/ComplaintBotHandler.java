@@ -10,7 +10,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 import org.telegram.telegrambots.meta.api.objects.PhotoSize;
 import org.telegram.telegrambots.meta.api.objects.Update;
-
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -53,7 +52,6 @@ public class ComplaintBotHandler {
             text = bestPhoto.getFileId();
         }
 
-
         UserSession session = sessions.computeIfAbsent(chatId, id -> new UserSession());
 
         if ("back".equals(text)) {
@@ -61,16 +59,14 @@ public class ComplaintBotHandler {
                 session.setState(session.getStateHistory().pop());
             }
         } else {
-            session.setLastInput(text); // 💡 теперь корректно будет и при callback'ах
+            session.setLastInput(text);
         }
-
 
         switch (session.getState()) {
             case IDLE_COMPLAINT -> handlerStatusComplaint(chatId, session);
             case COMPLAINT_SELECT -> handlerStartComplaint(chatId, session);
             case COMPLAINT_ENTER_FULL_NAME, COMPLAINT_ENTER_PHONE_NUMBER,
                  COMPLAINT_ENTER_TEXT, COMPLAINT_SEND_PHOTO -> handlerCreateComplaint(chatId, session);
-
         }
     }
 
@@ -80,7 +76,9 @@ public class ComplaintBotHandler {
             session.setState(COMPLAINT_SELECT);
 
             List<String> list = List.of("Так", "Ні");
-            sender.sendCallbackKeyboard(chatId, "Бажаете залишити повідомлення?", list, false);
+            sender.sendCallbackKeyboard(chatId, Complain.STEP_1.getText(), list, false);
+
+            log.info("Complaint start by user id {}", chatId);
         }
     }
 
@@ -89,7 +87,8 @@ public class ComplaintBotHandler {
             session.pushState(COMPLAINT_SELECT);
             session.setState(IDLE_COMPLAINT);
 
-            sender.sendMessage(chatId, "Гарного Вам дня!");
+            String text = "Також можете звернутися до Інформаційного центра за номерами:\n+38 (094) 921 98 86\n+38 (048) 7 886 886\n+38 (048) 717 54 54";
+            sender.sendMessage(chatId, text);
         } else if (session.getLastInput().equals("Так")){
             session.pushState(COMPLAINT_SELECT);
             session.setState(COMPLAINT_ENTER_FULL_NAME);
@@ -99,6 +98,7 @@ public class ComplaintBotHandler {
             session.pushState(COMPLAINT_SELECT);
             session.setState(IDLE_COMPLAINT);
         }
+        log.info("Complaint, select yes or no by user id {}", chatId);
     }
 
     private void handlerCreateComplaint(Long chatId, UserSession session){
@@ -139,11 +139,12 @@ public class ComplaintBotHandler {
                 if (session.getLastInput().equals("Пропустити")){
                     EmailSender.sendEmailWithAttachment("info@oget.od.ua",
                             "Скарга",
-                            complaint.getFullName() + "\n" + complaint.getPhoneNumber() + "\n" + complaint.getText(), chatId);
+                            complaint.getFullName() + "\n" + complaint.getPhoneNumber() + "\n" + complaint.getText());
 
                     sender.sendMessage(chatId,  Complain.STEP_7.getText());
                 } else {
 
+                    sender.sendMessage(chatId, "Зачекайте 5-10 секунд для обробки фото");
                     sender.processPhotoAndSendEmail(session.getLastInput(),
                             complaint.getFullName() + "\n" + complaint.getPhoneNumber() + "\n" + complaint.getText(), chatId);
                 }
@@ -151,6 +152,8 @@ public class ComplaintBotHandler {
                 session.setState(IDLE_COMPLAINT);
             }
         }
+
+        log.info("User ({}) enter values for complaint", chatId);
     }
 
     private void saveComplaint(Long chatId, UserSession session){
@@ -162,5 +165,7 @@ public class ComplaintBotHandler {
         complaint.setChatId(chatId);
 
         complaintService.save(complaint);
+
+        log.info("Complaint was created by user ({})", chatId);
     }
 }

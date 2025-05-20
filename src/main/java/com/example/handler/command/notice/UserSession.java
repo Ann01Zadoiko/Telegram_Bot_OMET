@@ -1,6 +1,5 @@
 package com.example.handler.command.notice;
 
-import com.example.handler.command.BotState;
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;
 import lombok.Setter;

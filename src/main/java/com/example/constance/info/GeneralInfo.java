@@ -4,6 +4,8 @@ public enum GeneralInfo {
     VACANCY ("Вакансії"),
     STUDY ("Навчання"),
     SOCIAL_MEDIA ("Соціальні мережі"),
+    INFO_CENTER("Інформаційний центр"),
+    FINDING_DOCUMENTS("Знайдені документи"),
     RENT("Оренда");
 
     private String fullName;

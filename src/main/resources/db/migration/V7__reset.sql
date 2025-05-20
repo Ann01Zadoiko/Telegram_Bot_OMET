@@ -5,3 +5,4 @@ SELECT setval('stops_id_seq', (SELECT COALESCE(MAX(id), 1) FROM stops));
 SELECT setval('museums_id_seq', (SELECT COALESCE(MAX(id), 1) FROM museums));
 SELECT setval('complaints_id_seq', (SELECT COALESCE(MAX(id), 1) FROM complaints));
 SELECT setval('users_id_seq', (SELECT COALESCE(MAX(id), 1) FROM users));
+SELECT setval('finding_documents_id_seq', (SELECT COALESCE(MAX(id), 1) FROM finding_documents));

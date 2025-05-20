@@ -4,6 +4,7 @@ import com.example.bot.TelegramBot;
 import com.example.constance.museum.Registration;
 import com.example.feature.museum.Museum;
 import com.example.feature.museum.MuseumService;
+import com.example.handler.BotSenderService;
 import lombok.RequiredArgsConstructor;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
@@ -20,15 +21,15 @@ public class MuseumRegistration {
 
     // --- НАЧАЛО РЕГИСТРАЦИИ ---
     @SneakyThrows
-    public void startRegistration(Long chatId, TelegramBot bot) {
+    public void startRegistration(Long chatId, BotSenderService botSenderService) {
         log.info("🚀 Начата регистрация chatId: {}", chatId);
         stateManager.startRegistration(chatId, RegistrationType.MUSEUM, 1);
-        bot.sendMessage(chatId, "📝 " + Registration.STEP_2.getText());
+        botSenderService.sendMessage(chatId, "📝 " + Registration.STEP_2.getText());
     }
 
     // --- ОБРАБОТКА ЭТАПОВ РЕГИСТРАЦИИ ---
     @SneakyThrows
-    public void processRegistrationStep(Long chatId, String messageText, TelegramBot bot) {
+    public void processRegistrationStep(Long chatId, String messageText, BotSenderService botSenderService) {
         log.info("🔹 processRegistrationStep() вызван для chatId: {}, step: {}", chatId, stateManager.getUserRegistration(chatId).getStep());
 
         UserRegistration userReg = stateManager.getUserRegistration(chatId);
@@ -46,7 +47,7 @@ public class MuseumRegistration {
                 userReg.setFullName(messageText);
                 userReg.nextStep();
                 stateManager.updateUserRegistration(chatId, userReg); // 👈 ОБНОВЛЯЕМ СОСТОЯНИЕ
-                bot.sendMessage(chatId, "📞 " + Registration.STEP_3.getText());
+                botSenderService.sendMessage(chatId, "📞 " + Registration.STEP_3.getText());
                 break;
 
             case 2:
@@ -59,7 +60,7 @@ public class MuseumRegistration {
                 userReg.nextStep();
                 stateManager.updateUserRegistration(chatId, userReg); // 👈 ОБНОВЛЯЕМ СОСТОЯНИЕ
 
-                bot.sendMessage(chatId, "👥 " + Registration.STEP_4.getText());
+                botSenderService.sendMessage(chatId, "👥 " + Registration.STEP_4.getText());
 
                 break;
 
@@ -73,9 +74,9 @@ public class MuseumRegistration {
 
                     userReg.setText("Количество человек: " + count);
 
-                    bot.sendMessage(chatId, Registration.STEP_8.getText() + "\n" + Registration.STEP_7.getText());
+                    botSenderService.sendMessage(chatId, Registration.STEP_8.getText() + "\n" + Registration.STEP_7.getText());
                 } catch (NumberFormatException e) {
-                    bot.sendMessage(chatId, "❌ Пожалуйста, введите число.");
+                    botSenderService.sendMessage(chatId, "❌ Пожалуйста, введите число.");
                     return;
                 }
                 stateManager.removeUser(chatId);

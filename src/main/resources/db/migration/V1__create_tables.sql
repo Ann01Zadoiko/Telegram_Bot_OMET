@@ -34,9 +34,11 @@ create table transports (
     type varchar(20),
     number_of_track varchar(5),
     stops_start_end text,
-    time_start_end text,
     link text,
-    interval_time varchar(20)
+    interval_weekdays varchar(10),
+    interval_weekend varchar(10),
+    time_start text,
+    time_end text
 );
 
 create table stops (
@@ -55,4 +57,9 @@ create table notices (
     relevance boolean,
     id_transport bigint,
     foreign key (id_transport) references transports (id)
+);
+
+create table finding_documents(
+    id bigserial primary key,
+    text text
 );

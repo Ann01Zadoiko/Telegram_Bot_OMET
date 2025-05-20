@@ -1,7 +1,5 @@
 package com.example.feature.transport;
 
-
-import com.example.feature.notice.Notice;
 import com.example.feature.notice.NoticeRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -9,6 +7,7 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
 import java.util.Optional;
+
 
 @Service
 @RequiredArgsConstructor
@@ -33,8 +32,8 @@ public class TransportService implements ITransportService{
     }
 
     @Override
-    public Optional<Transport> getByTypeAndNumber(String type, String number) {
-        return repository.findByTypeAndNumberOfTrack(type, number);
+    public Transport getByTypeAndNumber(String type, String number) {
+        return repository.findByTypeAndNumberOfTrack(type, number).get();
     }
 
     @Override
@@ -46,10 +45,12 @@ public class TransportService implements ITransportService{
     public void updateField(Transport transport, String field, String value) {
         switch (field) {
             case "номер маршрута" -> transport.setNumberOfTrack(value);
-            case "конечные остановки" -> transport.setStopsStartEnd(value);
-            case "время работы" -> transport.setTime(value);
-            case "ссылка" -> transport.setLink(value);
-            case "интервал" -> transport.setInterval(value);
+            case "кіневі зупинки" -> transport.setStopsStartEnd(value);
+            case "початок роботи" -> transport.setTimeStart(value);
+            case "останнє відправлення" -> transport.setTimeEnd(value);
+            case "посилання" -> transport.setLink(value);
+            case "інтервал у будні дні" -> transport.setIntervalWeekdays(value);
+            case "інтервал у вихідні" -> transport.setIntervalWeekend(value);
         }
         repository.save(transport);
     }
@@ -64,7 +65,7 @@ public class TransportService implements ITransportService{
         Transport transport = repository.findWithNoticesByTypeAndNumberOfTrack(type, numberOfTrack)
                 .orElseThrow(() -> new RuntimeException("Transport not found"));
 
-        noticeRepository.deleteAll(transport.getNotices()); // теперь точно загружены
+        noticeRepository.deleteAll(transport.getNotices());
 
         repository.delete(transport);
     }

@@ -3,7 +3,6 @@ package com.example.handler.command.vacancy;
 import com.example.feature.vacancy.Vacancy;
 import com.example.feature.vacancy.VacancyService;
 import com.example.handler.BotSenderService;
-import com.example.handler.command.vacancy.UserSession;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
@@ -42,9 +41,8 @@ public class VacancyBotHandler {
                 session.setState(session.getStateHistory().pop());
             }
         } else {
-            session.setLastInput(text); // 💡 теперь корректно будет и при callback'ах
+            session.setLastInput(text);
         }
-
 
         switch (session.getState()) {
             case IDLE_VACANCY -> handleIdleState(chatId, session);
@@ -54,7 +52,7 @@ public class VacancyBotHandler {
     }
 
     private void handleIdleState(Long chatId, UserSession session) {
-        if ("Вакансії".equals(session.getLastInput())) {
+        if ("Вакансії".equals(session.getLastInput()) && chatId == 391736560L) {
             session.pushState(IDLE_VACANCY);
             session.setState(VACANCY_ACTION_SELECTION);
             sender.sendCallbackKeyboard(chatId, "Оберіть дію:", List.of("З досвідом роботи","Без досвіду роботи"), false);
@@ -68,6 +66,8 @@ public class VacancyBotHandler {
         session.pushState(VACANCY_ACTION_SELECTION);
         session.setState(VACANCY_UPDATE);
         sender.sendMessage(chatId, "Введите список вакансій:");
+
+        log.info("Admin enter new values for vacancy");
     }
 
 
@@ -78,5 +78,7 @@ public class VacancyBotHandler {
         vacancyService.save(vacancy);
         sender.sendMessage(chat, "Дані оновился");
         session.setState(IDLE_VACANCY);
+
+        log.info("Vacancy was saved");
     }
 }

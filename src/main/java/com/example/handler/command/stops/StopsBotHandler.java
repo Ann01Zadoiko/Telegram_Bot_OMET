@@ -1,11 +1,11 @@
 package com.example.handler.command.stops;
 
+import com.example.constance.Function;
 import com.example.feature.stop.Stop;
 import com.example.feature.stop.StopService;
 import com.example.feature.transport.Transport;
 import com.example.feature.transport.TransportService;
 import com.example.handler.BotSenderService;
-import com.example.handler.command.stops.UserSession;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
 import org.telegram.telegrambots.meta.api.objects.Update;
@@ -22,6 +22,7 @@ public class StopsBotHandler {
     private final StopService stopService;
     private final Map<Long, UserSession> sessions = new HashMap<>();
     private final BotSenderService sender;
+    private final List<String> listOfChoose = List.of("прямий напрямок", "зворотній напрямок", "Завершити");
 
     public StopsBotHandler(TransportService transportService, StopService stopService, BotSenderService sender) {
         this.transportService = transportService;
@@ -49,7 +50,7 @@ public class StopsBotHandler {
                 session.setState(session.getStateHistory().pop());
             }
         } else {
-            session.setLastInput(text); // 💡 теперь корректно будет и при callback'ах
+            session.setLastInput(text);
         }
 
 
@@ -66,7 +67,7 @@ public class StopsBotHandler {
     }
 
     private void handleIdleState(Long chatId, UserSession session) {
-        if ("Зупинки".equals(session.getLastInput())) {
+        if ("Зупинки".equals(session.getLastInput()) && chatId == 391736560L) {
             session.pushState(IDLE_STOP);
             session.setState(STOPS_ACTION_SELECTION);
             Map<String, String> actions = new LinkedHashMap<>();
@@ -74,8 +75,6 @@ public class StopsBotHandler {
             actions.put("оновити", "stop_update");
             actions.put("видалити", "stop_delete");
             sender.sendInlineKeyboard(chatId, "Оберіть дію:", actions);
-
-            log.info("{} current state", session.getState().toString());
         }
     }
 
@@ -84,9 +83,6 @@ public class StopsBotHandler {
         session.pushState(STOPS_ACTION_SELECTION);
         session.setState(STOP_SELECT_TYPE);
         sender.sendCallbackKeyboard(chatId, "Оберіть тип транспортного засобу:", List.of("трамвай", "тролейбус"), false);
-
-        log.info("{} current state", session.getState().toString());
-        log.info("{} previous action", session.getPreviousAction());
 
     }
 
@@ -98,20 +94,18 @@ public class StopsBotHandler {
         switch (session.getPreviousAction()) {
             case "stop_add" -> {
                 session.setState(STOP_SELECT_NUMBER);
-                sender.sendCallbackKeyboard(chatId, "Оберіть номер маршруту:", numbers, false);
+                sender.sendCallbackKeyboard(chatId, Function.CHOOSE_NUMBER, numbers, false);
             }
             case "stop_update" -> {
                 session.setState(STOP_UPDATE_SELECT_FIELD);
-                sender.sendCallbackKeyboard(chatId, "Оберіть номер маршруту:", numbers, false);
+                sender.sendCallbackKeyboard(chatId, Function.CHOOSE_NUMBER, numbers, false);
             }
             case "stop_delete" -> {
                 session.setState(STOP_DELETE_NAME);
-                sender.sendCallbackKeyboard(chatId, "Оберіть номер маршруту:", numbers, false);
+                sender.sendCallbackKeyboard(chatId, Function.CHOOSE_NUMBER, numbers, false);
             }
         }
 
-        log.info("{} current state", session.getState().toString());
-        log.info("{} last input", session.getLastInput());
     }
 
     private void handleAddStopsState(Long chatId, UserSession session) {
@@ -137,7 +131,6 @@ public class StopsBotHandler {
                 sender.sendMessage(chatId, "Зупинки додани");
             }
         }
-        log.info("{} current state", session.getState().toString());
     }
 
     private void handleUpdateStopsState(Long chatId, UserSession session) {
@@ -146,8 +139,7 @@ public class StopsBotHandler {
                 session.setTrackNumber(session.getLastInput());
                 session.pushState(STOP_UPDATE_SELECT_FIELD);
                 session.setState(STOP_UPDATE_ENTER_VALUE);
-                sender.sendCallbackKeyboard(chatId, "Що бажаєте оновити?",
-                        List.of("прямий напрямок", "зворотній напрямок", "Завершити"), false);
+                sender.sendCallbackKeyboard(chatId, "Що бажаєте оновити?", listOfChoose, false);
             }
             case STOP_UPDATE_ENTER_VALUE -> {
                 if ("Завершити".equals(session.getLastInput())) {
@@ -164,33 +156,23 @@ public class StopsBotHandler {
                 String newValue = session.getLastInput();
                 updateStops(session, newValue); // вызываем обновление
                 session.setState(STOP_UPDATE_ENTER_VALUE); // возвращаемся к выбору следующего поля
-                sender.sendCallbackKeyboard(chatId, "Що бажаєте оновити ще?",
-                        List.of("прямий напрямок", "зворотній напрямок", "Завершити"), false);
+                sender.sendCallbackKeyboard(chatId, "Що бажаєте оновити ще?", listOfChoose, false);
             }
         }
 
-        log.info("{} current state", session.getState().toString());
     }
 
     private void handleDeleteStopsState(Long chatId, UserSession session) {
-        Transport transport = transportService.getByTypeAndNumber(session.getTransportType(), session.getLastInput()).get();
+        Transport transport = transportService.getByTypeAndNumber(session.getTransportType(), session.getLastInput());
         stopService.delete(transport);
 
         session.setState(IDLE_STOP);
         sender.sendMessage(chatId, "Зупиник видалені ✅");
 
-        log.info("{} current state", session.getState().toString());
     }
 
     private void saveStops(UserSession session) {
-        Optional<Transport> optional = transportService.getByTypeAndNumber(session.getTransportType(), session.getTrackNumber());
-
-        if (optional.isEmpty()) {
-            log.warn("Transport not found for type={} and number={}", session.getTransportType(), session.getTrackNumber());
-            return;
-        }
-
-        Transport transport = optional.get();
+        Transport transport = transportService.getByTypeAndNumber(session.getTransportType(), session.getTrackNumber());
 
         Stop stop = new Stop();
         stop.setTransport(transport);
@@ -202,10 +184,9 @@ public class StopsBotHandler {
     }
 
     private void updateStops(UserSession session, String newValue) {
-        Optional<Transport> optional = transportService.getByTypeAndNumber(session.getTransportType(), session.getTrackNumber());
-        if (optional.isEmpty()) return;
+        Transport optional = transportService.getByTypeAndNumber(session.getTransportType(), session.getTrackNumber());
 
-        Stop stop = stopService.getByTransport(optional.get());
+        Stop stop = stopService.getByTransport(optional);
 
         switch (session.getUpdateField()) {
             case "прямий напрямок" -> stop.setStopAcross(newValue);

@@ -11,20 +11,22 @@ import java.util.Deque;
 @Getter
 @Setter
 @NoArgsConstructor
-public class UserSession {
-    private BotState state = BotState.IDLE_TRACK; // Текущее состояние
-    private final Deque<BotState> stateHistory = new ArrayDeque<>(); // История состояний
-    private String lastInput; // Последний ввод пользователя
+public class UserSession{
+    private BotState state = BotState.IDLE_TRACK;
+    private final Deque<BotState> stateHistory = new ArrayDeque<>();
+    private String lastInput;
 
     // Поля, используемые при работе с маршрутами
-    private String previousAction; // "добавить", "обновить", "удалить"
-    private String transportType; // Тип транспорта
-    private String trackNumber; // Номер маршрута
-    private String stopsStartEnd; // Конечные остановки
-    private String timeStartEnd; // Время начала и конца
-    private String link; // Ссылка на маршрут
-    private String interval; // Интервал
-    private String updateField; // Обновляемое поле при редактировании
+    private String previousAction;
+    private String transportType;
+    private String trackNumber;
+    private String stopsStartEnd;
+    private String timeStart;
+    private String timeEnd;
+    private String link;
+    private String intervalWeekdays;
+    private String intervalWeekend;
+    private String updateField;
 
     // Установить новое состояние, сохранив текущее в историю
     public void pushState(BotState newState) {

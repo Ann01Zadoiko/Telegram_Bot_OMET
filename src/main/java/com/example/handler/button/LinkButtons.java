@@ -6,12 +6,12 @@ import org.telegram.telegrambots.meta.api.objects.replykeyboard.InlineKeyboardMa
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.InlineKeyboardButton;
 import org.telegram.telegrambots.meta.api.objects.webapp.WebAppInfo;
 
-import java.net.URLEncoder;
-import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
 
 public class LinkButtons {
+
+    private LinkButtons(){}
 
     public static InlineKeyboardMarkup createLinksMuseumButtons(){
         InlineKeyboardMarkup markup = new InlineKeyboardMarkup();

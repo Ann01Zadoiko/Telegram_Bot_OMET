@@ -66,6 +66,30 @@ public class GeneralInfoButtons {
 
         row.add(buttons3);
 
+        //info center
+        InlineKeyboardButton button8 = InlineKeyboardButton
+                .builder()
+                .text(GeneralInfo.INFO_CENTER.getFullName())
+                .callbackData(GeneralInfo.INFO_CENTER.name())
+                .build();
+
+        List<InlineKeyboardButton> buttons8 = new ArrayList<>();
+        buttons8.add(button8);
+
+        row.add(buttons8);
+
+        //finding documents
+        InlineKeyboardButton button9 = InlineKeyboardButton
+                .builder()
+                .text(GeneralInfo.FINDING_DOCUMENTS.getFullName())
+                .callbackData(GeneralInfo.FINDING_DOCUMENTS.name())
+                .build();
+
+        List<InlineKeyboardButton> buttons9 = new ArrayList<>();
+        buttons9.add(button9);
+
+        row.add(buttons9);
+
         //news
         WebAppInfo webAppInfo = new WebAppInfo();
         webAppInfo.setUrl(Link.NEWS.getUrl());

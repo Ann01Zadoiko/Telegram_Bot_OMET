@@ -11,7 +11,7 @@ public interface ITransportService {
 
     List<Transport> getByType(String type);
 
-    Optional<Transport> getByTypeAndNumber(String type, String number);
+    Transport getByTypeAndNumber(String type, String number);
 
     List<String> getNumbersByType(String type);
 

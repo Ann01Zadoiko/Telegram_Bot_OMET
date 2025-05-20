@@ -7,6 +7,8 @@ import com.example.constance.Button;
 
 public class MessageChecker {
 
+    private MessageChecker(){}
+
     public static boolean isEnumValueStatus(String value) {
         for (MuseumEnum e : MuseumEnum.values()) {
             if (e.name().equals(value)) {
@@ -48,7 +50,4 @@ public class MessageChecker {
     public static boolean isClose(String value){
         return (value.equals(Function.CLOSE));
     }
-
-
-
 }

@@ -2,10 +2,7 @@ package com.example.feature.museum;
 
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
-
-import java.sql.Date;
 import java.time.LocalDate;
-import java.time.ZoneId;
 import java.util.List;
 
 @Service
@@ -26,7 +23,7 @@ public class MuseumService implements IMuseumService{
 
     @Override
     public Museum getById(Long id) {
-        return repository.getById(id);
+        return repository.findById(id).get();
     }
 
     @Override
@@ -62,6 +59,4 @@ public class MuseumService implements IMuseumService{
         List<LocalDate> allDates = repository.findAllDates();
         return allDates.get(allDates.size()-1);
     }
-
-
 }

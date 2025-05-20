@@ -17,16 +17,6 @@ public class ComplaintService implements IComplaintService{
     }
 
     @Override
-    public Complaint getById(Long id) {
-        return repository.getById(id);
-    }
-
-    @Override
-    public void deleteById(Long id) {
-        repository.deleteById(id);
-    }
-
-    @Override
     public List<Complaint> getAll() {
         return repository.findAll();
     }
