@@ -6,7 +6,6 @@ import com.example.feature.notice.NoticeService;
 import com.example.feature.transport.Transport;
 import com.example.feature.transport.TransportService;
 import com.example.handler.BotSenderService;
-import com.example.handler.printer.NoticePrinter;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Component;
@@ -14,6 +13,7 @@ import org.telegram.telegrambots.meta.api.objects.Update;
 
 import java.time.LocalDate;
 import java.time.LocalTime;
+import java.time.format.DateTimeFormatter;
 import java.util.*;
 
 import static com.example.handler.command.notice.NoticeBotState.*;
@@ -61,7 +61,7 @@ public class NoticeBotHandler {
     }
 
     private void handleIdleState(Long chatId, UserSession session) {
-        boolean b = (796494502L == chatId) || (1037495749L == chatId) || ( chatId == 391736560L);
+        boolean b = (796494502L == chatId) || (1037495749L == chatId) || (391736560L == chatId);
         if ("Додати повідомлення".equals(session.getLastInput()) && b) {
             session.pushState(IDLE_NOTICE);
             session.setState(NOTICE_SELECT_TYPE);
@@ -132,7 +132,10 @@ public class NoticeBotHandler {
             }
 
             case NOTICE_ENTER_NOTIFICATION -> {
-                String text = session.getTime().getHour() + ":" + session.getTime().getMinute() + " " + session.getLastInput();
+                DateTimeFormatter formatter = DateTimeFormatter.ofPattern("HH:mm");
+                String time = formatter.format(session.getTime());
+
+                String text = time + " " + session.getLastInput();
 
                 session.setReason(text);
 

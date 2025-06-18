@@ -38,7 +38,9 @@ create table transports (
     interval_weekdays varchar(10),
     interval_weekend varchar(10),
     time_start text,
-    time_end text
+    time_end text,
+    work boolean,
+    text text
 );
 
 create table stops (

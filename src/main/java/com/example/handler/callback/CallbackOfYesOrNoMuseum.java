@@ -25,20 +25,20 @@ public class CallbackOfYesOrNoMuseum implements ICallback{
         Long chatId = update.getCallbackQuery().getMessage().getChatId();
         long messageId = update.getCallbackQuery().getMessage().getMessageId();
 
-        if (data.equals("YES_MUSEUM")){
-            Museum museum = new Museum();
-            museum.setDate(museumService.showDate());
-            museum.setChatId(chatId);
-            museumService.save(museum);
-            museumRegistration.startRegistration(chatId, botSenderService);
-        }
-
-        if (data.equals("NO_MUSEUM")){
-            List<MuseumEnum> list = Arrays.stream(MuseumEnum.values()).toList();
-            List<String> listText = list.stream().map(MuseumEnum::getFullName).toList();
-            List<String> listCallback = list.stream().map(MuseumEnum::name).toList();
-
-            botSenderService.executeEditMessage("Музей", chatId, messageId, new GeneralButton().getButtons(listText, listCallback));
-        }
+//        if (data.equals("YES_MUSEUM")){
+//            Museum museum = new Museum();
+//            museum.setDate(museumService.showDate());
+//            museum.setChatId(chatId);
+//            museumService.save(museum);
+//            museumRegistration.startRegistration(chatId, botSenderService);
+//        }
+//
+//        if (data.equals("NO_MUSEUM")){
+//            List<MuseumEnum> list = Arrays.stream(MuseumEnum.values()).toList();
+//            List<String> listText = list.stream().map(MuseumEnum::getFullName).toList();
+//            List<String> listCallback = list.stream().map(MuseumEnum::name).toList();
+//
+//            botSenderService.executeEditMessage("Музей", chatId, messageId, new GeneralButton().getButtons(listText, listCallback));
+//        }
     }
 }

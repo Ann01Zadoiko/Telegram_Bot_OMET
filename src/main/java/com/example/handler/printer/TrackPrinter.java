@@ -12,11 +12,15 @@ public class TrackPrinter {
     public static String print(Transport transport){
         log.info("Print track({} {})", transport.getType(), transport.getNumberOfTrack());
 
-        return transport.getType() + " " + transport.getNumberOfTrack() + "\n\n" +
-                transport.getStopsStartEnd() + "\n\n" +
-                TransportEnum.TIME_START.getName() + "\n" + transport.getTimeStart() + "\n\n" +
-                TransportEnum.TIME_END.getName() + "\n" + transport.getTimeEnd() + "\n\n" +
-                TransportEnum.INTERVAL_WEEKDAYS.getName() + transport.getIntervalWeekdays() + " хв.\n" +
-                TransportEnum.INTERVAL_WEEKEND.getName() + transport.getIntervalWeekend() + " хв.";
+        if (transport.isWork()){
+            return transport.getType() + " " + transport.getNumberOfTrack() + "\n\n" +
+                    transport.getStopsStartEnd() + "\n\n" +
+                    TransportEnum.TIME_START.getName() + "\n" + transport.getTimeStart() + "\n\n" +
+                    TransportEnum.TIME_END.getName() + "\n" + transport.getTimeEnd() + "\n\n" +
+                    TransportEnum.INTERVAL_WEEKDAYS.getName() + transport.getIntervalWeekdays() + " хв.\n" +
+                    TransportEnum.INTERVAL_WEEKEND.getName() + transport.getIntervalWeekend() + " хв.";
+        } else {
+            return transport.getText();
+        }
     }
 }

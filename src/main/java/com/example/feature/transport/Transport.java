@@ -52,18 +52,26 @@ public class Transport {
     @Column(name = "time_end")
     private String timeEnd;
 
+    @Column(name = "work")
+    private boolean work;
+
+    @Column(name = "text")
+    private String text;
+
     @Override
     public String toString() {
         return "Transport{" +
-                "id=" + id +
-                ", type='" + type + '\'' +
-                ", numberOfTrack='" + numberOfTrack + '\'' +
-                ", stopsStartEnd='" + stopsStartEnd + '\'' +
-                ", link='" + link + '\'' +
-                ", intervalWeekdays='" + intervalWeekdays + '\'' +
-                ", intervalWeekend='" + intervalWeekend + '\'' +
-                ", timeStart='" + timeStart + '\'' +
+                "text='" + text + '\'' +
+                ", work=" + work +
                 ", timeEnd='" + timeEnd + '\'' +
+                ", timeStart='" + timeStart + '\'' +
+                ", intervalWeekend='" + intervalWeekend + '\'' +
+                ", intervalWeekdays='" + intervalWeekdays + '\'' +
+                ", link='" + link + '\'' +
+                ", stopsStartEnd='" + stopsStartEnd + '\'' +
+                ", numberOfTrack='" + numberOfTrack + '\'' +
+                ", type='" + type + '\'' +
+                ", id=" + id +
                 '}';
     }
 }

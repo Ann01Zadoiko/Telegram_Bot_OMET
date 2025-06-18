@@ -114,14 +114,14 @@ public class StopsBotHandler {
                 session.setTrackNumber(session.getLastInput());
                 session.pushState(STOP_SELECT_NUMBER);
                 session.setState(STOP_ENTER_NAME_1);
-                sender.sendMessage(chatId, "Введить список зупинок у прямому напрямку:");
+                sender.sendMessage(chatId, "Введіть список зупинок у прямому напрямку:");
             }
 
             case STOP_ENTER_NAME_1 -> {
                 session.setStopsAcross(session.getLastInput());
                 session.pushState(STOP_ENTER_NAME_1);
                 session.setState(STOP_ENTER_NAME_2);
-                sender.sendMessage(chatId, "Введить список зупинок у зворотньому напрямку:");
+                sender.sendMessage(chatId, "Введіть список зупинок у зворотньому напрямку:");
             }
             case STOP_ENTER_NAME_2 -> {
                 session.setStopsRightBack(session.getLastInput());
@@ -150,7 +150,7 @@ public class StopsBotHandler {
                 session.setUpdateField(session.getLastInput());
                 session.pushState(STOP_UPDATE_ENTER_VALUE);
                 session.setState(STOP_UPDATE_ENTER_NEW_VALUE);
-                sender.sendMessage(chatId, "Введить нове значення:");
+                sender.sendMessage(chatId, "Введіть нове значення:");
             }
             case STOP_UPDATE_ENTER_NEW_VALUE -> {
                 String newValue = session.getLastInput();

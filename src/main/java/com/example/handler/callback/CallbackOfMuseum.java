@@ -40,22 +40,22 @@ public class CallbackOfMuseum implements ICallback{
                     botSenderService.sendMiniApp(chatId, LinkButtons.createLinksMuseumButtons(), text, messageId, update.getCallbackQuery());
                 }
 
-                case REGISTRATION ->{
-                    DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd.MM");
-
-                    Museum museum = museumService.getById(1L);
-                    String textClose = Registration.STEP_9.getText() + "\n" + Registration.STEP_10.getText();
-                    String textOpen =  Registration.STEP_1.getText() + museum.getDate().format(formatter) + " на 12:00?";
-
-                    if (museum.isClose()){
-                        botSenderService.executeEditMessage(textClose, chatId, messageId, new GeneralButton().getButtons(List.of("Назад"), List.of("BACK_MUSEUM")));
-                    } else {
-                        List<String> listText = List.of("Так", "Ні");
-                        List<String> listCallback = List.of("YES_MUSEUM", "NO_MUSEUM");
-
-                        botSenderService.executeEditMessage(textOpen, chatId, messageId, new GeneralButton().getButtons(listText, listCallback));
-                    }
-                }
+//                case REGISTRATION ->{
+//                    DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd.MM");
+//
+//                    Museum museum = museumService.getById(1L);
+//                    String textClose = Registration.STEP_9.getText() + "\n" + Registration.STEP_10.getText();
+//                    String textOpen =  Registration.STEP_1.getText() + museum.getDate().format(formatter) + " на 12:00?";
+//
+//                    if (museum.isClose()){
+//                        botSenderService.executeEditMessage(textClose, chatId, messageId, new GeneralButton().getButtons(List.of("Назад"), List.of("BACK_MUSEUM")));
+//                    } else {
+//                        List<String> listText = List.of("Так", "Ні");
+//                        List<String> listCallback = List.of("YES_MUSEUM", "NO_MUSEUM");
+//
+//                        botSenderService.executeEditMessage(textOpen, chatId, messageId, new GeneralButton().getButtons(listText, listCallback));
+//                    }
+//                }
             }
         }
     }

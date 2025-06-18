@@ -17,5 +17,5 @@ public interface ITransportService {
 
     void deleteByTypeAndNumberOfTrack(String type, String numberOfTrack);
 
-    void updateField(Transport transport, String field, String value);
+
 }

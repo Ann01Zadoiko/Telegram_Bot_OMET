@@ -1,4 +1,4 @@
-package com.example.handler.command.complaint;
+package com.example.handler.registration.complaint;
 
 import lombok.Getter;
 import lombok.RequiredArgsConstructor;

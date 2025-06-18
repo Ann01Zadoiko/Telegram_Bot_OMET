@@ -49,11 +49,11 @@ public class FindingBotHandler {
     }
 
     private void handleIdleState(Long chatId, UserSession session){
-        boolean b = (796494502L == chatId) || (1037495749L == chatId) || ( chatId == 391736560L);
+        boolean b = (796494502L == chatId) || (1037495749L == chatId) || (391736560L == chatId);
         if ("Додати документи".equals(session.getLastInput()) && b){
             session.pushState(IDLE_FINDING);
             session.setState(FINDING_ENTER);
-            sender.sendMessage(chatId, "Введить список документів:");
+            sender.sendMessage(chatId, "Введіть список документів:");
         }
     }
 

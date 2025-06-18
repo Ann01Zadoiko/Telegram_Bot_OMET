@@ -47,23 +47,23 @@ public class BotHandler {
     @SneakyThrows
     public void answerToMessage(Update update, UserStateManager stateManager){
 
-        if (stateManager.isUserRegistering(update.getMessage().getChatId())) {
-            if (update.getMessage().getText().equalsIgnoreCase("/cancel")) {
-                stateManager.removeUser(update.getMessage().getChatId());
-                botSenderService.sendMessage(update.getMessage().getChatId(), "❌ Регистрация отменена.");
-            } else {
-                log.info("🟡 Пользователь {} находится в процессе регистрации.", update.getMessage().getChatId());
-
-                RegistrationType type = stateManager.getUserRegistrationType(update.getMessage().getChatId());
-
-                if (type == RegistrationType.MUSEUM) {
-                    museumRegistration.processRegistrationStep(update.getMessage().getChatId(), update.getMessage().getText(), botSenderService);
-                }
-
-
-            }
-            return;
-        }
+//        if (stateManager.isUserRegistering(update.getMessage().getChatId())) {
+//            if (update.getMessage().getText().equalsIgnoreCase("/cancel")) {
+//                stateManager.removeUser(update.getMessage().getChatId());
+//                botSenderService.sendMessage(update.getMessage().getChatId(), "❌ Регистрация отменена.");
+//            } else {
+//                log.info("🟡 Пользователь {} находится в процессе регистрации.", update.getMessage().getChatId());
+//
+//                RegistrationType type = stateManager.getUserRegistrationType(update.getMessage().getChatId());
+//
+//                if (type == RegistrationType.MUSEUM) {
+//                    museumRegistration.processRegistrationStep(update.getMessage().getChatId(), update.getMessage().getText(), botSenderService);
+//                }
+//
+//
+//            }
+//            return;
+//        }
 
         new MessageOfGeneralInfo().handlerOfMessage(update, botSenderService);
         new MessageOfMuseum().handlerOfMessage(update, botSenderService);

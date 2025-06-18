@@ -16,7 +16,6 @@ public class UserSession{
     private final Deque<BotState> stateHistory = new ArrayDeque<>();
     private String lastInput;
 
-    // Поля, используемые при работе с маршрутами
     private String previousAction;
     private String transportType;
     private String trackNumber;
@@ -27,8 +26,9 @@ public class UserSession{
     private String intervalWeekdays;
     private String intervalWeekend;
     private String updateField;
+    private String text;
+    private boolean work;
 
-    // Установить новое состояние, сохранив текущее в историю
     public void pushState(BotState newState) {
         if (this.state != null) {
             stateHistory.push(this.state);

@@ -55,6 +55,7 @@ public class TracksBotHandler {
             case TRACK_UPDATE_SELECT_FIELD, TRACK_UPDATE_ENTER_VALUE,
                  TRACK_UPDATE_ENTER_NEW_VALUE -> handleUpdateTrackState(chatId, session);
             case TRACK_DELETE_SELECT -> handleDeleteTrackState(chatId, session);
+            case TRACK_ADD_TEXT, TRACK_CHANGE_INFO -> handleAddNotification(chatId, session);
         }
     }
 
@@ -66,6 +67,7 @@ public class TracksBotHandler {
             actions.put("додати", "track_add");
             actions.put("оновити", "track_update");
             actions.put("видалити", "track_delete");
+            actions.put("змінти на повідомлення", "only_text");
             sender.sendInlineKeyboard(chatId, "Оберіть дію:", actions);
 
         }
@@ -79,6 +81,39 @@ public class TracksBotHandler {
 
     }
 
+    private void handleAddNotification(Long chatId, UserSession session){
+        switch (session.getState()){
+            case TRACK_ADD_TEXT -> {
+                session.setTrackNumber(session.getLastInput());
+
+                session.pushState(TRACK_ADD_TEXT);
+                session.pushState(TRACK_CHANGE_INFO);
+
+                sender.sendMessage(chatId, "Введіть текст повідомлення");
+            }
+            case TRACK_CHANGE_INFO -> {
+                session.setText(session.getLastInput());
+
+                session.pushState(TRACK_CHANGE_INFO);
+                session.setState(IDLE_TRACK);
+
+                updateTransportForNotice(session);
+
+                sender.sendMessage(chatId, "Дані про маршрут змінені на повідомлення");
+            }
+        }
+
+    }
+
+    private void updateTransportForNotice(UserSession session){
+        Transport transport = transportService.getByTypeAndNumber(session.getTransportType(), session.getTrackNumber());
+
+        transport.setWork(false);
+        transport.setText(session.getText());
+
+        transportService.add(transport);
+    }
+
     private void handleTrackSelectType(Long chatId, UserSession session) {
         session.setTransportType(session.getLastInput());
         session.pushState(TRACK_SELECT_TYPE);
@@ -87,14 +122,21 @@ public class TracksBotHandler {
         switch (session.getPreviousAction()) {
             case "track_add" -> {
                 session.setState(TRACK_ENTER_NUMBER);
-                sender.sendMessage(chatId, "Введить номер маршруту:");
+                session.setWork(true);
+                sender.sendMessage(chatId, "Введіть номер маршруту:");
             }
             case "track_update" -> {
                 session.setState(TRACK_UPDATE_SELECT_FIELD);
+                session.setWork(true);
                 sender.sendCallbackKeyboard(chatId, "Оберіть номер маршруту:", numbers, false);
             }
             case "track_delete" -> {
                 session.setState(TRACK_DELETE_SELECT);
+                sender.sendCallbackKeyboard(chatId, "Оберіть номер маршруту:", numbers, false);
+            }
+            case "only_text" -> {
+                session.setState(TRACK_ADD_TEXT);
+                session.setWork(false);
                 sender.sendCallbackKeyboard(chatId, "Оберіть номер маршруту:", numbers, false);
             }
         }
@@ -107,37 +149,37 @@ public class TracksBotHandler {
                 session.setTrackNumber(session.getLastInput().trim());
                 session.pushState(TRACK_ENTER_NUMBER);
                 session.setState(TRACK_ENTER_STOP_END);
-                sender.sendMessage(chatId, "Введить кінцеві зупинки:");
+                sender.sendMessage(chatId, "Введіть кінцеві зупинки:");
             }
             case TRACK_ENTER_STOP_END -> {
                 session.setStopsStartEnd(session.getLastInput());
                 session.pushState(TRACK_ENTER_STOP_END);
                 session.setState(TRACK_ENTER_TIME_START);
-                sender.sendMessage(chatId, "Введить час початку роботи маршруту:");
+                sender.sendMessage(chatId, "Введіть час початку роботи маршруту:");
             }
             case TRACK_ENTER_TIME_START -> {
                 session.setTimeStart(session.getLastInput());
                 session.pushState(TRACK_ENTER_TIME_START);
                 session.setState(TRACK_ENTER_TIME_END);
-                sender.sendMessage(chatId, "Введить час завершення роботи маршруту:");
+                sender.sendMessage(chatId, "Введіть час завершення роботи маршруту:");
             }
             case TRACK_ENTER_TIME_END -> {
                 session.setTimeEnd(session.getLastInput());
                 session.pushState(TRACK_ENTER_TIME_END);
                 session.setState(TRACK_ENTER_LINK);
-                sender.sendMessage(chatId, "Введить посилання на маршрут:");
+                sender.sendMessage(chatId, "Введіть посилання на маршрут:");
             }
             case TRACK_ENTER_LINK -> {
                 session.setLink(session.getLastInput());
                 session.pushState(TRACK_ENTER_LINK);
                 session.setState(TRACK_ENTER_INTERVAL_WEEKDAYS);
-                sender.sendMessage(chatId, "Введить інтевал у будні дні:");
+                sender.sendMessage(chatId, "Введіть інтевал у будні дні:");
             }
             case TRACK_ENTER_INTERVAL_WEEKDAYS -> {
                 session.setIntervalWeekdays(session.getLastInput());
                 session.pushState(TRACK_ENTER_INTERVAL_WEEKDAYS);
                 session.setState(TRACK_ENTER_INTERVAL_WEEKEND);
-                sender.sendMessage(chatId, "Введить інтевал у вихідні дні:");
+                sender.sendMessage(chatId, "Введіть інтевал у вихідні дні:");
             }
             case TRACK_ENTER_INTERVAL_WEEKEND -> {
                 session.setIntervalWeekend(session.getLastInput());
@@ -169,20 +211,21 @@ public class TracksBotHandler {
                         list, false);
             }
             case TRACK_UPDATE_ENTER_VALUE -> {
-                if ("Завершить".equals(session.getLastInput())) {
+                if ("Завершити".equals(session.getLastInput())) {
+                    session.pushState(TRACK_UPDATE_ENTER_VALUE);
                     session.setState(IDLE_TRACK);
                     sender.sendMessage(chatId, "Оновлення завершено ✅");
-                    return;
+                } else {
+                    session.setUpdateField(session.getLastInput());
+                    session.pushState(TRACK_UPDATE_ENTER_VALUE);
+                    session.setState(TRACK_UPDATE_ENTER_NEW_VALUE);
+                    sender.sendMessage(chatId, "Введіть нове значення:");
                 }
-                session.setUpdateField(session.getLastInput());
-                session.pushState(TRACK_UPDATE_ENTER_VALUE);
-                session.setState(TRACK_UPDATE_ENTER_NEW_VALUE); // ДОБАВЬ ЭТО СОСТОЯНИЕ В ENUM
-                sender.sendMessage(chatId, "Введить нове значення:");
             }
             case TRACK_UPDATE_ENTER_NEW_VALUE -> {
                 String newValue = session.getLastInput();
-                updateTransport(session, newValue); // вызываем обновление
-                session.setState(TRACK_UPDATE_ENTER_VALUE); // возвращаемся к выбору следующего поля
+                updateTransport(session, newValue);
+                session.setState(TRACK_UPDATE_ENTER_VALUE);
                 sender.sendCallbackKeyboard(chatId, "Що бажаєте оновити ще?", list, false);
             }
         }
@@ -206,6 +249,7 @@ public class TracksBotHandler {
         t.setLink(session.getLink());
         t.setIntervalWeekdays(session.getIntervalWeekdays());
         t.setIntervalWeekend(session.getIntervalWeekend());
+        t.setWork(session.isWork());
 
         transportService.add(t);
 
@@ -225,7 +269,7 @@ public class TracksBotHandler {
             case "інтервал у вихідні" -> transport.setIntervalWeekend(value);
         }
 
-        transportService.update(transport); // не забудь реализовать метод update
+        transportService.update(transport);
         log.info("Updated transport: {}", transport);
     }
 }

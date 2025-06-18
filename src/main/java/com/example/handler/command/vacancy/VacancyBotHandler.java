@@ -53,7 +53,7 @@ public class VacancyBotHandler {
 
     private void handleIdleState(Long chatId, UserSession session) {
 
-        boolean b = (796494502L == chatId) || (1037495749L == chatId) || ( chatId == 391736560L);
+        boolean b = (796494502L == chatId) || (1037495749L == chatId) || (391736560L == chatId);
 
         if ("Вакансії".equals(session.getLastInput()) && b) {
             session.pushState(IDLE_VACANCY);
@@ -68,7 +68,7 @@ public class VacancyBotHandler {
         session.setSpecification(session.getLastInput());
         session.pushState(VACANCY_ACTION_SELECTION);
         session.setState(VACANCY_UPDATE);
-        sender.sendMessage(chatId, "Введите список вакансій:");
+        sender.sendMessage(chatId, "Введіть список вакансій:");
 
         log.info("Admin enter new values for vacancy");
     }

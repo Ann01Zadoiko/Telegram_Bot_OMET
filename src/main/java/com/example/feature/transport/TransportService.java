@@ -41,22 +41,9 @@ public class TransportService implements ITransportService{
         return repository.findNumbersByType(type);
     }
 
-    @Override
-    public void updateField(Transport transport, String field, String value) {
-        switch (field) {
-            case "номер маршрута" -> transport.setNumberOfTrack(value);
-            case "кіневі зупинки" -> transport.setStopsStartEnd(value);
-            case "початок роботи" -> transport.setTimeStart(value);
-            case "останнє відправлення" -> transport.setTimeEnd(value);
-            case "посилання" -> transport.setLink(value);
-            case "інтервал у будні дні" -> transport.setIntervalWeekdays(value);
-            case "інтервал у вихідні" -> transport.setIntervalWeekend(value);
-        }
-        repository.save(transport);
-    }
 
     public void update(Transport transport) {
-        repository.save(transport); // или реализация вручную
+        repository.save(transport);
     }
 
     @Transactional

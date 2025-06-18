@@ -1,4 +1,4 @@
-package com.example.handler.command.complaint;
+package com.example.handler.registration.complaint;
 
 import com.example.constance.complaint.Complain;
 import com.example.email.EmailSender;
@@ -14,12 +14,12 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import static com.example.handler.command.complaint.ComplaintBotState.*;
+import static com.example.handler.registration.complaint.ComplaintBotState.*;
 
 @Component
 @Slf4j
 @RequiredArgsConstructor
-public class ComplaintBotHandler {
+public class ComplaintBotRegistration {
 
     private final ComplaintService complaintService;
     private final Map<Long, UserSession> sessions = new HashMap<>();

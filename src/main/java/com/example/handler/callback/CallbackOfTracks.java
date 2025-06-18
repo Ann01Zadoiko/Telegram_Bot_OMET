@@ -6,9 +6,14 @@ import com.example.handler.BotSenderService;
 import com.example.handler.button.TrackButton;
 import com.example.handler.printer.TrackPrinter;
 import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
 import org.springframework.stereotype.Service;
 import org.telegram.telegrambots.meta.api.objects.Update;
 
+import java.util.Comparator;
+import java.util.List;
+
+@Slf4j
 @Service
 @RequiredArgsConstructor
 public class CallbackOfTracks implements ICallback{
@@ -24,11 +29,21 @@ public class CallbackOfTracks implements ICallback{
         if (data.contains("trollbus")){
             String[] s = data.split(" ");
             if (s[1].equals("trollbus")){
-                for (String number: transportService.getNumbersByType("тролейбус")){
+
+                List<String> numbers = transportService.getNumbersByType("тролейбус");
+                numbers.sort(Comparator.comparingInt(n -> Integer.parseInt(n.replace("№", "").trim())));
+
+                for (String number: numbers){
                     if (s[0].equals(number)){
                         Transport byTypeAndNumber = transportService.getByTypeAndNumber("тролейбус", s[0]);
-                        botSenderService.sendMiniApp(chatId, TrackButton.getButton(byTypeAndNumber), TrackPrinter.print(byTypeAndNumber), messageId,
-                                update.getCallbackQuery());
+                        log.info("track is work {}", byTypeAndNumber.isWork());
+
+                        if (byTypeAndNumber.isWork()){
+                            botSenderService.sendMiniApp(chatId, TrackButton.getButton(byTypeAndNumber), TrackPrinter.print(byTypeAndNumber), messageId,
+                                    update.getCallbackQuery());
+                        } else {
+                            botSenderService.sendMessage(chatId, TrackPrinter.print(byTypeAndNumber), messageId, update.getCallbackQuery());
+                        }
                     }
                 }
             }
@@ -38,11 +53,19 @@ public class CallbackOfTracks implements ICallback{
         if (data.contains("trambus")){
             String[] s = data.split(" ");
             if (s[1].equals("trambus")){
-                for (String number: transportService.getNumbersByType("трамвай")){
+
+                List<String> numbers = transportService.getNumbersByType("трамвай");
+                numbers.sort(Comparator.comparingInt(n -> Integer.parseInt(n.replace("№", "").trim())));
+
+                for (String number: numbers){
                     if (s[0].equals(number)){
                         Transport byTypeAndNumber = transportService.getByTypeAndNumber("трамвай", s[0]);
-                        botSenderService.sendMiniApp(chatId, TrackButton.getButton(byTypeAndNumber), TrackPrinter.print(byTypeAndNumber), messageId,
-                                update.getCallbackQuery());
+                        if (byTypeAndNumber.isWork()){
+                            botSenderService.sendMiniApp(chatId, TrackButton.getButton(byTypeAndNumber), TrackPrinter.print(byTypeAndNumber), messageId,
+                                    update.getCallbackQuery());
+                        } else {
+                            botSenderService.sendMessage(chatId, TrackPrinter.print(byTypeAndNumber), messageId, update.getCallbackQuery());
+                        }
                     }
                 }
             }

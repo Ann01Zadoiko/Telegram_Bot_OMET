@@ -1,0 +1,10 @@
+package com.example.handler.registration.museum;
+
+public enum MuseumBotState {
+
+    IDLE_MUSEUM_REGISTRATION,
+    REGISTRATION_CHOOSE,
+    REGISTRATION_ENTER_NAME,
+    REGISTRATION_ENTER_PHONE_NUMBER,
+    REGISTRATION_ENTER_COUNT_OF_PEOPLE
+}

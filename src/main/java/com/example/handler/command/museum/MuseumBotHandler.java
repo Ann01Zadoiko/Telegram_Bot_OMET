@@ -54,7 +54,7 @@ public class MuseumBotHandler {
     }
 
     private void handleIdleState(Long chatId, UserSession session){
-        boolean b = (796494502L == chatId) || (1037495749L == chatId) || ( chatId == 391736560L);
+        boolean b = (796494502L == chatId) || (1037495749L == chatId) || (391736560L == chatId);
         if ("Редагувати екскурсію".equals(session.getLastInput()) && b){
             session.pushState(IDLE_MUSEUM);
             session.setState(MUSEUM_CHOOSE_ACTION);
@@ -69,7 +69,7 @@ public class MuseumBotHandler {
             session.pushState(MUSEUM_CHOOSE_ACTION);
             session.setState(MUSEUM_ENTER);
 
-            sender.sendMessage(chatId, "Введить дату за зразком (15.05.2025)");
+            sender.sendMessage(chatId, "Введіть дату за зразком (15.05.2025)");
 
         } else if (session.getLastInput().equals("Закрити запис")) {
             session.pushState(MUSEUM_CHOOSE_ACTION);
