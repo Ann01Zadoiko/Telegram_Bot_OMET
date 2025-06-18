@@ -42,7 +42,6 @@ public class TelegramBot extends TelegramLongPollingBot {
 
     @SneakyThrows
     public void onUpdateReceived(Update update) {
-
         commandHandler.handlerOfCommands(update);
 
         if (update.hasMessage() && update.getMessage().hasText()) {
@@ -52,7 +51,6 @@ public class TelegramBot extends TelegramLongPollingBot {
         if (update.hasCallbackQuery()) {
             botHandler.answerToCallback(update);
         }
-
     }
 }
 
